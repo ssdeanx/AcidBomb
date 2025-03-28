@@ -16,6 +16,7 @@ This Turborepo includes the following packages/apps:
 
 ### Apps and Packages
 
+    ```bash
     .
     ├── apps
     │   ├── api                       # NestJS app (https://nestjs.com).
@@ -26,6 +27,16 @@ This Turborepo includes the following packages/apps:
         ├── @repo/jest-config         # `jest` configurations
         ├── @repo/typescript-config   # `tsconfig.json`s used throughout the monorepo
         └── @repo/ui                  # Shareable stub React component library.
+```
+
+- **`apps/api`**: A [NestJS](https://nestjs.com/) application that serves as the backend API.
+- **`apps/web`**: A [Next.js](https://nextjs.org/) application that serves as the frontend.
+- **`packages/@repo/ui`**: A stub React component library that can be used in both the `web` and `api` applications.
+- **`packages/@repo/typescript-config`**: A shared `tsconfig.json` file that can be used in all packages and applications.
+- **`packages/@repo/jest-config`**: A shared `jest` configuration that can be used in all packages and applications.
+- **`packages/@repo/eslint-config`**: A shared `eslint` configuration that can be used in all packages and applications.
+- **`packages/@repo/api`**: A shared `NestJS` resources that can be used in all packages and applications.
+- **`packages/@repo/tsconfig`**: A shared `tsconfig.json` file that can be used in all packages and applications.
 
 Each package and application are 100% [TypeScript](https://www.typescriptlang.org/) safe.
 

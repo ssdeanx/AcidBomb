@@ -16,7 +16,7 @@ This Turborepo includes the following packages/apps:
 
 ### Apps and Packages
 
-    ```bash
+```bash
     .
     ├── apps
     │   ├── api                       # NestJS app (https://nestjs.com).
@@ -26,7 +26,8 @@ This Turborepo includes the following packages/apps:
         ├── @repo/eslint-config       # `eslint` configurations (includes `prettier`)
         ├── @repo/jest-config         # `jest` configurations
         ├── @repo/typescript-config   # `tsconfig.json`s used throughout the monorepo
-        └── @repo/ui                  # Shareable stub React component library.
+        ├── @repo/ui                  # Shareable stub React component library.
+        └── @repo/database              # Shareable stub React component library.
 ```
 
 - **`apps/api`**: A [NestJS](https://nestjs.com/) application that serves as the backend API.
@@ -39,6 +40,94 @@ This Turborepo includes the following packages/apps:
 - **`packages/@repo/tsconfig`**: A shared `tsconfig.json` file that can be used in all packages and applications.
 
 Each package and application are 100% [TypeScript](https://www.typescriptlang.org/) safe.
+
+```mermaid
+mindmap
+  root((Turbo-Next))
+    apps
+      web
+        Next.js App
+          pages
+            dashboard
+            documentation
+            about
+          components
+          tests
+            jest
+            playwright
+      api
+        NestJS App
+          controllers
+          services
+          modules
+          tests
+    packages
+      @repo/ui
+        Layout
+          appbar
+          sidebar
+          footer
+          hero
+        Data Display
+          charts[Recharts]
+          graphs[Plotly]
+          table
+          list
+        AI/Chat
+          chatWindow
+          chatMessage
+          modelSelector
+        Core
+          button
+          card
+          input
+          paper
+          progress
+          switch
+          slider
+          tooltip
+      @repo/database
+        Models
+          User
+          Prompt
+          Chat
+        Migrations
+        Seeds
+        Client
+      @repo/api
+        DTOs
+        Entities
+        Types
+      Config Packages
+        typescript-config
+          base
+          react
+          next
+          nest
+        eslint-config
+          base
+          react
+          next
+          nest
+          prettier
+        jest-config
+          base
+          react
+          nest
+    Tools
+      Package Manager[PNPM]
+      Build Tool[Turbo]
+      Testing
+        Jest
+        Playwright
+      Linting
+        ESLint
+        Prettier
+        TypeScript
+      CI/CD
+        Turbo Cache
+        Vercel
+```
 
 ### Utilities
 
@@ -58,10 +147,11 @@ This `Turborepo` already configured useful commands for all your apps and packag
 ```bash
 # Will build all the app & packages with the supported `build` script.
 pnpm run build
-
-# ℹ️ If you plan to only build apps individually,
-# Please make sure you've built the packages first.
 ```
+
+#### ℹ️ If you plan to only build apps individually
+
+#### Please make sure you've built the packages first
 
 #### Develop
 
@@ -70,7 +160,7 @@ pnpm run build
 pnpm run dev
 ```
 
-#### test
+#### Test
 
 ```bash
 # Will launch a test suites for all the app & packages with the supported `test` script.
@@ -129,3 +219,91 @@ Learn more about the power of Turborepo:
 - [Filtering](https://turbo.build/repo/docs/core-concepts/monorepos/filtering)
 - [Configuration Options](https://turbo.build/repo/docs/reference/configuration)
 - [CLI Usage](https://turbo.build/repo/docs/reference/command-line-reference)
+
+```mermaid
+graph TB
+    User((External User))
+
+    subgraph "Frontend Container"
+        direction TB
+        NextApp["Next.js Web App<br>(Next.js 15.2)"]
+
+        subgraph "Frontend Components"
+            direction TB
+            ThemeProvider["Theme Provider<br>(MUI)"]
+            UIComponents["UI Components<br>(React)"]
+            Layout["Root Layout<br>(React)"]
+            Pages["Pages Router<br>(Next.js)"]
+
+            subgraph "UI Component Library"
+                direction LR
+                AppBar["AppBar<br>(React)"]
+                Button["Button<br>(React)"]
+                Card["Card<br>(React)"]
+                Charts["Charts<br>(React)"]
+                Chat["Chat Components<br>(React)"]
+                Dashboard["Dashboard<br>(React)"]
+                Footer["Footer<br>(React)"]
+            end
+        end
+    end
+
+    subgraph "Backend Container"
+        direction TB
+        NestApp["API Server<br>(NestJS)"]
+
+        subgraph "API Components"
+            direction TB
+            AppModule["App Module<br>(NestJS)"]
+            LinksModule["Links Module<br>(NestJS)"]
+            LinksController["Links Controller<br>(NestJS)"]
+            LinksService["Links Service<br>(NestJS)"]
+        end
+    end
+
+    subgraph "Database Container"
+        direction TB
+        PostgresDB[("PostgreSQL Database<br>(PostgreSQL)")]
+
+        subgraph "Database Components"
+            direction TB
+            PrismaClient["Prisma Client<br>(Prisma)"]
+            UserModel["User Model<br>(Prisma)"]
+            PromptModel["Prompt Model<br>(Prisma)"]
+            ChatModel["Chat Model<br>(Prisma)"]
+        end
+    end
+
+    %% Relationships
+    User -->|"Uses"| NextApp
+    NextApp -->|"API Calls"| NestApp
+
+    %% Frontend Internal
+    NextApp -->|"Uses"| ThemeProvider
+    NextApp -->|"Uses"| UIComponents
+    NextApp -->|"Uses"| Layout
+    NextApp -->|"Routes"| Pages
+    ThemeProvider -->|"Styles"| UIComponents
+
+    %% Backend Internal
+    NestApp -->|"Contains"| AppModule
+    AppModule -->|"Imports"| LinksModule
+    LinksModule -->|"Contains"| LinksController
+    LinksController -->|"Uses"| LinksService
+
+    %% Database Internal
+    NestApp -->|"Queries"| PrismaClient
+    PrismaClient -->|"Manages"| PostgresDB
+    PrismaClient -->|"Maps"| UserModel
+    PrismaClient -->|"Maps"| PromptModel
+    PrismaClient -->|"Maps"| ChatModel
+
+    %% Component Library
+    UIComponents -->|"Contains"| AppBar
+    UIComponents -->|"Contains"| Button
+    UIComponents -->|"Contains"| Card
+    UIComponents -->|"Contains"| Charts
+    UIComponents -->|"Contains"| Chat
+    UIComponents -->|"Contains"| Dashboard
+    UIComponents -->|"Contains"| Footer
+```

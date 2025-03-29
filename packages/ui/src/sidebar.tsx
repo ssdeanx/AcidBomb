@@ -28,8 +28,6 @@ import {
   Help,
   ExpandLess,
   ExpandMore,
-  Chat,
-  Timeline,
 } from '@mui/icons-material';
 
 export interface SidebarItem {
@@ -242,35 +240,29 @@ const defaultItems: SidebarItem[] = [
     title: 'Overview',
     icon: <Dashboard />,
     path: '/dashboard',
-  },
-  {
-    title: 'Chat',
-    icon: <Chat />,
-    path: '/dashboard/chat',
+    active: true,
   },
   {
     title: 'Prompts',
     icon: <Psychology />,
-    path: '/dashboard/prompt_manager',
-  },
-  {
-    title: 'Traces',
-    icon: <Timeline />,
-    path: '/dashboard/traces',
+    items: [
+      { title: 'Templates', path: '/dashboard/prompts/templates' },
+      { title: 'Analytics', path: '/dashboard/prompts/analytics' },
+    ],
   },
   {
     title: 'Models',
     icon: <Science />,
-    path: '/dashboard/models',
+    items: [
+      { title: 'Performance', path: '/dashboard/models/performance' },
+      { title: 'Costs', path: '/dashboard/models/costs' },
+    ],
   },
   {
-    title: 'Metrics',
+    title: 'Analytics',
     icon: <QueryStats />,
-    path: '/dashboard/metrics',
+    path: '/dashboard/analytics',
   },
-  {
-    title: 'Settings',
-    icon: <Settings />,
-    path: '/dashboard/settings'
-  }
+  { title: 'Settings', icon: <Settings />, path: '/dashboard/settings' },
+  { title: 'Help', icon: <Help />, path: '/dashboard/help' },
 ];

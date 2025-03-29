@@ -100,7 +100,7 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
   },
 }));
 
-export const chat = React.forwardRef<HTMLDivElement, ChatProps>(
+export const Chat = React.forwardRef<HTMLDivElement, ChatProps>(
   ({
     messages = [],
     model,
@@ -276,4 +276,4 @@ export const chat = React.forwardRef<HTMLDivElement, ChatProps>(
   }
 );
 
-chat.displayName = 'chat';
+Chat.displayName = 'Chat';

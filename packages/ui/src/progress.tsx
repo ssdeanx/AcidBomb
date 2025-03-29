@@ -94,11 +94,11 @@ const Dot = styled('span', {
     animationDelay: `${delay}s`,
 
     '@keyframes pulse': {
-      0%, 80%, 100% {
+      '0%, 80%, 100%': {
         transform: 'scale(0)',
         opacity: 0.3,
       },
-      40% {
+      '40%': {
         transform: 'scale(1)',
         opacity: 1,
       },
@@ -106,7 +106,7 @@ const Dot = styled('span', {
   })
 );
 
-export const progress = React.forwardRef<HTMLDivElement, ProgressProps>(
+export const Progress = React.forwardRef<HTMLDivElement, ProgressProps>(
   ({
     variant = 'linear',
     value = 0,
@@ -212,4 +212,4 @@ export const progress = React.forwardRef<HTMLDivElement, ProgressProps>(
   }
 );
 
-progress.displayName = 'progress';
+Progress.displayName = 'Progress';

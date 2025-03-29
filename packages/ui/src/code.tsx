@@ -65,7 +65,7 @@ const StyledCode = styled('code', {
   } : {},
 }));
 
-export const code = React.forwardRef<HTMLElement, CodeProps>(
+export const Code = React.forwardRef<HTMLElement, CodeProps>(
   ({ children, className, variant = 'inline', highlight = false, ...props }, ref) => {
     return (
       <StyledCode
@@ -81,4 +81,4 @@ export const code = React.forwardRef<HTMLElement, CodeProps>(
   }
 );
 
-code.displayName = 'code';
+Code.displayName = 'Code';

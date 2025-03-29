@@ -49,7 +49,7 @@ const StyledSwitch = styled(MuiSwitch)(({ theme }) => ({
   },
 }));
 
-export const switch_ = React.forwardRef<HTMLButtonElement, SwitchProps>(
+export const Switch_ = React.forwardRef<HTMLButtonElement, SwitchProps>(
   ({ label, defaultChecked = false, required = false, disabled = false, ...props }, ref) => {
     return (
       <FormGroup>
@@ -70,4 +70,4 @@ export const switch_ = React.forwardRef<HTMLButtonElement, SwitchProps>(
   }
 );
 
-switch_.displayName = 'switch';
+Switch_.displayName = 'Switch_';

@@ -52,7 +52,7 @@ export interface GraphProps {
   onRangeChange?: (range: [Date, Date]) => void;
 }
 
-export const graphs = React.forwardRef<HTMLDivElement, GraphProps>(
+export const Graphs = React.forwardRef<HTMLDivElement, GraphProps>(
   ({
     type,
     data,
@@ -126,4 +126,4 @@ export const graphs = React.forwardRef<HTMLDivElement, GraphProps>(
   }
 );
 
-graphs.displayName = 'graphs';
+Graphs.displayName = 'Graphs';

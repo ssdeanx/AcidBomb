@@ -117,7 +117,7 @@ const StyledTextField = styled(TextField, {
   })
 );
 
-export const input = React.forwardRef<HTMLDivElement, InputProps>(
+export const Input = React.forwardRef<HTMLDivElement, InputProps>(
   ({
     variant = 'primary',
     clearable = false,
@@ -222,4 +222,4 @@ export const input = React.forwardRef<HTMLDivElement, InputProps>(
   }
 );
 
-input.displayName = 'input';
+Input.displayName = 'Input';

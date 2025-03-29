@@ -122,7 +122,7 @@ const StyledPaper = styled(MuiPaper, {
   }),
 }));
 
-export const paper = React.forwardRef<HTMLDivElement, PaperProps>(
+export const Paper = React.forwardRef<HTMLDivElement, PaperProps>(
   ({
     variant = 'default',
     interactive = false,
@@ -148,4 +148,4 @@ export const paper = React.forwardRef<HTMLDivElement, PaperProps>(
   }
 );
 
-paper.displayName = 'paper';
+Paper.displayName = 'Paper';

@@ -258,4 +258,4 @@ export const charts = React.forwardRef<HTMLDivElement, ChartProps>(
   }
 );
 
-charts.displayName = 'charts';
+charts.displayName = 'Charts';

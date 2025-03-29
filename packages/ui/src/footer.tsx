@@ -67,8 +67,10 @@ const StyledFooter = styled('footer')(({ theme }) => ({
   },
 }));
 
-const SocialIcon = ({ name, ...props }: { name: FooterProps['socials'][0]['name'] }) => {
-  const icons = {
+type SocialIconName = NonNullable<FooterProps['socials']>[number]['name'];
+
+const SocialIcon = ({ name }: { name: SocialIconName }) => {
+  const icons: Record<SocialIconName, React.ReactElement> = {
     github: <GitHub />,
     twitter: <Twitter />,
     linkedin: <LinkedIn />,
@@ -79,7 +81,7 @@ const SocialIcon = ({ name, ...props }: { name: FooterProps['socials'][0]['name'
   return icons[name] || null;
 };
 
-export const footer = React.forwardRef<HTMLDivElement, FooterProps>(
+export const Footer = React.forwardRef<HTMLDivElement, FooterProps>(
   ({
     companyName = 'DeanMachines',
     logoUrl,
@@ -177,7 +179,7 @@ export const footer = React.forwardRef<HTMLDivElement, FooterProps>(
   }
 );
 
-footer.displayName = 'footer';
+Footer.displayName = 'Footer';
 
 // Default values for the footer
 const defaultLinks = [

@@ -97,7 +97,7 @@ const HighlightText = styled('span')(({ theme }) => ({
 
 const AnimatedBox = motion(Box);
 
-export const hero = React.forwardRef<HTMLDivElement, HeroProps>(
+export const Hero = React.forwardRef<HTMLDivElement, HeroProps>(
   ({
     title,
     description,
@@ -232,4 +232,4 @@ export const hero = React.forwardRef<HTMLDivElement, HeroProps>(
   }
 );
 
-hero.displayName = 'hero';
+Hero.displayName = 'Hero';

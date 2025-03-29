@@ -38,13 +38,14 @@ export interface ChatMessageProps {
   status?: 'sending' | 'sent' | 'error';
 }
 
-const MessageContainer = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  gap: theme.spacing(2),
-  marginBottom: theme.spacing(2),
-  opacity: (props: { status?: string }) =>
-    props.status === 'sending' ? 0.7 : 1,
-}));
+const MessageContainer = styled(Box)<{ status?: ChatMessageProps['status'] }>(
+  ({ theme, status }) => ({
+    display: 'flex',
+    gap: theme.spacing(2),
+    marginBottom: theme.spacing(2),
+    opacity: status === 'sending' ? 0.7 : 1,
+  })
+);
 
 const MessageBubble = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'isUser',
@@ -64,7 +65,7 @@ const ModelBadge = styled(Typography)(({ theme }) => ({
   marginTop: theme.spacing(0.5),
 }));
 
-export const chatMessage = React.forwardRef<HTMLDivElement, ChatMessageProps>(
+export const ChatMessage = React.forwardRef<HTMLDivElement, ChatMessageProps>(
   ({
     content,
     role,
@@ -121,4 +122,4 @@ export const chatMessage = React.forwardRef<HTMLDivElement, ChatMessageProps>(
   }
 );
 
-chatMessage.displayName = 'chatMessage';
+ChatMessage.displayName = 'ChatMessage';

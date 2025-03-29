@@ -163,7 +163,7 @@ const ListItem = ({ icon, text, description, children, onClick, href, active }: 
   );
 };
 
-export const list = React.forwardRef<HTMLUListElement, ListProps>(
+export const List = React.forwardRef<HTMLUListElement, ListProps>(
   ({ items, variant = 'default', className, ...props }, ref) => {
     return (
       <StyledList
@@ -179,4 +179,4 @@ export const list = React.forwardRef<HTMLUListElement, ListProps>(
   }
 );
 
-list.displayName = 'list';
+List.displayName = 'List';

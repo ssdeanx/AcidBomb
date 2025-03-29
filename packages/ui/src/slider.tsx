@@ -35,7 +35,7 @@ export interface SliderProps extends Omit<MuiSliderProps, 'defaultValue'> {
   marks?: boolean;
 }
 
-export const slider = React.forwardRef<HTMLSpanElement, SliderProps>(
+export const Slider = React.forwardRef<HTMLSpanElement, SliderProps>(
   ({
     defaultValue = 0,
     min = 0,
@@ -62,4 +62,4 @@ export const slider = React.forwardRef<HTMLSpanElement, SliderProps>(
   }
 );
 
-slider.displayName = 'slider';
+Slider.displayName = 'Slider';

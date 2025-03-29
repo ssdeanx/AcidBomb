@@ -130,7 +130,7 @@ const StatusChip = styled(Chip)<{ status?: 'success' | 'warning' | 'error' }>(
 // In MUI v7, the API for Grid has changed
 const Grid = styled(MuiGrid)(({ theme }) => ({}));
 
-export const dashboard = React.forwardRef<HTMLDivElement, DashboardProps>(
+export const Dashboard = React.forwardRef<HTMLDivElement, DashboardProps>(
   ({
     title = 'AI Analytics Dashboard',
     user,
@@ -195,16 +195,18 @@ export const dashboard = React.forwardRef<HTMLDivElement, DashboardProps>(
           {/* Metrics Grid */}
           <MuiGrid container spacing={3} sx={{ mb: 4 }}>
             {metricCards.map((metric, index) => (
-              <MuiGrid component="div" xs={12} sm={6} md={3} key={index}>
+              <MuiGrid item xs={12} sm={6} md={3} key={index}>
                 <StyledMetricCard>
                   <CardContent>
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                      <Box sx={{
-                        p: 1,
-                        borderRadius: 1,
-                        bgcolor: alpha(theme.palette.primary.main, 0.1),
-                        color: theme.palette.primary.main,
-                      }}>
+                      <Box
+                        sx={{
+                          p: 1,
+                          borderRadius: 1,
+                          bgcolor: alpha(theme.palette.primary.main, 0.1),
+                          color: theme.palette.primary.main,
+                        }}
+                      >
                         {metric.icon}
                       </Box>
                     </Box>
@@ -235,7 +237,7 @@ export const dashboard = React.forwardRef<HTMLDivElement, DashboardProps>(
 
           {/* Prompts and Models Section */}
           <MuiGrid container spacing={3}>
-            <MuiGrid component="div" xs={12} md={6}>
+            <MuiGrid item xs={12} md={6}>
               <Paper sx={{ p: 3 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
                   <Psychology sx={{ mr: 1 }} />
@@ -245,7 +247,7 @@ export const dashboard = React.forwardRef<HTMLDivElement, DashboardProps>(
               </Paper>
             </MuiGrid>
 
-            <MuiGrid component="div" xs={12} md={6}>
+            <MuiGrid item xs={12} md={6}>
               <Paper sx={{ p: 3 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
                   <CloudQueue sx={{ mr: 1 }} />
@@ -261,4 +263,4 @@ export const dashboard = React.forwardRef<HTMLDivElement, DashboardProps>(
   }
 );
 
-dashboard.displayName = 'dashboard';
+Dashboard.displayName = 'Dashboard';

@@ -1,7 +1,13 @@
-import { dashboard as Dashboard } from '@repo/ui/dashboard';
-import { charts as Charts } from '@repo/ui/charts';
+'use client';
 
-// Sample data
+import { useState } from 'react';
+import { Box, CssBaseline } from '@mui/material';
+import { AppBar } from '@repo/ui/appbar';
+import { Sidebar } from '@repo/ui/sidebar';
+import { Dashboard } from '@repo/ui/dashboard';
+import { Charts } from '@repo/ui/charts';
+
+// Sample data for charts
 const lineData = [
   { name: 'Jan', calls: 4000, latency: 240, value: 4000 },
   { name: 'Feb', calls: 3000, latency: 139, value: 3000 },
@@ -17,40 +23,105 @@ const barData = [
   { name: 'Model D', requests: 2300, errors: 30, value: 2300 },
 ];
 
-// In your page component
-<>
-  // In your page component
-  <Dashboard
-    title="AI Analytics"
-    user={{
-      name: "John Doe",
-      role: "Admin"
-    }}
-    metrics={{
-      totalCalls: 15000,
-      avgLatency: 245,
-      successRate: 99.2,
-      totalCost: 1234.56
-    }}
-    prompts={[ /* prompt metrics */]}
-    models={[ /* model metrics */]} />
-  // In your component
-  <Charts
-    type="line"
-    data={lineData}
-    height={300}
-    dataKeys={['calls', 'latency']} />
-  // Area chart with custom colors
-  <Charts
-    type="area"
-    data={lineData}
-    colors={['#4caf50', '#ff9800']}
-    animate={false} />
-  // Pie chart
-  <Charts
-    type="pie"
-    data={barData}
-    height={400}
-    colors={['#4caf50', '#ff9800']}
-    animate={false} />
-</>
+export default function DashboardPage() {
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
+  // Handle navigation
+  const handleNavigation = (path: string) => {
+    console.log(`Navigating to: ${path}`);
+    // In a real app, you would use Next.js navigation here
+    // router.push(path);
+  };
+
+  // Handle sidebar collapse toggle
+  const handleSidebarCollapse = (collapsed: boolean) => {
+    setSidebarCollapsed(collapsed);
+  };
+
+  return (
+    <>
+      <CssBaseline />
+      <Box sx={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
+        {/* AppBar */}
+        <AppBar
+          title="AI Analytics Platform"
+          onNavigate={handleNavigation}
+          onProfileAction={(action) => console.log(`Profile action: ${action}`)}
+        />
+
+        {/* Sidebar */}
+        <Sidebar
+          collapsed={sidebarCollapsed}
+          onCollapse={handleSidebarCollapse}
+          onItemSelect={handleNavigation}
+        />
+
+        {/* Main Content */}
+        <Box
+          component="main"
+          sx={{
+            flexGrow: 1,
+            p: 3,
+            mt: 8,
+            overflow: 'auto',
+            ml: sidebarCollapsed ? '64px' : '240px',
+            transition: (theme) => theme.transitions.create('margin', {
+              easing: theme.transitions.easing.sharp,
+              duration: theme.transitions.duration.enteringScreen,
+            }),
+          }}
+        >
+          {/* Dashboard Component */}
+          <Dashboard
+            title="AI Analytics"
+            user={{
+              name: "John Doe",
+              role: "Admin"
+            }}
+            metrics={{
+              totalCalls: 15000,
+              avgLatency: 245,
+              successRate: 99.2,
+              totalCost: 1234.56
+            }}
+          />
+
+          {/* Charts Section */}
+          <Box sx={{ mt: 4, display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3 }}>
+            <Box sx={{ bgcolor: 'background.paper', p: 3, borderRadius: 2, boxShadow: 1 }}>
+              <Charts
+                type="line"
+                title="API Calls & Latency"
+                data={lineData}
+                height={300}
+                dataKeys={['calls', 'latency']}
+              />
+            </Box>
+
+            <Box sx={{ bgcolor: 'background.paper', p: 3, borderRadius: 2, boxShadow: 1 }}>
+              <Charts
+                type="area"
+                title="Monthly Usage"
+                data={lineData}
+                height={300}
+                colors={['#4caf50', '#ff9800']}
+                animate={false}
+              />
+            </Box>
+
+            <Box sx={{ bgcolor: 'background.paper', p: 3, borderRadius: 2, boxShadow: 1, gridColumn: { xs: '1', md: 'span 2' } }}>
+              <Charts
+                type="pie"
+                title="Model Distribution"
+                data={barData}
+                height={400}
+                colors={['#4caf50', '#ff9800', '#2196f3', '#f44336']}
+                animate={false}
+              />
+            </Box>
+          </Box>
+        </Box>
+      </Box>
+    </>
+  );
+}

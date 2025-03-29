@@ -60,7 +60,7 @@ const ProviderChip = styled(Chip)(({ theme }) => ({
   fontSize: '0.75rem',
 }));
 
-export const modelSelector = React.forwardRef<HTMLDivElement, ModelSelectorProps>(
+export const ModelSelector = React.forwardRef<HTMLDivElement, ModelSelectorProps>(
   ({
     models,
     selectedModel,
@@ -126,4 +126,4 @@ export const modelSelector = React.forwardRef<HTMLDivElement, ModelSelectorProps
   }
 );
 
-modelSelector.displayName = 'modelSelector';
+ModelSelector.displayName = 'ModelSelector';

@@ -125,7 +125,7 @@ const StyledListItemButton = styled(ListItemButton)(({ theme }) => ({
   },
 }));
 
-export const sidebar = React.forwardRef<HTMLDivElement, SidebarProps>(
+export const Sidebar = React.forwardRef<HTMLDivElement, SidebarProps>(
   ({
     items = defaultItems,
     width = 240,
@@ -233,7 +233,7 @@ export const sidebar = React.forwardRef<HTMLDivElement, SidebarProps>(
   }
 );
 
-sidebar.displayName = 'sidebar';
+Sidebar.displayName = 'Sidebar';
 
 const defaultItems: SidebarItem[] = [
   {

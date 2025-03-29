@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import {
-  AppBar,
+  AppBar as MuiAppBar,
   Box,
   Toolbar,
   Typography,
@@ -43,11 +43,62 @@ const navigationItems: NavigationItem[] = [
   { label: 'About', path: '/about', icon: <Info /> },
 ];
 
-export const appbar = () => {
+export interface AppBarProps {
+  /**
+   * The title to display in the AppBar
+   */
+  title?: string;
+
+  /**
+   * Logo component or element to display
+   */
+  logo?: React.ReactNode;
+
+  /**
+   * Custom navigation items
+   */
+  navigationItems?: NavigationItem[];
+
+  /**
+   * Function called when a navigation item is clicked
+   */
+  onNavigate?: (path: string) => void;
+
+  /**
+   * Function called when profile menu items are clicked
+   */
+  onProfileAction?: (action: 'profile' | 'settings' | 'logout') => void;
+
+  /**
+   * Whether to show the profile button
+   * @default true
+   */
+  showProfileButton?: boolean;
+
+  /**
+   * Additional profile menu items
+   */
+  profileMenuItems?: Array<{
+    label: string;
+    action: string;
+  }>;
+}
+
+export const AppBar = ({
+  title = 'DeanMachines',
+  logo,
+  navigationItems: customNavigationItems,
+  onNavigate,
+  onProfileAction,
+  showProfileButton = true,
+  profileMenuItems = [],
+}: AppBarProps) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+
+  const items = customNavigationItems || navigationItems;
 
   const handleProfileMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -62,16 +113,30 @@ export const appbar = () => {
   };
 
   const handleNavigation = (path: string) => {
-    // Handle navigation here - you can use Next.js router
-    console.log(`Navigating to: ${path}`);
+    if (onNavigate) {
+      onNavigate(path);
+    } else {
+      // Default navigation handler
+      console.log(`Navigating to: ${path}`);
+    }
+
     if (isMobile) {
       setMobileOpen(false);
     }
   };
 
+  const handleProfileMenuItem = (action: 'profile' | 'settings' | 'logout' | string) => {
+    handleMenuClose();
+    if (onProfileAction) {
+      onProfileAction(action as any);
+    } else {
+      console.log(`Profile action: ${action}`);
+    }
+  };
+
   const navigationList = (
     <List>
-      {navigationItems.map(({ label, path, icon }) => (
+      {items.map(({ label, path, icon }) => (
         <ListItem
           key={path}
           onClick={() => handleNavigation(path)}
@@ -94,7 +159,7 @@ export const appbar = () => {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar
+      <MuiAppBar
         position="static"
         elevation={0}
         sx={{
@@ -115,6 +180,12 @@ export const appbar = () => {
             </IconButton>
           )}
 
+          {logo ? (
+            <Box sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>
+              {logo}
+            </Box>
+          ) : null}
+
           <Typography
             variant="h6"
             component="div"
@@ -125,12 +196,12 @@ export const appbar = () => {
               letterSpacing: -0.5
             }}
           >
-            DeanMachines
+            {title}
           </Typography>
 
           {!isMobile && (
             <Box sx={{ display: 'flex', gap: 1 }}>
-              {navigationItems.map(({ label, path }) => (
+              {items.map(({ label, path }) => (
                 <Button
                   key={path}
                   onClick={() => handleNavigation(path)}
@@ -147,17 +218,19 @@ export const appbar = () => {
             </Box>
           )}
 
-          <IconButton
-            size="large"
-            aria-label="account of current user"
-            aria-controls="menu-appbar"
-            aria-haspopup="true"
-            onClick={handleProfileMenu}
-            color="inherit"
-            sx={{ ml: 2 }}
-          >
-            <AccountCircle />
-          </IconButton>
+          {showProfileButton && (
+            <IconButton
+              size="large"
+              aria-label="account of current user"
+              aria-controls="menu-appbar"
+              aria-haspopup="true"
+              onClick={handleProfileMenu}
+              color="inherit"
+              sx={{ ml: 2 }}
+            >
+              <AccountCircle />
+            </IconButton>
+          )}
 
           <Menu
             id="menu-appbar"
@@ -174,13 +247,18 @@ export const appbar = () => {
             open={Boolean(anchorEl)}
             onClose={handleMenuClose}
           >
-            <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-            <MenuItem onClick={handleMenuClose}>Settings</MenuItem>
+            <MenuItem onClick={() => handleProfileMenuItem('profile')}>Profile</MenuItem>
+            <MenuItem onClick={() => handleProfileMenuItem('settings')}>Settings</MenuItem>
+            {profileMenuItems.map((item) => (
+              <MenuItem key={item.action} onClick={() => handleProfileMenuItem(item.action)}>
+                {item.label}
+              </MenuItem>
+            ))}
             <Divider />
-            <MenuItem onClick={handleMenuClose}>Logout</MenuItem>
+            <MenuItem onClick={() => handleProfileMenuItem('logout')}>Logout</MenuItem>
           </Menu>
         </Toolbar>
-      </AppBar>
+      </MuiAppBar>
 
       {/* Mobile Navigation Drawer */}
       <Drawer
@@ -215,4 +293,4 @@ export const appbar = () => {
   );
 };
 
-appbar.displayName = 'appbar';
+AppBar.displayName = 'AppBar';

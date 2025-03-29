@@ -42,8 +42,8 @@ import {
   AudioFile,
   PictureAsPdf,
 } from '@mui/icons-material';
-import { chatMessage as ChatMessage } from './chatmessage';
-import { modelSelector as ModelSelector } from './model_selector';
+import { ChatMessage } from './chatmessage';
+import { ModelSelector } from './model_selector';
 import type { ModelOption } from './model_selector';
 
 // Add new interface for chat settings
@@ -165,7 +165,7 @@ const TypingIndicator = styled(Box)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
-export const chatWindow = React.forwardRef<HTMLDivElement, ChatWindowProps>(
+export const ChatWindow = React.forwardRef<HTMLDivElement, ChatWindowProps>(
   ({
     messages = [],
     models = [],
@@ -424,4 +424,4 @@ export const chatWindow = React.forwardRef<HTMLDivElement, ChatWindowProps>(
   }
 );
 
-chatWindow.displayName = 'chatWindow';
+ChatWindow.displayName = 'ChatWindow';

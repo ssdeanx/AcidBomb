@@ -1,3 +1,4 @@
+// Version 2: Modifying 'content' prop to 'string'
 'use client';
 
 import * as React from 'react';
@@ -6,11 +7,10 @@ import {
   TooltipProps as MuiTooltipProps,
   tooltipClasses,
   styled,
-  Typography,
-  Button
 } from '@mui/material';
 
-export interface TooltipProps extends Omit<MuiTooltipProps, 'children' | 'title'> {
+// Base interface defining your custom props and inheriting allowed props
+export interface TooltipProps extends Omit<MuiTooltipProps, 'title' | 'children'> {
   /**
    * The variant of the tooltip
    * @default "default"
@@ -18,9 +18,9 @@ export interface TooltipProps extends Omit<MuiTooltipProps, 'children' | 'title'
   variant?: 'default' | 'light' | 'rich';
 
   /**
-   * The content to be displayed in the tooltip
+   * The content to be displayed in the tooltip (Limited to strings)
    */
-  content: React.ReactNode;
+  content: string; // <-- Changed to string
 
   /**
    * The element that triggers the tooltip
@@ -34,9 +34,17 @@ export interface TooltipProps extends Omit<MuiTooltipProps, 'children' | 'title'
   arrow?: boolean;
 }
 
-const StyledTooltip = styled(({ className, ...props }: MuiTooltipProps) => (
+// Interface for the props passed directly to the styled MuiTooltip
+// This ensures the styled component itself knows about MuiTooltipProps
+interface StyledTooltipWrapperProps extends MuiTooltipProps {
+  className?: string;
+}
+
+// Styled component wrapper around MuiTooltip
+const StyledTooltip = styled(({ className, ...props }: StyledTooltipWrapperProps) => (
   <MuiTooltip {...props} classes={{ popper: className }} />
 ))(({ theme }) => ({
+  // --- Styling for different variants ---
   [`&.variant-default .${tooltipClasses.tooltip}`]: {
     backgroundColor: theme.palette.grey[800],
     color: theme.palette.common.white,
@@ -67,18 +75,21 @@ const StyledTooltip = styled(({ className, ...props }: MuiTooltipProps) => (
   },
 
   [`& .${tooltipClasses.arrow}`]: {
-    color: 'inherit',
+    color: 'inherit', // Use background color for arrow
   },
 }));
 
-export const tooltip = React.forwardRef<HTMLDivElement, TooltipProps>(
+// Your custom Tooltip component implementation
+export const Tooltip = React.forwardRef<HTMLDivElement, TooltipProps>(
   ({ variant = 'default', content, children, arrow = false, className, ...props }, ref) => {
+    // 'content' is now guaranteed to be a string, matching the TS error's expectation
     return (
       <StyledTooltip
         ref={ref}
-        title={content}
+        title={content} // <-- Assignment is valid if TS expects string | undefined
         arrow={arrow}
         className={`variant-${variant} ${className || ''}`}
+        // Spread remaining compatible props
         {...props}
       >
         {children}
@@ -87,30 +98,6 @@ export const tooltip = React.forwardRef<HTMLDivElement, TooltipProps>(
   }
 );
 
-tooltip.displayName = 'tooltip';
+Tooltip.displayName = 'Tooltip';
 
-// Remove the default export and create a separate example component
-export const TooltipExample = () => {
-  return (
-    <div style={{ display: 'flex', gap: '1rem' }}>
-      <tooltip variant="light" content="Add">
-        <Button>Light</Button>
-      </tooltip>
-      <tooltip variant="default" content="Add">
-        <Button>Bootstrap</Button>
-      </tooltip>
-      <tooltip
-        variant="rich"
-        content={
-          <>
-            <Typography color="inherit">Tooltip with HTML</Typography>
-            <em>And here&apos;s</em> <b>some</b> <u>amazing content</u>.{' '}
-            It&apos;s very engaging. Right?
-          </>
-        }
-      >
-        <Button>HTML</Button>
-      </tooltip>
-    </div>
-  );
-};
+export default Tooltip;

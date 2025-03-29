@@ -139,7 +139,7 @@ const StyledCardContent = styled(CardContent)(({ theme }) => ({
   },
 }));
 
-export const card = React.forwardRef<HTMLDivElement, CardProps>(
+export const Card = React.forwardRef<HTMLDivElement, CardProps>(
   ({
     variant = 'default',
     title,
@@ -245,4 +245,4 @@ export const card = React.forwardRef<HTMLDivElement, CardProps>(
   }
 );
 
-card.displayName = 'card';
+Card.displayName = 'Card';

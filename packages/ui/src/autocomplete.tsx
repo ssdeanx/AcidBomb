@@ -4,9 +4,13 @@ import Autocomplete from '@mui/material/Autocomplete';
 
 export default function Grouped() {
   const options = top100Films.map((option) => {
-    const firstLetter = option.title[0].toUpperCase();
+    let firstLetter = '#'; // Default group for empty or undefined titles
+    if (option.title && option.title.length > 0) {
+      const char = option.title[0].toUpperCase();
+      firstLetter = /[0-9]/.test(char) ? '0-9' : char;
+    }
     return {
-      firstLetter: /[0-9]/.test(firstLetter) ? '0-9' : firstLetter,
+      firstLetter,
       ...option,
     };
   });

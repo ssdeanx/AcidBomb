@@ -3,9 +3,9 @@ import Image from 'next/image';
 
 import { Link } from '@repo/api/links/entities/link.entity';
 
-import { Card } from '@repo/ui/card';
-import { Code } from '@repo/ui/code';
-import { Button } from '@repo/ui/button';
+import { Card } from '@repo/ui/Card';
+import { Code } from '@repo/ui/Code';
+import { Button } from '@repo/ui/Button';
 
 
 import styles from './page.module.css';

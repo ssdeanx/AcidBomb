@@ -76,7 +76,7 @@ const ChartContainer = styled('div')({
   height: '100%',
 });
 
-export const charts = React.forwardRef<HTMLDivElement, ChartProps>(
+export const Charts = React.forwardRef<HTMLDivElement, ChartProps>(
   ({
     type = 'line',
     data,
@@ -258,4 +258,4 @@ export const charts = React.forwardRef<HTMLDivElement, ChartProps>(
   }
 );
 
-charts.displayName = 'Charts';
+Charts.displayName = 'Charts';

@@ -2,10 +2,10 @@
 
 import { useState } from 'react';
 import { Box, CssBaseline } from '@mui/material';
-import { AppBar } from '@repo/ui/appbar';
-import { Sidebar } from '@repo/ui/sidebar';
-import { Dashboard } from '@repo/ui/dashboard';
-import { Charts } from '@repo/ui/charts';
+import { AppBar } from '@repo/ui/Appbar';
+import { Sidebar } from '@repo/ui/Sidebar';
+import { Dashboard } from '@repo/ui/Dashboard';
+import { Charts } from '@repo/ui/Charts';
 
 // Sample data for charts
 const lineData = [

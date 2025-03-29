@@ -219,91 +219,91 @@ Learn more about the power of Turborepo:
 - [Filtering](https://turbo.build/repo/docs/core-concepts/monorepos/filtering)
 - [Configuration Options](https://turbo.build/repo/docs/reference/configuration)
 - [CLI Usage](https://turbo.build/repo/docs/reference/command-line-reference)
+- [GitHub Actions](https://turbo.build/repo/docs/guides/github-actions)
+- [Vercel](https://vercel.com/docs/concepts/git)
+- [Vercel Remote Cache](https://vercel.com/docs/concepts/remote-cache)
+- [Vercel CLI](https://vercel.com/docs/cli)
+- [Vercel CLI Commands](https://vercel.com/docs/cli)
+- [Vercel CLI Configuration](https://vercel.com/docs/cli/configuration)
+- [Vercel CLI Environment Variables](https://vercel.com/docs/cli/environment-variables)
 
 ```mermaid
 graph TB
-    User((External User))
+    User((User))
 
     subgraph "Frontend Container"
-        direction TB
-        NextApp["Next.js Web App<br>(Next.js 15.2)"]
+        WebApp["Web Application<br>(Next.js)"]
 
         subgraph "Frontend Components"
-            direction TB
-            ThemeProvider["Theme Provider<br>(MUI)"]
-            UIComponents["UI Components<br>(React)"]
-            Layout["Root Layout<br>(React)"]
+            ThemeProvider["Theme Provider<br>(React Context)"]
             Pages["Pages Router<br>(Next.js)"]
+            UIComponents["UI Components<br>(React/MUI)"]
 
             subgraph "UI Component Library"
-                direction LR
                 AppBar["AppBar<br>(React)"]
-                Button["Button<br>(React)"]
-                Card["Card<br>(React)"]
-                Charts["Charts<br>(React)"]
-                Chat["Chat Components<br>(React)"]
                 Dashboard["Dashboard<br>(React)"]
-                Footer["Footer<br>(React)"]
+                Charts["Charts<br>(React)"]
+                Chat["Chat Interface<br>(React)"]
+                ModelSelector["Model Selector<br>(React)"]
             end
         end
     end
 
     subgraph "Backend Container"
-        direction TB
-        NestApp["API Server<br>(NestJS)"]
+        APIServer["API Server<br>(NestJS)"]
 
         subgraph "API Components"
-            direction TB
             AppModule["App Module<br>(NestJS)"]
             LinksModule["Links Module<br>(NestJS)"]
+            AppController["App Controller<br>(NestJS)"]
             LinksController["Links Controller<br>(NestJS)"]
             LinksService["Links Service<br>(NestJS)"]
         end
     end
 
     subgraph "Database Container"
-        direction TB
-        PostgresDB[("PostgreSQL Database<br>(PostgreSQL)")]
+        Database["PostgreSQL Database<br>(Prisma)"]
 
         subgraph "Database Components"
-            direction TB
-            PrismaClient["Prisma Client<br>(Prisma)"]
-            UserModel["User Model<br>(Prisma)"]
-            PromptModel["Prompt Model<br>(Prisma)"]
-            ChatModel["Chat Model<br>(Prisma)"]
+            PrismaClient["Prisma Client<br>(TypeScript)"]
+
+            subgraph "Data Models"
+                UserModel["User Model<br>(Prisma Schema)"]
+                PromptModel["Prompt Model<br>(Prisma Schema)"]
+                ChatModel["Chat Model<br>(Prisma Schema)"]
+                LinkModel["Link Model<br>(Prisma Schema)"]
+            end
         end
     end
 
-    %% Relationships
-    User -->|"Uses"| NextApp
-    NextApp -->|"API Calls"| NestApp
+    %% User Interactions
+    User -->|"Accesses"| WebApp
 
-    %% Frontend Internal
-    NextApp -->|"Uses"| ThemeProvider
-    NextApp -->|"Uses"| UIComponents
-    NextApp -->|"Uses"| Layout
-    NextApp -->|"Routes"| Pages
-    ThemeProvider -->|"Styles"| UIComponents
-
-    %% Backend Internal
-    NestApp -->|"Contains"| AppModule
-    AppModule -->|"Imports"| LinksModule
-    LinksModule -->|"Contains"| LinksController
-    LinksController -->|"Uses"| LinksService
-
-    %% Database Internal
-    NestApp -->|"Queries"| PrismaClient
-    PrismaClient -->|"Manages"| PostgresDB
-    PrismaClient -->|"Maps"| UserModel
-    PrismaClient -->|"Maps"| PromptModel
-    PrismaClient -->|"Maps"| ChatModel
-
-    %% Component Library
+    %% Frontend Relationships
+    WebApp -->|"Uses"| ThemeProvider
+    WebApp -->|"Routes to"| Pages
+    WebApp -->|"Renders"| UIComponents
     UIComponents -->|"Contains"| AppBar
-    UIComponents -->|"Contains"| Button
-    UIComponents -->|"Contains"| Card
+    UIComponents -->|"Contains"| Dashboard
     UIComponents -->|"Contains"| Charts
     UIComponents -->|"Contains"| Chat
-    UIComponents -->|"Contains"| Dashboard
-    UIComponents -->|"Contains"| Footer
+    UIComponents -->|"Contains"| ModelSelector
+
+    %% Frontend to Backend
+    WebApp -->|"API Calls"| APIServer
+
+    %% Backend Component Relationships
+    APIServer -->|"Manages"| AppModule
+    AppModule -->|"Includes"| LinksModule
+    LinksModule -->|"Uses"| LinksController
+    LinksModule -->|"Uses"| LinksService
+    AppModule -->|"Uses"| AppController
+
+    %% Backend to Database
+    LinksService -->|"Queries"| PrismaClient
+    PrismaClient -->|"Manages"| UserModel
+    PrismaClient -->|"Manages"| PromptModel
+    PrismaClient -->|"Manages"| ChatModel
+    PrismaClient -->|"Manages"| LinkModel
+    PrismaClient -->|"Connects to"| Database
 ```

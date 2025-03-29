@@ -1,11 +1,13 @@
 'use client';
 
 import * as React from 'react';
-import dynamic from 'next/dynamic';
-import { Box, Paper, useTheme } from '@mui/material';
+import { Box, Paper } from '@mui/material';
+import { useTheme } from '/ThemeProvider';
 
-// Dynamic import for Plotly to avoid SSR issues
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
+import type { Layout, Config } from 'plotly.js';
+
+// Use React.lazy instead of next/dynamic
+const Plot = React.lazy(() => import('react-plotly.js'));
 
 export interface GraphProps {
   /**
@@ -21,12 +23,12 @@ export interface GraphProps {
   /**
    * Layout configuration for the plot
    */
-  layout?: Partial<Plotly.Layout>;
+  layout?: Partial<Layout>;
 
   /**
    * Plot configuration options
    */
-  config?: Partial<Plotly.Config>;
+  config?: Partial<Config>;
 
   /**
    * Width of the graph
@@ -66,44 +68,7 @@ export const Graphs = React.forwardRef<HTMLDivElement, GraphProps>(
   }, ref) => {
     const theme = useTheme();
 
-    // Default configuration
-    const defaultConfig = {
-      responsive: true,
-      displayModeBar: true,
-      displaylogo: false,
-      modeBarButtonsToRemove: ['lasso2d', 'select2d'],
-      ...config,
-    };
-
-    // Default layout based on theme
-    const defaultLayout = {
-      width,
-      height,
-      paper_bgcolor: 'transparent',
-      plot_bgcolor: 'transparent',
-      font: {
-        family: theme.typography.fontFamily,
-        color: theme.palette.text.primary,
-      },
-      margin: { t: 30, r: 10, l: 10, b: 30 },
-      xaxis: {
-        gridcolor: theme.palette.divider,
-        zerolinecolor: theme.palette.divider,
-      },
-      yaxis: {
-        gridcolor: theme.palette.divider,
-        zerolinecolor: theme.palette.divider,
-      },
-      ...layout,
-    };
-
-    // Handle range selection for cross-linking
-    const handleRelayout = (eventData: any) => {
-      if (crossLink && onRangeChange && eventData['xaxis.range']) {
-        onRangeChange(eventData['xaxis.range']);
-      }
-    };
-
+    // Add Suspense boundary inside the component
     return (
       <Box ref={ref} {...props}>
         <Paper
@@ -114,12 +79,43 @@ export const Graphs = React.forwardRef<HTMLDivElement, GraphProps>(
             backdropFilter: 'blur(8px)',
           }}
         >
-          <Plot
-            data={data}
-            layout={defaultLayout}
-            config={defaultConfig}
-            onRelayout={handleRelayout}
-          />
+          <React.Suspense fallback={<div>Loading graph...</div>}>
+            <Plot
+              data={data}
+              layout={{
+                width,
+                height,
+                paper_bgcolor: 'transparent',
+                plot_bgcolor: 'transparent',
+                font: {
+                  family: theme.typography.fontFamily,
+                  color: theme.palette.text.primary,
+                },
+                margin: { t: 30, r: 10, l: 10, b: 30 },
+                xaxis: {
+                  gridcolor: theme.palette.divider,
+                  zerolinecolor: theme.palette.divider,
+                },
+                yaxis: {
+                  gridcolor: theme.palette.divider,
+                  zerolinecolor: theme.palette.divider,
+                },
+                ...layout,
+              }}
+              config={{
+                responsive: true,
+                displayModeBar: true,
+                displaylogo: false,
+                modeBarButtonsToRemove: ['lasso2d', 'select2d'],
+                ...config,
+              }}
+              onRelayout={(eventData: any) => {
+                if (crossLink && onRangeChange && eventData['xaxis.range']) {
+                  onRangeChange(eventData['xaxis.range']);
+                }
+              }}
+            />
+          </React.Suspense>
         </Paper>
       </Box>
     );

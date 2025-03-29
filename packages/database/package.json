@@ -17,7 +17,9 @@
   },
   "dependencies": {
     "@prisma/client": "^6.5.0",
-    "dotenv": "^16.4.7"
+    "@supabase/realtime-js": "^2.11.5",
+    "dotenv": "^16.4.7",
+    "redis": "^4.7.0"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",

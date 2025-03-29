@@ -1,6 +1,7 @@
 'use client';
 
-import { Box, Typography, Container, Paper, Divider } from '@repo/ui';
+import { Box, Typography, Container, Paper, Divider } from '@mui/material';
+import React from 'react';
 import { useTheme } from '@repo/ui/ThemeProvider';
 import { Switch_ as Switch } from '@repo/ui/Switch';
 import { Code } from '@repo/ui/Code';

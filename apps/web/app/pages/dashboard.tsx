@@ -89,9 +89,9 @@ export default function DashboardPage() {
           {/* Charts Section */}
           <Box sx={{ mt: 4, display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3 }}>
             <Box sx={{ bgcolor: 'background.paper', p: 3, borderRadius: 2, boxShadow: 1 }}>
+              {/* You might want to add a Typography component here for the title */}
               <Charts
                 type="line"
-                title="API Calls & Latency"
                 data={lineData}
                 height={300}
                 dataKeys={['calls', 'latency']}
@@ -99,9 +99,9 @@ export default function DashboardPage() {
             </Box>
 
             <Box sx={{ bgcolor: 'background.paper', p: 3, borderRadius: 2, boxShadow: 1 }}>
+              {/* You might want to add a Typography component here for the title */}
               <Charts
                 type="area"
-                title="Monthly Usage"
                 data={lineData}
                 height={300}
                 colors={['#4caf50', '#ff9800']}
@@ -110,9 +110,9 @@ export default function DashboardPage() {
             </Box>
 
             <Box sx={{ bgcolor: 'background.paper', p: 3, borderRadius: 2, boxShadow: 1, gridColumn: { xs: '1', md: 'span 2' } }}>
+              {/* You might want to add a Typography component here for the title */}
               <Charts
                 type="pie"
-                title="Model Distribution"
                 data={barData}
                 height={400}
                 colors={['#4caf50', '#ff9800', '#2196f3', '#f44336']}

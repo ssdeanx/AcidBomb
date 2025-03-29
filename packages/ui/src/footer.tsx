@@ -104,7 +104,7 @@ export const Footer = React.forwardRef<HTMLDivElement, FooterProps>(
                   <img src={logoUrl} alt={companyName} style={{ height: 32 }} />
                 ) : (
                   <Typography variant="h6" color="text.primary" gutterBottom>
-                    {companyName}
+                    {compame}
                   </Typography>
                 )}
               </Box>
@@ -181,6 +181,9 @@ export const Footer = React.forwardRef<HTMLDivElement, FooterProps>(
 
 Footer.displayName = 'Footer';
 
+// Define the type for social links based on FooterProps for consistency
+type SocialLink = NonNullable<FooterProps['socials']>[number];
+
 // Default values for the footer
 const defaultLinks = [
   {
@@ -203,14 +206,14 @@ const defaultLinks = [
     title: 'Support',
     items: [
       { label: 'Help Center', href: '/help' },
-      { label: 'Terms of Service', href: '/terms' },
-      { label: 'Privacy Policy', href: '/privacy' },
     ],
-  },
+  }
 ];
 
-const defaultSocials = [
-  { name: 'github', href: 'https://github.com' },
-  { name: 'twitter', href: 'https://twitter.com' },
-  { name: 'linkedin', href: 'https://linkedin.com' },
+// Explicitly type defaultSocials to ensure name is the correct literal union
+const defaultSocials: SocialLink[] = [
+  { name: 'github', href: 'https://github.com/ssdeanx' },
+  { name: 'twitter', href: 'https://x.com/deanmachines' },
+  { name: 'linkedin', href: 'https://linkedin.com/in/deanmachines' },
+
 ];

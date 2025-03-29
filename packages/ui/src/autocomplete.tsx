@@ -2,24 +2,36 @@ import * as React from 'react';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 
+interface FilmOption {
+  title: string;
+  year: number;
+}
+
+interface GroupedFilmOption extends FilmOption {
+  firstLetter: string;
+}
+
+
 export default function Grouped() {
-  const options = top100Films.map((option) => {
+  const options: GroupedFilmOption[] = top100Films.map((option: FilmOption) => {
+    const title = option.title;
     let firstLetter = '#'; // Default group for empty or undefined titles
-    if (option.title && option.title.length > 0) {
-      const char = option.title[0].toUpperCase();
+    // Check if title is a non-empty string before accessing its characters
+    if (title) { // Ensures title is not null, undefined, or empty string ""
+      const char = title[0].toUpperCase(); // Safe access within this block
       firstLetter = /[0-9]/.test(char) ? '0-9' : char;
     }
     return {
-      firstLetter,
-      ...option,
+      ...option, // Spread first to ensure title/year are present
+      firstLetter, // Override or add firstLetter
     };
   });
 
   return (
-    <Autocomplete
+    <Autocomplete<GroupedFilmOption> // Specify the option type for Autocomplete
       options={options.sort((a, b) => -b.firstLetter.localeCompare(a.firstLetter))}
       groupBy={(option) => option.firstLetter}
-      getOptionLabel={(option) => option.title}
+      getOptionLabel={(option) => option.title} // TS now knows option is GroupedFilmOption
       sx={{ width: 300 }}
       renderInput={(params) => <TextField {...params} label="With categories" />}
     />
@@ -27,7 +39,7 @@ export default function Grouped() {
 }
 
 // Top 100 films as rated by IMDb users. http://www.imdb.com/chart/top
-const top100Films = [
+const top100Films: readonly FilmOption[] = [ // Add type annotation for the source array
   { title: 'The Shawshank Redemption', year: 1994 },
   { title: 'The Godfather', year: 1972 },
   { title: 'The Godfather: Part II', year: 1974 },

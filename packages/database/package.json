@@ -2,6 +2,10 @@
   "name": "@repo/database",
   "version": "0.0.1",
   "private": true,
+  "exports": {
+    "./Schema": "./prisma/schema.prisma",
+    "./PrismaClient": "./src/client.js"
+  },
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",

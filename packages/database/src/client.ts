@@ -1,13 +1,19 @@
 import { PrismaClient } from '@prisma/client';
-import { DotenvConfigOutput } from "dotenv";
-declare global {
-  var prisma: PrismaClient | undefined;
+import * as dotenv from 'dotenv'; // Import dotenv
+
+// Define a type for the global object including the prisma instance
+interface GlobalWithPrisma extends NodeJS.Global {
+    prisma?: PrismaClient;
 }
 
-dotenv.config();
+// Cast the global object to the custom type
+const globalWithPrisma = global as GlobalWithPrisma;
 
-export const prisma = global.prisma || new PrismaClient();
+
+dotenv.config(); // Call config correctly
+
+export const prisma = globalWithPrisma.prisma ?? new PrismaClient();
 
 if (process.env.NODE_ENV !== 'production') {
-  global.prisma = prisma;
+  globalWithPrisma.prisma = prisma;
 }

@@ -1,15 +1,11 @@
-// apps/api/src/app.module.ts
-import { Module } from '@nestjs/common';
-import { PrismaService } from './prisma.service';
-
-@Module({
-  providers: [PrismaService],
-})
-export class AppModule {}
-
 // apps/api/src/prisma.service.ts
-import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
-import { prisma } from '@repo/database';
+import {
+  Injectable,
+  OnModuleInit,
+  OnModuleDestroy,
+  Module,
+} from '@nestjs/common';
+import { prisma } from '@repo/database/PrismaClient'; // Adjust the import path as
 
 @Injectable()
 export class PrismaService implements OnModuleInit, OnModuleDestroy {
@@ -22,13 +18,23 @@ export class PrismaService implements OnModuleInit, OnModuleDestroy {
   }
 }
 
-// Example usage in a service
-import { Injectable } from '@nestjs/common';
-import { prisma } from '@repo/database';
+// apps/api/src/app.module.ts
+@Module({
+  providers: [PrismaService],
+  exports: [PrismaService], // Export PrismaService if it needs to be used in other modules
+})
+export class AppModule {}
 
+// Example usage in a service
 @Injectable()
 export class UserService {
+  // Assuming PrismaService is injected via constructor
+  constructor(private readonly prismaService: PrismaService) {}
+
   async createUser(data: { email: string; name?: string }) {
+    // Use the injected prisma instance if available through the service,
+    // otherwise use the direct import if that's the intended pattern.
+    // This example assumes direct import usage based on original code.
     return prisma.user.create({ data });
   }
 }

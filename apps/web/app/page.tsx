@@ -6,9 +6,14 @@ import { Link } from '@repo/api/links/entities/link.entity';
 import { Card } from '@repo/ui/Card';
 import { Code } from '@repo/ui/Code';
 import { Button } from '@repo/ui/Button';
-
+import { useState, useEffect } from 'react'
+import { supabase } from './utils/supabase'
 
 import styles from './page.module.css';
+
+
+
+
 
 const Gradient = ({
   conic,
@@ -66,8 +71,30 @@ const LinksSectionForTest = () => {
 };
 
 const RootPage = ({ params }: { params: { forTest?: boolean } }) => {
+  interface Todo {
+    id: string;
+    // Add other properties as needed based on your actual todo schema
+    [key: string]: any;
+  }
+
+  const [todos, setTodos] = useState<Todo[]>([])
+
+  useEffect(() => {
+    async function getTodos() {
+      const { data: todos } = await supabase.from('todos').select()
+      setTodos(todos || []) // Set todos to empty array if null
+    }
+
+    getTodos()
+  }, [])
+
   return (
     <main className={styles.main}>
+      <div>
+        {todos.map((todo) => (
+          <li key={todo.id}>{JSON.stringify(todo)}</li>
+        ))}
+      </div>
       <div className={styles.description}>
         <p>
           examples/<Code className={styles.code}>with-nestjs</Code>
@@ -150,9 +177,8 @@ const RootPage = ({ params }: { params: { forTest?: boolean } }) => {
       {/**
        * @note Unsupported async component testing.
        * Should limit the following constrain for a specific environment (dev or testing).
-       *
-       * @see https://nextjs.org/docs/app/building-your-application/testing/jest
        */}
+
       {params.forTest ? (
         <LinksSectionForTest />
       ) : (
@@ -160,6 +186,5 @@ const RootPage = ({ params }: { params: { forTest?: boolean } }) => {
       )}
     </main>
   );
-};
-
+}
 export default RootPage;

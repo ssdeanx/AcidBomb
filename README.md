@@ -229,81 +229,75 @@ Learn more about the power of Turborepo:
 
 ```mermaid
 graph TB
-    User((User))
+    User((External User))
 
-    subgraph "Frontend Container"
-        WebApp["Web Application<br>(Next.js)"]
+    subgraph "Web Application"
+        NextApp["Next.js Frontend<br>Next.js 13+"]
 
         subgraph "Frontend Components"
-            ThemeProvider["Theme Provider<br>(React Context)"]
-            Pages["Pages Router<br>(Next.js)"]
-            UIComponents["UI Components<br>(React/MUI)"]
-
-            subgraph "UI Component Library"
-                AppBar["AppBar<br>(React)"]
-                Dashboard["Dashboard<br>(React)"]
-                Charts["Charts<br>(React)"]
-                Chat["Chat Interface<br>(React)"]
-                ModelSelector["Model Selector<br>(React)"]
-            end
+            ThemeProvider["Theme Provider<br>MUI"]
+            UIComponents["UI Components<br>React/MUI"]
+            Pages["Pages Router<br>Next.js"]
+            LayoutComponent["Root Layout<br>Next.js"]
+            LinksSection["Links Section<br>React"]
         end
     end
 
-    subgraph "Backend Container"
-        APIServer["API Server<br>(NestJS)"]
+    subgraph "Backend Services"
+        NestApp["API Server<br>NestJS"]
 
         subgraph "API Components"
-            AppModule["App Module<br>(NestJS)"]
-            LinksModule["Links Module<br>(NestJS)"]
-            AppController["App Controller<br>(NestJS)"]
-            LinksController["Links Controller<br>(NestJS)"]
-            LinksService["Links Service<br>(NestJS)"]
+            AppModule["App Module<br>NestJS"]
+            LinksModule["Links Module<br>NestJS"]
+            LinksController["Links Controller<br>NestJS"]
+            LinksService["Links Service<br>NestJS"]
         end
     end
 
-    subgraph "Database Container"
-        Database["PostgreSQL Database<br>(Prisma)"]
+    subgraph "Data Layer"
+        Database["Database<br>PostgreSQL"]
+        PrismaClient["Database Client<br>Prisma"]
 
-        subgraph "Database Components"
-            PrismaClient["Prisma Client<br>(TypeScript)"]
-
-            subgraph "Data Models"
-                UserModel["User Model<br>(Prisma Schema)"]
-                PromptModel["Prompt Model<br>(Prisma Schema)"]
-                ChatModel["Chat Model<br>(Prisma Schema)"]
-                LinkModel["Link Model<br>(Prisma Schema)"]
-            end
+        subgraph "Database Models"
+            UserModel["User Model<br>Prisma Schema"]
+            PromptModel["Prompt Model<br>Prisma Schema"]
+            ChatModel["Chat Model<br>Prisma Schema"]
         end
     end
 
-    %% User Interactions
-    User -->|"Accesses"| WebApp
+    subgraph "Shared Packages"
+        UILib["UI Library<br>React/MUI"]
+        APILib["API Library<br>TypeScript"]
+        DatabaseLib["Database Library<br>Prisma"]
+    end
 
-    %% Frontend Relationships
-    WebApp -->|"Uses"| ThemeProvider
-    WebApp -->|"Routes to"| Pages
-    WebApp -->|"Renders"| UIComponents
-    UIComponents -->|"Contains"| AppBar
-    UIComponents -->|"Contains"| Dashboard
-    UIComponents -->|"Contains"| Charts
-    UIComponents -->|"Contains"| Chat
-    UIComponents -->|"Contains"| ModelSelector
+    %% User interactions
+    User -->|"Accesses Web App"| NextApp
 
-    %% Frontend to Backend
-    WebApp -->|"API Calls"| APIServer
+    %% Frontend relationships
+    NextApp -->|"Uses"| ThemeProvider
+    NextApp -->|"Renders"| LayoutComponent
+    NextApp -->|"Routes to"| Pages
+    Pages -->|"Uses"| UIComponents
+    Pages -->|"Includes"| LinksSection
+    LinksSection -->|"Fetches data"| NestApp
 
-    %% Backend Component Relationships
-    APIServer -->|"Manages"| AppModule
-    AppModule -->|"Includes"| LinksModule
-    LinksModule -->|"Uses"| LinksController
-    LinksModule -->|"Uses"| LinksService
-    AppModule -->|"Uses"| AppController
+    %% Backend relationships
+    NestApp -->|"Contains"| AppModule
+    AppModule -->|"Imports"| LinksModule
+    LinksModule -->|"Defines"| LinksController
+    LinksModule -->|"Provides"| LinksService
+    LinksService -->|"Uses"| PrismaClient
 
-    %% Backend to Database
-    LinksService -->|"Queries"| PrismaClient
-    PrismaClient -->|"Manages"| UserModel
-    PrismaClient -->|"Manages"| PromptModel
-    PrismaClient -->|"Manages"| ChatModel
-    PrismaClient -->|"Manages"| LinkModel
+    %% Database relationships
     PrismaClient -->|"Connects to"| Database
+    PrismaClient -->|"Maps"| UserModel
+    PrismaClient -->|"Maps"| PromptModel
+    PrismaClient -->|"Maps"| ChatModel
+
+    %% Shared package relationships
+    NextApp -->|"Imports"| UILib
+    NextApp -->|"Imports"| APILib
+    NestApp -->|"Imports"| APILib
+    NestApp -->|"Uses"| DatabaseLib
 ```

@@ -1,9 +1,9 @@
 {
-  "name": "my-turborepo",
-  "version": "0.0.0",
+  "name": "deanmachines",
+  "version": "0.0.1",
   "private": true,
-  "description": "",
-  "author": "",
+  "description": "Turbo monorepo, with Nextjs, Nestjs, React, and more, trying to create a all in one platform for training ai agents in typescript",
+  "author": "ssdeanx",
   "license": "UNLICENSED",
   "scripts": {
     "dev": "turbo run dev",
@@ -22,7 +22,7 @@
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "prettier": "^3.2.5",
+    "prettier": "^3.5.3",
     "turbo": "^2.4.4"
   },
   "packageManager": "pnpm@8.15.5",

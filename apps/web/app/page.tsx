@@ -1,15 +1,19 @@
 import { Suspense } from 'react';
 import Image from 'next/image';
 
-import { Link } from '@repo/api/links/entities/link.entity';
+// Define the Link interface locally
+interface Link {
+  title: string;
+  url: string;
+  description: string;
+}
 
 import { Card } from '@repo/ui/Card';
 import { Code } from '@repo/ui/Code';
 import { Button } from '@repo/ui/Button';
-import { useState, useEffect } from 'react'
-import { supabase } from './utils/supabase'
-
+import { cookies } from 'next/headers'
 import styles from './page.module.css';
+import { createClient } from './utils/suprabase/server';
 
 
 
@@ -70,28 +74,21 @@ const LinksSectionForTest = () => {
   );
 };
 
-const RootPage = ({ params }: { params: { forTest?: boolean } }) => {
-  interface Todo {
-    id: string;
-    // Add other properties as needed based on your actual todo schema
-    [key: string]: any;
-  }
+const RootPage = async ({ params }: { params: { forTest?: boolean } }) => {
 
-  const [todos, setTodos] = useState<Todo[]>([])
-
-  useEffect(() => {
-    async function getTodos() {
-      const { data: todos } = await supabase.from('todos').select()
-      setTodos(todos || []) // Set todos to empty array if null
-    }
-
-    getTodos()
-  }, [])
+  const cookieStore = await cookies()
+  const supabase = createClient(Promise.resolve(cookieStore))
+  const { data: todos } = await supabase.from('todos').select()
 
   return (
     <main className={styles.main}>
+      <ul>
+        {todos?.map((todo) => (
+          <li key={todo.id}>{JSON.stringify(todo)}</li>
+        ))}
+      </ul>
       <div>
-        {todos.map((todo) => (
+        {todos?.map((todo) => (
           <li key={todo.id}>{JSON.stringify(todo)}</li>
         ))}
       </div>

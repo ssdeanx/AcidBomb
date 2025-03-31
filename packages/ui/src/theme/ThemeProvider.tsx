@@ -1,4 +1,11 @@
-import React, { createContext, useContext, useState, ReactNode, useMemo, JSX } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useMemo,
+  JSX,
+} from 'react';
 import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { lightTheme, darkTheme } from './index';
@@ -27,7 +34,7 @@ interface ThemeProviderProps {
  */
 export function ThemeProvider({
   children,
-  defaultMode = 'light'
+  defaultMode = 'light',
 }: ThemeProviderProps): JSX.Element {
   const [mode, setMode] = useState<ThemeMode>(defaultMode);
 
@@ -47,7 +54,7 @@ export function ThemeProvider({
       mode,
       toggleTheme,
     }),
-    [mode]
+    [mode],
   );
 
   return (
@@ -74,3 +81,5 @@ export function useTheme(): ThemeContextType {
 
   return context;
 }
+
+ThemeProvider.displayName = 'ThemeProvider';

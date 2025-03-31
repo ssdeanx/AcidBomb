@@ -30,7 +30,15 @@
     "./Chart": "./src/chart.tsx",
     "./Responsive": "./src/responsive.tsx",
     "./Autocomplete": "./src/autocomplete.tsx",
-    "./Select": "./src/select.tsx"
+    "./Select": "./src/select.tsx",
+    "./AccountMenu": "./src/menu.tsx",
+    "./Grid": "./src/grid.tsx",
+    "./Drawer": "./src/drawer.tsx",
+    "./D3": "./src/d3.tsx",
+    "./AdvancedTabs": "./src/tabs.tsx",
+    "./darkTheme": "./src/theme/index.ts",
+    "./lightTheme": "./src/theme/index.ts",
+    "./theme": "./src/theme/index.ts"
   },
   "scripts": {
     "lint": "eslint . --max-warnings 0",

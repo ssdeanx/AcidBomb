@@ -1,3 +1,5 @@
+'use client';
+
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
@@ -105,3 +107,5 @@ export default function AccountMenu() {
     </React.Fragment>
   );
 }
+
+AccountMenu.displayName = 'AccountMenu';

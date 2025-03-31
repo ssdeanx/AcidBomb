@@ -7,18 +7,11 @@ import {
   IconButton,
   FormControl,
   FormHelperText,
-  InputLabel,
   styled,
   alpha,
   TextFieldProps,
-  useTheme,
 } from '@mui/material';
-import {
-  Visibility,
-  VisibilityOff,
-  Search,
-  Clear,
-} from '@mui/icons-material';
+import { Visibility, VisibilityOff, Search, Clear } from '@mui/icons-material';
 
 export interface InputProps extends Omit<TextFieldProps, 'variant'> {
   /**
@@ -114,23 +107,25 @@ const StyledTextField = styled(TextField, {
         transform: 'translateX(-100%)',
       },
     },
-  })
+  }),
 );
 
 export const Input = React.forwardRef<HTMLDivElement, InputProps>(
-  ({
-    variant = 'primary',
-    clearable = false,
-    loading = false,
-    startAdornment,
-    endAdornment,
-    onClear,
-    value,
-    onChange,
-    type = 'text',
-    ...props
-  }, ref) => {
-    const theme = useTheme();
+  (
+    {
+      variant = 'primary',
+      clearable = false,
+      loading = false,
+      startAdornment,
+      endAdornment,
+      onClear,
+      value,
+      onChange,
+      type = 'text',
+      ...props
+    },
+    ref,
+  ) => {
     const [showPassword, setShowPassword] = React.useState(false);
     const isPassword = variant === 'password' || type === 'password';
     const hasValue = Boolean(value);
@@ -219,7 +214,7 @@ export const Input = React.forwardRef<HTMLDivElement, InputProps>(
         )}
       </FormControl>
     );
-  }
+  },
 );
 
 Input.displayName = 'Input';

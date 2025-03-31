@@ -101,15 +101,18 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
 }));
 
 export const Chat = React.forwardRef<HTMLDivElement, ChatProps>(
-  ({
-    messages = [],
-    model,
-    isTyping = false,
-    onSendMessage,
-    onFileUpload,
-    className,
-    ...props
-  }, ref) => {
+  (
+    {
+      messages = [],
+      model,
+      isTyping = false,
+      onSendMessage,
+      onFileUpload,
+      className,
+      ...props
+    },
+    ref,
+  ) => {
     const theme = useTheme();
     const [input, setInput] = React.useState('');
     const messagesEndRef = React.useRef<HTMLDivElement>(null);
@@ -141,7 +144,9 @@ export const Chat = React.forwardRef<HTMLDivElement, ChatProps>(
       }
     };
 
-    const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileUpload = async (
+      event: React.ChangeEvent<HTMLInputElement>,
+    ) => {
       const file = event.target.files?.[0];
       if (file && onFileUpload) {
         try {
@@ -198,9 +203,10 @@ export const Chat = React.forwardRef<HTMLDivElement, ChatProps>(
             >
               <Avatar
                 sx={{
-                  bgcolor: message.role === 'user'
-                    ? theme.palette.primary.main
-                    : theme.palette.secondary.main,
+                  bgcolor:
+                    message.role === 'user'
+                      ? theme.palette.primary.main
+                      : theme.palette.secondary.main,
                 }}
               >
                 {message.role === 'user' ? <Person /> : <SmartToy />}
@@ -273,7 +279,7 @@ export const Chat = React.forwardRef<HTMLDivElement, ChatProps>(
         </Box>
       </StyledPaper>
     );
-  }
+  },
 );
 
 Chat.displayName = 'Chat';

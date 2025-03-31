@@ -9,12 +9,7 @@ import {
  */
 declare module '@mui/material/styles' {
   interface Palette {
-    customPrimary: {
-      main: string;
-      light: string;
-      dark: string;
-      contrastText: string;
-    };
+    customPrimary: PaletteColorOptions;
     customSecondary: {
       main: string;
       light: string;
@@ -26,6 +21,10 @@ declare module '@mui/material/styles' {
       paper: string;
       light: string;
     };
+  }
+
+  interface Theme {
+    displayName?: string;
   }
 
   interface PaletteOptions {
@@ -246,4 +245,23 @@ export const darkTheme = createTheme({
   },
 });
 
-export default lightTheme;
+export type ThemeType = 'light' | 'dark';
+export const theme = {
+  light: lightTheme,
+  dark: darkTheme,
+};
+
+darkTheme.displayName = 'darkTheme';
+lightTheme.displayName = 'lightTheme';
+theme.dark.displayName = 'darkTheme';
+theme.light.displayName = 'lightTheme';
+export const themeOptions = {
+  light: lightTheme,
+  dark: darkTheme,
+};
+
+export const themeNames = {
+  light: 'lightTheme',
+  dark: 'darkTheme',
+};
+export const themeList = Object.keys(themeNames);

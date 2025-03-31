@@ -9,7 +9,6 @@ import {
   ListItemText,
   Collapse,
   styled,
-  useTheme
 } from '@mui/material';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 
@@ -120,7 +119,15 @@ const StyledList = styled(MuiList)(({ theme }) => ({
   },
 }));
 
-const ListItem = ({ icon, text, description, children, onClick, href, active }: ListItemProps) => {
+const ListItem = ({
+  icon,
+  text,
+  description,
+  children,
+  onClick,
+  href,
+  active,
+}: ListItemProps) => {
   const [open, setOpen] = React.useState(false);
   const hasChildren = children && children.length > 0;
 
@@ -176,7 +183,7 @@ export const List = React.forwardRef<HTMLUListElement, ListProps>(
         ))}
       </StyledList>
     );
-  }
+  },
 );
 
 List.displayName = 'List';

@@ -6,8 +6,9 @@
  */
 import { Mastra } from '@mastra/core';
 import { google } from '@ai-sdk/google';
-import { UpstashMemory, UpstashVector } from '@mastra/upstash';
+import { UpstashVector } from '@mastra/upstash';
 import { Redis } from '@upstash/redis';
+import { createMemory } from '@mastra/core/dist/memory';
 
 // Import agents and tools
 import { agents } from './agents';
@@ -41,11 +42,14 @@ const redis = new Redis({
 });
 
 /**
- * Initialize memory provider with Upstash
+ * Initialize memory provider with Redis
  */
-const memoryProvider = new UpstashMemory({
-  redis,
-  namespace: 'mastra:memory',
+const memoryProvider = createMemory({
+  storage: {
+    type: 'redis',
+    redis,
+    namespace: 'mastra:memory',
+  },
   options: {
     lastMessages: 20,
     semanticRecall: {
@@ -64,21 +68,10 @@ const memoryProvider = new UpstashMemory({
 /**
  * Initialize vector store with Upstash for RAG capabilities
  */
-const vectorStore = new UpstashVector(
-  {
-    // Credentials
-    url: upstashVectorUrl,
-    token: upstashVectorToken,
-  },
-  {
-    // Options
-    namespace: 'mastra:vector',
-    dimension: 1536, // Adjust dimension based on the embedding model used
-    distanceMetric: 'cosine',
-    maxResults: 5,
-    metadataKeys: ['source'],
-  },
-);
+const vectorStore = new UpstashVectorStore({
+  url: upstashVectorUrl,
+  token: upstashVectorToken,
+});
 
 /**
  * Configure Gemini model parameters from environment variables
@@ -92,15 +85,13 @@ const modelMaxTokens = parseInt(getEnvVar('MODEL_MAX_TOKENS', '8192'), 10);
 /**
  * Initialize Gemini model with configured parameters
  */
-const geminiModel = google(modelName, {
-  temperature: modelTemperature,
-  maxTokens: modelMaxTokens,
-});
+const geminiModel = google(modelName);
 
 /**
  * Set up LangSmith integration if enabled
  */
 if (getEnvVar('LANGSMITH_TRACING', 'false') === 'true') {
+  // Set environment variables for LangSmith tracing
   process.env.LANGCHAIN_TRACING_V2 = 'true';
   process.env.LANGCHAIN_ENDPOINT = getEnvVar('LANGSMITH_ENDPOINT');
   process.env.LANGCHAIN_API_KEY = getEnvVar('LANGSMITH_API_KEY');
@@ -116,6 +107,14 @@ const fireCrawlKey = getEnvVar('FIRECRAWL_KEY');
  */
 export const mastra = new Mastra({
   memory: memoryProvider,
+  agents,
+});
+
+/**
+ * Helper function to create a new conversation with a specific agent
+ *
+ * @param agentId - The ID of the agent to create a conversation with
+ * @param userId - The user ID for the conversation
   agents: agents,
   tools: tools,
   workflows: {

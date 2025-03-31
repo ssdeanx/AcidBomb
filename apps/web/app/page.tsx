@@ -13,7 +13,7 @@ import { Code } from '@repo/ui/Code';
 import { Button } from '@repo/ui/Button';
 import { cookies } from 'next/headers'
 import styles from './page.module.css';
-import { createClient } from './utils/suprabase/server';
+import { createClient } from './utils/supabase/server';
 
 
 

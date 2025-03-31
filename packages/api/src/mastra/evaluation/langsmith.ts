@@ -5,7 +5,7 @@
  * @module packages/api/src/mastra/evaluation
  */
 
-import { LangChainTracer } from 'langsmith';
+import { LangChainTracer } from 'langsmith/traceable';
 import { getEnvVar } from '../utils';
 
 /**

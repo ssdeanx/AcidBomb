@@ -18,4 +18,6 @@ export const mastra: Mastra = new Mastra({
 // Re-export other components as they are implemented
 // export * from './agents';
 // export * from './tools';
-// export * from './workflows';
+/**
+ * This file (`apps/web/src/mastra/index.ts`) configures Mastra for the web frontend. It correctly re-exports the `useAgent` hook, which is used to communicate with agents defined on your backend API (like in `#document:/c:/Users/dm/Documents/Deanmachines/packages/api/src/mastra/index.ts`). Agent definitions are not needed in this frontend configuration file. The `useAgent` hook handles the API calls to interact with those backend agents. No changes are required here.
+ */

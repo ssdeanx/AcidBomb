@@ -8,7 +8,7 @@ import { Mastra } from '@mastra/core';
 import { google } from '@ai-sdk/google';
 import { UpstashVector } from '@mastra/upstash';
 import { Redis } from '@upstash/redis';
-import { createMemory } from '@mastra/core/memory';
+import { createMemory } from '@mastra/memory';
 
 // Import agents and tools
 import { agents } from './agents';

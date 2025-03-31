@@ -229,100 +229,77 @@ Learn more about the power of Turborepo:
 
 ```mermaid
 graph TB
-    User((External User))
+    User((User))
 
     subgraph "Frontend Container"
-        WebApp["Web Application<br>Next.js"]
+        WebApp["Web Application<br>(Next.js)"]
 
         subgraph "Frontend Components"
-            AppLayout["Layout Manager<br>React"]
-            ThemeProvider["Theme Provider<br>MUI"]
-            AppBar["App Bar<br>MUI"]
-            Sidebar["Sidebar<br>MUI"]
-            Dashboard["Dashboard<br>React"]
-            Charts["Charts Component<br>Recharts"]
-            Pages["Pages Router<br>Next.js"]
-            SupabaseClient["Supabase Client<br>@supabase/ssr"]
+            ThemeProvider["Theme Provider<br>(React)"]
+            AppBar["App Bar<br>(React/MUI)"]
+            UIComponents["UI Components<br>(React/MUI)"]
+            SupabaseClient["Supabase Client<br>(TypeScript)"]
         end
     end
 
     subgraph "Backend Container"
-        NestAPI["API Server<br>NestJS"]
+        APIServer["API Server<br>(NestJS)"]
 
         subgraph "API Components"
-            AppModule["App Module<br>NestJS"]
-            LinksModule["Links Module<br>NestJS"]
-            AgentController["Agent Controller<br>NestJS"]
-            MastraCore["Mastra Core<br>Custom"]
-            AuthGuard["Supabase Auth Guard<br>NestJS"]
+            AgentController["Agent Controller<br>(NestJS)"]
+            LinksModule["Links Module<br>(NestJS)"]
+            AuthGuard["Supabase Auth Guard<br>(NestJS)"]
+            MastraCore["Mastra Core<br>(TypeScript)"]
+        end
+
+        subgraph "Agent Components"
+            ChatAgent["Chat Agent<br>(Gemini)"]
+            SearchAgent["Search Agent<br>(Gemini)"]
+            CodeAssistant["Code Assistant<br>(Gemini)"]
         end
     end
 
-    subgraph "Database Container"
-        PostgresDB[("PostgreSQL Database<br>Prisma")]
-
-        subgraph "Database Components"
-            PrismaClient["Prisma Client<br>Prisma"]
-            Models["Data Models<br>Prisma Schema"]
-        end
-    end
-
-    subgraph "AI Services Container"
-        MastraService["Mastra Service<br>Custom"]
-
-        subgraph "AI Components"
-            ChatAgent["Chat Agent<br>Gemini"]
-            SearchAgent["Search Agent<br>Gemini"]
-            CodeAgent["Code Assistant<br>Gemini"]
-            VectorStore["Vector Store<br>Upstash"]
-            MemoryProvider["Memory Provider<br>Redis"]
-        end
+    subgraph "Data Storage Container"
+        PostgresDB[("PostgreSQL Database<br>(Prisma)")]
+        RedisCache[("Redis Cache<br>(Upstash)")]
+        VectorStore[("Vector Store<br>(Upstash)")]
     end
 
     subgraph "External Services"
-        Supabase["Supabase<br>Auth & Storage"]
-        Upstash["Upstash<br>Vector & Redis"]
-        LangSmith["LangSmith<br>AI Tracing"]
-        Gemini["Google Gemini<br>AI Model"]
+        GeminiAI["Gemini AI<br>(Google)"]
+        LangSmith["LangSmith<br>(Evaluation)"]
+        Supabase["Supabase<br>(Auth/Storage)"]
     end
 
     %% Frontend Relationships
     User -->|"Accesses"| WebApp
-    WebApp -->|"Uses"| AppLayout
-    AppLayout -->|"Contains"| ThemeProvider
-    AppLayout -->|"Contains"| AppBar
-    AppLayout -->|"Contains"| Sidebar
-    AppLayout -->|"Contains"| Dashboard
-    Dashboard -->|"Uses"| Charts
-    WebApp -->|"Routes to"| Pages
-    WebApp -->|"Authenticates via"| SupabaseClient
+    WebApp -->|"Uses"| ThemeProvider
+    WebApp -->|"Uses"| AppBar
+    WebApp -->|"Uses"| UIComponents
+    WebApp -->|"Authenticates"| SupabaseClient
+    SupabaseClient -->|"Authenticates with"| Supabase
 
     %% Backend Relationships
-    WebApp -->|"API Requests"| NestAPI
-    NestAPI -->|"Routes through"| AppModule
-    AppModule -->|"Includes"| LinksModule
-    AppModule -->|"Includes"| AgentController
-    AgentController -->|"Uses"| AuthGuard
-    AgentController -->|"Uses"| MastraCore
+    WebApp -->|"Makes API calls"| APIServer
+    APIServer -->|"Routes requests"| AgentController
+    APIServer -->|"Uses"| LinksModule
+    APIServer -->|"Validates auth"| AuthGuard
+    AuthGuard -->|"Verifies tokens"| Supabase
 
-    %% Database Relationships
-    NestAPI -->|"Queries via"| PrismaClient
-    PrismaClient -->|"Manages"| PostgresDB
-    PostgresDB -->|"Defined by"| Models
+    %% Agent Relationships
+    AgentController -->|"Manages"| MastraCore
+    MastraCore -->|"Uses"| ChatAgent
+    MastraCore -->|"Uses"| SearchAgent
+    MastraCore -->|"Uses"| CodeAssistant
+    ChatAgent -->|"Generates responses"| GeminiAI
+    SearchAgent -->|"Generates responses"| GeminiAI
+    CodeAssistant -->|"Generates responses"| GeminiAI
 
-    %% AI Service Relationships
-    MastraService -->|"Uses"| ChatAgent
-    MastraService -->|"Uses"| SearchAgent
-    MastraService -->|"Uses"| CodeAgent
-    MastraService -->|"Stores vectors in"| VectorStore
-    MastraService -->|"Manages memory with"| MemoryProvider
+    %% Data Storage Relationships
+    APIServer -->|"Persists data"| PostgresDB
+    MastraCore -->|"Caches data"| RedisCache
+    MastraCore -->|"Stores vectors"| VectorStore
 
     %% External Service Relationships
-    SupabaseClient -->|"Connects to"| Supabase
-    VectorStore -->|"Stores in"| Upstash
-    MemoryProvider -->|"Caches in"| Upstash
-    MastraService -->|"Traces with"| LangSmith
-    ChatAgent -->|"Powered by"| Gemini
-    SearchAgent -->|"Powered by"| Gemini
-    CodeAgent -->|"Powered by"| Gemini
+    MastraCore -->|"Evaluates"| LangSmith
 ```

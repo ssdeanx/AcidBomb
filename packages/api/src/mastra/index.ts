@@ -8,7 +8,7 @@ import { Mastra } from '@mastra/core';
 import { google } from '@ai-sdk/google';
 import { UpstashVector } from '@mastra/upstash';
 import { Redis } from '@upstash/redis';
-import { createMemory } from '@mastra/core/dist/memory';
+import { createMemory } from '@mastra/core/memory';
 
 // Import agents and tools
 import { agents } from './agents';
@@ -68,7 +68,7 @@ const memoryProvider = createMemory({
 /**
  * Initialize vector store with Upstash for RAG capabilities
  */
-const vectorStore = new UpstashVectorStore({
+const vectorStore = new UpstashVector({
   url: upstashVectorUrl,
   token: upstashVectorToken,
 });
@@ -93,8 +93,8 @@ const geminiModel = google(modelName);
 if (getEnvVar('LANGSMITH_TRACING', 'false') === 'true') {
   // Set environment variables for LangSmith tracing
   process.env.LANGCHAIN_TRACING_V2 = 'true';
-  process.env.LANGCHAIN_ENDPOINT = getEnvVar('LANGSMITH_ENDPOINT');
-  process.env.LANGCHAIN_API_KEY = getEnvVar('LANGSMITH_API_KEY');
+  process.env.LANGSMITH_ENDPOINT = getEnvVar('LANGSMITH_ENDPOINT');
+  process.env.LANGSMITH_API_KEY = getEnvVar('LANGSMITH_API_KEY');
 }
 
 /**
@@ -134,7 +134,7 @@ export const createConversation = async (
   agentId: string,
   userId: string,
 ): Promise<string> => {
-  const conversationId = await mastra.createConversation({
+  const conversationId = await memoryProvider.createConversation({
     agentId,
     metadata: {
       userId,

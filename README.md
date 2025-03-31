@@ -231,73 +231,98 @@ Learn more about the power of Turborepo:
 graph TB
     User((External User))
 
-    subgraph "Web Application"
-        NextApp["Next.js Frontend<br>Next.js 13+"]
+    subgraph "Frontend Container"
+        WebApp["Web Application<br>Next.js"]
 
         subgraph "Frontend Components"
+            AppLayout["Layout Manager<br>React"]
             ThemeProvider["Theme Provider<br>MUI"]
-            UIComponents["UI Components<br>React/MUI"]
+            AppBar["App Bar<br>MUI"]
+            Sidebar["Sidebar<br>MUI"]
+            Dashboard["Dashboard<br>React"]
+            Charts["Charts Component<br>Recharts"]
             Pages["Pages Router<br>Next.js"]
-            LayoutComponent["Root Layout<br>Next.js"]
-            LinksSection["Links Section<br>React"]
+            SupabaseClient["Supabase Client<br>@supabase/ssr"]
         end
     end
 
-    subgraph "Backend Services"
-        NestApp["API Server<br>NestJS"]
+    subgraph "Backend Container"
+        NestAPI["API Server<br>NestJS"]
 
         subgraph "API Components"
             AppModule["App Module<br>NestJS"]
             LinksModule["Links Module<br>NestJS"]
-            LinksController["Links Controller<br>NestJS"]
-            LinksService["Links Service<br>NestJS"]
+            AgentController["Agent Controller<br>NestJS"]
+            MastraCore["Mastra Core<br>Custom"]
+            AuthGuard["Supabase Auth Guard<br>NestJS"]
         end
     end
 
-    subgraph "Data Layer"
-        Database["Database<br>PostgreSQL"]
-        PrismaClient["Database Client<br>Prisma"]
+    subgraph "Database Container"
+        PostgresDB[("PostgreSQL Database<br>Prisma")]
 
-        subgraph "Database Models"
-            UserModel["User Model<br>Prisma Schema"]
-            PromptModel["Prompt Model<br>Prisma Schema"]
-            ChatModel["Chat Model<br>Prisma Schema"]
+        subgraph "Database Components"
+            PrismaClient["Prisma Client<br>Prisma"]
+            Models["Data Models<br>Prisma Schema"]
         end
     end
 
-    subgraph "Shared Packages"
-        UILib["UI Library<br>React/MUI"]
-        APILib["API Library<br>TypeScript"]
-        DatabaseLib["Database Library<br>Prisma"]
+    subgraph "AI Services Container"
+        MastraService["Mastra Service<br>Custom"]
+
+        subgraph "AI Components"
+            ChatAgent["Chat Agent<br>Gemini"]
+            SearchAgent["Search Agent<br>Gemini"]
+            CodeAgent["Code Assistant<br>Gemini"]
+            VectorStore["Vector Store<br>Upstash"]
+            MemoryProvider["Memory Provider<br>Redis"]
+        end
     end
 
-    %% User interactions
-    User -->|"Accesses Web App"| NextApp
+    subgraph "External Services"
+        Supabase["Supabase<br>Auth & Storage"]
+        Upstash["Upstash<br>Vector & Redis"]
+        LangSmith["LangSmith<br>AI Tracing"]
+        Gemini["Google Gemini<br>AI Model"]
+    end
 
-    %% Frontend relationships
-    NextApp -->|"Uses"| ThemeProvider
-    NextApp -->|"Renders"| LayoutComponent
-    NextApp -->|"Routes to"| Pages
-    Pages -->|"Uses"| UIComponents
-    Pages -->|"Includes"| LinksSection
-    LinksSection -->|"Fetches data"| NestApp
+    %% Frontend Relationships
+    User -->|"Accesses"| WebApp
+    WebApp -->|"Uses"| AppLayout
+    AppLayout -->|"Contains"| ThemeProvider
+    AppLayout -->|"Contains"| AppBar
+    AppLayout -->|"Contains"| Sidebar
+    AppLayout -->|"Contains"| Dashboard
+    Dashboard -->|"Uses"| Charts
+    WebApp -->|"Routes to"| Pages
+    WebApp -->|"Authenticates via"| SupabaseClient
 
-    %% Backend relationships
-    NestApp -->|"Contains"| AppModule
-    AppModule -->|"Imports"| LinksModule
-    LinksModule -->|"Defines"| LinksController
-    LinksModule -->|"Provides"| LinksService
-    LinksService -->|"Uses"| PrismaClient
+    %% Backend Relationships
+    WebApp -->|"API Requests"| NestAPI
+    NestAPI -->|"Routes through"| AppModule
+    AppModule -->|"Includes"| LinksModule
+    AppModule -->|"Includes"| AgentController
+    AgentController -->|"Uses"| AuthGuard
+    AgentController -->|"Uses"| MastraCore
 
-    %% Database relationships
-    PrismaClient -->|"Connects to"| Database
-    PrismaClient -->|"Maps"| UserModel
-    PrismaClient -->|"Maps"| PromptModel
-    PrismaClient -->|"Maps"| ChatModel
+    %% Database Relationships
+    NestAPI -->|"Queries via"| PrismaClient
+    PrismaClient -->|"Manages"| PostgresDB
+    PostgresDB -->|"Defined by"| Models
 
-    %% Shared package relationships
-    NextApp -->|"Imports"| UILib
-    NextApp -->|"Imports"| APILib
-    NestApp -->|"Imports"| APILib
-    NestApp -->|"Uses"| DatabaseLib
+    %% AI Service Relationships
+    MastraService -->|"Uses"| ChatAgent
+    MastraService -->|"Uses"| SearchAgent
+    MastraService -->|"Uses"| CodeAgent
+    MastraService -->|"Stores vectors in"| VectorStore
+    MastraService -->|"Manages memory with"| MemoryProvider
+
+    %% External Service Relationships
+    SupabaseClient -->|"Connects to"| Supabase
+    VectorStore -->|"Stores in"| Upstash
+    MemoryProvider -->|"Caches in"| Upstash
+    MastraService -->|"Traces with"| LangSmith
+    ChatAgent -->|"Powered by"| Gemini
+    SearchAgent -->|"Powered by"| Gemini
+    CodeAgent -->|"Powered by"| Gemini
 ```

@@ -1,6 +1,8 @@
 {
   "name": "@repo/jest-config",
-  "version": "0.0.0",
+  "version": "0.0.2",
+  "description": "Jest configuration for monorepo",
+  "author": "ssdeanx",
   "private": true,
   "license": "MIT",
   "publishConfig": {

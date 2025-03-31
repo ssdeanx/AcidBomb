@@ -1,6 +1,6 @@
 {
   "name": "deanmachines",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "description": "Turbo monorepo, with Nextjs, Nestjs, React, and more, trying to create a all in one platform for training ai agents in typescript",
   "author": "ssdeanx",

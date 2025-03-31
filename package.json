@@ -28,5 +28,11 @@
   "packageManager": "pnpm@8.15.5",
   "engines": {
     "node": ">=18"
+  },
+  "pnpm": {
+    "overrides": {
+      "pathe": "^1.1.2",
+      "pg": "^8.12.0"
+    }
   }
 }

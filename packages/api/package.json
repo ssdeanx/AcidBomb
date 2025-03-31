@@ -69,6 +69,7 @@
     "@supabase/postgrest-js": "^1.19.4",
     "@supabase/realtime-js": "^2.11.5",
     "@supabase/ssr": "^0.6.1",
+    "@supabase/supabase-js": "^2.49.4",
     "@trpc/server": "^11.0.1",
     "@types/ws": "^8.18.0",
     "@upstash/core-analytics": "^0.0.10",

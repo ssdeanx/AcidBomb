@@ -8,6 +8,16 @@
         "-y",
         "@mastra/mcp-docs-server@latest"
       ]
+    },
+      "MCP_DOCKER": {
+        "command": "docker",
+        "args": [
+          "run",
+        "--rm",
+        "alpine/socat",
+        "STDIO",
+        "TCP:host.docker.internal:8811"
+      ]
     }
   }
 }

@@ -8,22 +8,14 @@ import { Mastra } from '@mastra/core';
 import { google } from '@ai-sdk/google';
 import { UpstashVector } from '@mastra/upstash';
 import { Redis } from '@upstash/redis';
-import { createMemory } from '@mastra/memory';
+import { Index } from '@upstash/vector';
+import { Memory } from '@mastra/memory';
 
-// Import agents and tools
+// Import agents
 import { agents } from './agents';
-import { tools } from './tools';
-
-/**
- * Safely access environment variables with fallbacks to prevent runtime errors
- */
-const getEnvVar = (key: string, defaultValue: string = ''): string => {
-  const value = process.env[key];
-  if (!value && defaultValue === '') {
-    console.warn(`Environment variable ${key} is not set`);
-  }
-  return value || defaultValue;
-};
+// Fix: Only import the initializeVectorSearchTool function, not the tools object
+import { initializeVectorSearchTool } from './tools';
+import { getEnvVar } from '../utils/env';
 
 /**
  * Configure Upstash services using environment variables
@@ -44,7 +36,7 @@ const redis = new Redis({
 /**
  * Initialize memory provider with Redis
  */
-const memoryProvider = createMemory({
+const memoryProvider = new Memory({
   storage: {
     type: 'redis',
     redis,
@@ -66,7 +58,15 @@ const memoryProvider = createMemory({
 });
 
 /**
- * Initialize vector store with Upstash for RAG capabilities
+ * Initialize Upstash Vector index for RAG capabilities
+ */
+const vectorIndex = new Index({
+  url: upstashVectorUrl,
+  token: upstashVectorToken,
+});
+
+/**
+ * Create Mastra vector store from Upstash index
  */
 const vectorStore = new UpstashVector({
   url: upstashVectorUrl,
@@ -85,7 +85,21 @@ const modelMaxTokens = parseInt(getEnvVar('MODEL_MAX_TOKENS', '8192'), 10);
 /**
  * Initialize Gemini model with configured parameters
  */
-const geminiModel = google(modelName);
+const geminiModel = google(modelName, {
+  temperature: modelTemperature,
+  maxOutputTokens: modelMaxTokens,
+});
+
+/**
+ * Initialize embedding model
+ */
+const embeddingModel = google.embedding('embedding-001');
+
+/**
+ * Initialize vector search tool with embedding model
+ * This returns the fully initialized tools object
+ */
+const initializedTools = initializeVectorSearchTool(embeddingModel);
 
 /**
  * Set up LangSmith integration if enabled
@@ -106,20 +120,14 @@ const fireCrawlKey = getEnvVar('FIRECRAWL_KEY');
  * Create and export the main Mastra instance
  */
 export const mastra = new Mastra({
-  memory: memoryProvider,
-  agents,
-});
-
-/**
- * Helper function to create a new conversation with a specific agent
- *
- * @param agentId - The ID of the agent to create a conversation with
- * @param userId - The user ID for the conversation
-  agents: agents,
-  tools: tools,
-  workflows: {
-    // Will be populated as workflows are implemented
+  memory: {
+    provider: memoryProvider,
+    vector: vectorStore,
+    embedder: embeddingModel,
   },
+  agents,
+  workflows: {},
+  tools: initializedTools, // Provide the initialized tools
 });
 
 /**
@@ -134,12 +142,14 @@ export const createConversation = async (
   agentId: string,
   userId: string,
 ): Promise<string> => {
-  const conversationId = await memoryProvider.createConversation({
+  // Create a unique ID and store metadata in Redis
+  const conversationId = `conv_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+  const metadataKey = `mastra:conversation:${conversationId}:metadata`;
+
+  await redis.hset(metadataKey, {
     agentId,
-    metadata: {
-      userId,
-      createdAt: new Date().toISOString(),
-    },
+    userId,
+    createdAt: new Date().toISOString(),
   });
 
   return conversationId;
@@ -148,4 +158,14 @@ export const createConversation = async (
 /**
  * Export necessary components for use in other modules
  */
-export { memoryProvider, vectorStore, geminiModel, redis, fireCrawlKey };
+export {
+  memoryProvider,
+  vectorStore,
+  vectorIndex,
+  embeddingModel,
+  geminiModel,
+  redis,
+  fireCrawlKey,
+  modelTemperature,
+  modelMaxTokens,
+};

@@ -18,7 +18,7 @@ import {
 import { Request, Response } from 'express';
 import { createId } from '@paralleldrive/cuid2';
 import { mastra, createConversation } from '../../mastra';
-import { SupabaseAuthGuard } from '../../supabase/supabase-auth.guard';
+import { SupabaseAuthGuard } from '../../supabase/guard';
 import { CoreMessage } from '@mastra/core'; // Import CoreMessage
 
 // Define the allowed agent names based on the Mastra configuration

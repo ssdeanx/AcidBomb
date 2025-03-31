@@ -3,10 +3,28 @@
   "globalDependencies": [
     "**/.env.*"
   ],
-  "tasks": {
+  "pipeline": {
     "dev": {
-      "cache": true,
-      "persistent": true
+      "cache": false,
+      "persistent": true,
+      "env": [
+        "DATABASE_URL",
+        "NEXT_PUBLIC_SUPABASE_URL",
+        "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+        "UPSTASH_VECTOR_REST_URL",
+        "UPSTASH_VECTOR_REST_TOKEN",
+        "UPSTASH_REDIS_URL",
+        "UPSTACK_REDIS_TOKEN",
+        "LANGSMITH_TRACING_V2",
+        "LANGSMITH_ENDPOINT",
+        "LANGSMITH_API_KEY",
+        "LANGSMITH_SERVICE_KEY",
+        "GEMINI_API_KEY",
+        "GOOGLE_API_KEY",
+        "MODEL",
+        "MODEL_TYPE",
+        "MODEL_TEMPERATURE"
+      ]
     },
     "build": {
       "dependsOn": [
@@ -14,12 +32,35 @@
       ],
       "outputs": [
         ".next/**",
-        "!.next/cache/**"
+        "!.next/cache/**",
+        "dist/**"
+      ],
+      "env": [
+        "DATABASE_URL",
+        "NEXT_PUBLIC_SUPABASE_URL",
+        "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+        "UPSTASH_VECTOR_REST_URL",
+        "UPSTASH_VECTOR_REST_TOKEN",
+        "UPSTASH_REDIS_URL",
+        "UPSTACK_REDIS_TOKEN",
+        "GEMINI_API_KEY",
+        "GOOGLE_API_KEY",
+        "MODEL",
+        "MODEL_TYPE",
+        "NODE_ENV"
       ],
       "cache": true
     },
-    "lint": {},
-    "test": {},
-    "test:e2e": {}
+    "lint": {
+      "outputs": []
+    },
+    "test": {
+      "dependsOn": ["build"],
+      "outputs": ["coverage/**"]
+    },
+    "test:e2e": {
+      "dependsOn": ["build"],
+      "outputs": []
+    }
   }
 }

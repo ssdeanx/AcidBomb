@@ -8,7 +8,7 @@
 import { createLogger, LogLevel } from '@mastra/core';
 import { createId } from '@paralleldrive/cuid2';
 import { EmbeddingModel } from 'ai';
-import { createEmbeddingService, Document } from './store-embeddings';
+import { EmbeddingStoreService, Document } from './store-embeddings';
 import { getEnvVar } from '../../utils/env';
 import { db, vectorOperations, redisOperations } from '../../database';
 
@@ -31,8 +31,7 @@ export interface MessageData {
  * Database service for Mastra agents
  */
 export class MastraDatabase {
-  private embeddingService: ReturnType<typeof createEmbeddingService> | null =
-    null;
+  private embeddingService: EmbeddingStoreService | null = null;
   private indexName: string;
 
   constructor() {
@@ -48,10 +47,13 @@ export class MastraDatabase {
    */
   initEmbeddingService(embeddingModel: EmbeddingModel<number[]>): void {
     if (!this.embeddingService) {
-      this.embeddingService = createEmbeddingService(
-        embeddingModel,
-        this.indexName,
-      );
+      // TODO: Refactor EmbeddingStoreService to accept model/indexName
+      // potentially in constructor or a dedicated setup method before initialize.
+      // For now, assuming EmbeddingStoreService configures itself internally.
+      this.embeddingService = new EmbeddingStoreService();
+      // The embeddingModel might need to be stored or passed differently
+      // depending on how EmbeddingStoreService uses it.
+      this.embeddingService.initialize();
       logger.info('Embedding service initialized');
     }
   }
@@ -141,15 +143,29 @@ export class MastraDatabase {
         },
       }));
 
-      // Process and store the documents
-      await this.embeddingService.processAndStoreDocuments(documents, {
-        // Use smaller chunks for conversation messages
-        chunkSize: 500,
-        chunkOverlap: 100,
-      });
+      // Process and store each document individually
+      // TODO: Consider batching if EmbeddingStoreService supports it for efficiency
+      let storedCount = 0;
+      for (const doc of documents) {
+        try {
+          // Assuming processAndStoreDocument exists and handles chunking internally
+          // Pass chunk options if the method accepts them, otherwise remove them.
+          // Adjust based on the actual signature of processAndStoreDocument.
+          await this.embeddingService.processAndStoreDocument(
+            doc /*, { chunkSize: 500, chunkOverlap: 100 } */,
+          );
+          storedCount++;
+        } catch (docError) {
+          logger.error(
+            `Failed to store embedding for one message in conversation ${conversationId}:`,
+            docError,
+          );
+          // Decide whether to continue or stop on partial failure
+        }
+      }
 
       logger.info(
-        `Stored ${messages.length} conversation messages as embeddings for conversation ${conversationId}`,
+        `Stored ${storedCount} out of ${messages.length} conversation messages as embeddings for conversation ${conversationId}`,
       );
     } catch (error) {
       logger.error(

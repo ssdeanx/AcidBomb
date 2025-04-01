@@ -32,7 +32,7 @@ export const chatAgent = new Agent({
   name: 'chat',
   instructions: chatInstructions,
   model: geminiModel,
-  // Memory is managed by the main Mastra instance
+  memory: memoryProvider,
 });
 
 /**
@@ -58,7 +58,7 @@ export const searchAgent = new Agent({
   name: 'search',
   instructions: searchAgentInstructions,
   model: geminiModel,
-  // Memory is managed by the main Mastra instance
+  memory: memoryProvider,
 });
 
 /**
@@ -84,7 +84,7 @@ export const codeAssistantAgent = new Agent({
   name: 'code-assistant',
   instructions: codeAssistantInstructions,
   model: geminiModel,
-  // Memory is managed by the main Mastra instance
+  memory: memoryProvider,
 });
 
 /**

@@ -2,11 +2,15 @@
   "extends": "@repo/typescript-config/nestjs.json",
   "compilerOptions": {
     "allowJs": true,
-    "baseUrl": "src",
+    "jsx": "react-jsx",
+    "baseUrl": "src", // Changed from "src" to "." to reflect root structure
     "esModuleInterop": true,
     "incremental": false,
-    "outDir": "dist"
+    "outDir": "dist",
+    "strict": true,
+    "module": "esnext", // Allow top-level await
+    "target": "esnext" // Ensure target is ES2017 or higher
   },
-  "include": ["src"],
+  "include": ["src/Drizzle/index.tsx", "src/Drizzle/**/*.tsx", "src"], // Added index.tsx and Drizzle/** pattern
   "exclude": ["node_modules", "test", "dist", "**/*spec.ts"]
 }

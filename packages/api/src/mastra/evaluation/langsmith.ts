@@ -6,7 +6,7 @@
  */
 
 import { LangChainTracer } from 'langsmith/traceable';
-import { getEnvVar } from '../../utils/env';
+import { getEnvVar } from './utils';
 
 /**
  * Configuration options for the LangSmith tracer

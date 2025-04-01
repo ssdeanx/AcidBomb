@@ -232,74 +232,73 @@ graph TB
     User((User))
 
     subgraph "Frontend Container"
-        WebApp["Web Application<br>(Next.js)"]
+        WebApp["Web Application<br>Next.js"]
 
         subgraph "Frontend Components"
-            ThemeProvider["Theme Provider<br>(React)"]
-            AppBar["App Bar<br>(React/MUI)"]
-            UIComponents["UI Components<br>(React/MUI)"]
-            SupabaseClient["Supabase Client<br>(TypeScript)"]
+            AuthModule["Auth Module<br>Next Auth"]
+            Pages["Pages Router<br>Next.js"]
+            SupabaseClient["Supabase Client<br>@supabase/ssr"]
+            UIComponents["UI Components<br>React"]
         end
     end
 
     subgraph "Backend Container"
-        APIServer["API Server<br>(NestJS)"]
+        NestAPI["API Server<br>NestJS"]
 
         subgraph "API Components"
-            AgentController["Agent Controller<br>(NestJS)"]
-            LinksModule["Links Module<br>(NestJS)"]
-            AuthGuard["Supabase Auth Guard<br>(NestJS)"]
-            MastraCore["Mastra Core<br>(TypeScript)"]
-        end
-
-        subgraph "Agent Components"
-            ChatAgent["Chat Agent<br>(Gemini)"]
-            SearchAgent["Search Agent<br>(Gemini)"]
-            CodeAssistant["Code Assistant<br>(Gemini)"]
+            AppController["App Controller<br>NestJS"]
+            LinksModule["Links Module<br>NestJS"]
+            MastraService["Mastra Service<br>@mastra/core"]
+            AgentsService["Agents Service<br>@ai-sdk/google"]
         end
     end
 
-    subgraph "Data Storage Container"
-        PostgresDB[("PostgreSQL Database<br>(Prisma)")]
-        RedisCache[("Redis Cache<br>(Upstash)")]
-        VectorStore[("Vector Store<br>(Upstash)")]
+    subgraph "Database Container"
+        SupabaseDB[("Primary Database<br>Supabase")]
+        RedisCache[("Cache Storage<br>Upstash Redis")]
+        VectorStore[("Vector Storage<br>Upstash Vector")]
     end
 
-    subgraph "External Services"
-        GeminiAI["Gemini AI<br>(Google)"]
-        LangSmith["LangSmith<br>(Evaluation)"]
-        Supabase["Supabase<br>(Auth/Storage)"]
+    subgraph "AI Services Container"
+        GeminiModel["LLM Service<br>Google Gemini"]
+
+        subgraph "AI Components"
+            ChatAgent["Chat Agent<br>Mastra"]
+            SearchAgent["Search Agent<br>Mastra"]
+            CodeAgent["Code Assistant<br>Mastra"]
+            MemoryProvider["Memory Provider<br>@mastra/memory"]
+        end
     end
 
-    %% Frontend Relationships
-    User -->|"Accesses"| WebApp
-    WebApp -->|"Uses"| ThemeProvider
-    WebApp -->|"Uses"| AppBar
-    WebApp -->|"Uses"| UIComponents
-    WebApp -->|"Authenticates"| SupabaseClient
-    SupabaseClient -->|"Authenticates with"| Supabase
+    %% Frontend relationships
+    User -->|"Interacts with"| WebApp
+    WebApp -->|"Uses"| AuthModule
+    WebApp -->|"Routes via"| Pages
+    WebApp -->|"Authenticates via"| SupabaseClient
+    WebApp -->|"Renders"| UIComponents
 
-    %% Backend Relationships
-    WebApp -->|"Makes API calls"| APIServer
-    APIServer -->|"Routes requests"| AgentController
-    APIServer -->|"Uses"| LinksModule
-    APIServer -->|"Validates auth"| AuthGuard
-    AuthGuard -->|"Verifies tokens"| Supabase
+    %% Frontend to Backend
+    WebApp -->|"API Requests"| NestAPI
 
-    %% Agent Relationships
-    AgentController -->|"Manages"| MastraCore
-    MastraCore -->|"Uses"| ChatAgent
-    MastraCore -->|"Uses"| SearchAgent
-    MastraCore -->|"Uses"| CodeAssistant
-    ChatAgent -->|"Generates responses"| GeminiAI
-    SearchAgent -->|"Generates responses"| GeminiAI
-    CodeAssistant -->|"Generates responses"| GeminiAI
+    %% Backend relationships
+    NestAPI -->|"Routes to"| AppController
+    NestAPI -->|"Uses"| LinksModule
+    NestAPI -->|"Manages"| MastraService
+    MastraService -->|"Configures"| AgentsService
 
-    %% Data Storage Relationships
-    APIServer -->|"Persists data"| PostgresDB
-    MastraCore -->|"Caches data"| RedisCache
-    MastraCore -->|"Stores vectors"| VectorStore
+    %% Database relationships
+    NestAPI -->|"Queries"| SupabaseDB
+    NestAPI -->|"Caches in"| RedisCache
+    MastraService -->|"Stores vectors in"| VectorStore
 
-    %% External Service Relationships
-    MastraCore -->|"Evaluates"| LangSmith
+    %% AI Service relationships
+    AgentsService -->|"Uses"| GeminiModel
+    MastraService -->|"Manages"| ChatAgent
+    MastraService -->|"Manages"| SearchAgent
+    MastraService -->|"Manages"| CodeAgent
+    ChatAgent -->|"Uses"| MemoryProvider
+    SearchAgent -->|"Uses"| MemoryProvider
+    CodeAgent -->|"Uses"| MemoryProvider
+    MemoryProvider -->|"Stores in"| RedisCache
+    MemoryProvider -->|"Stores in"| VectorStore
 ```

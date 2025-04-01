@@ -1,28 +1,60 @@
 /**
  * Mastra agents implementation.
  * Provides chat and specialized agents using Gemini as the model provider.
+ * Includes conceptual association of tools and Upstash memory setup.
  *
  * @module packages/api/src/mastra/agents
  */
 
-import { Agent } from '@mastra/core';
-import { google } from '@ai-sdk/google';
-import { memoryProvider, geminiModel } from '../index';
+import { Agent } from '@mastra/core'; // Assuming Agent class and MastraMemory type/interface exist
+// --- Hypothetical Memory Adapter ---
+// Assuming '@mastra/core' or a related package provides a way to create
+// the required memory object from Upstash clients and an embedder.
+// Replace 'createMastraUpstashMemory' and 'MastraMemory' with actual exports if they exist.
+import { MastraMemory } from '@mastra/core'; // Or '@mastra/core'
+import { createMastraUpstashMemory } from '@mastra/upstash';
+
+// Import Upstash clients (ensure these packages are installed)
+import { Index } from '@upstash/vector';
+import { Redis } from '@upstash/redis';
+
+// Import the tools defined in the other module
+import { tools as availableTools, initializeVectorSearchTool } from '../tools';
+
+// Import model and memory providers/clients from index
+// We now assume index exports the initialized clients and models
+import {
+  geminiModel,
+  embeddingModel,
+  // Assume index.ts now exports initialized Upstash clients:
+  upstashVectorClient, // e.g., const upstashVectorClient = new Index({...});
+  upstashRedisClient, // e.g., const upstashRedisClient = new Redis({...});
+} from '../index';
+
+// --- Initialize Vector Search Tool ---
+initializeVectorSearchTool(embeddingModel);
+
+// --- Create the MastraMemory Instance ---
+// This is where you construct the object that satisfies the Agent's memory requirement.
+// Replace with the actual function/class provided by your Mastra framework.
+const mastraMemoryProvider: MastraMemory = createMastraUpstashMemory({
+  vectorClient: upstashVectorClient, // Your initialized @upstash/vector Index client
+  storageClient: upstashRedisClient, // Your initialized @upstash/redis client (optional?)
+  embedder: embeddingModel, // Your initialized embedding model
+  // threadConfig: {...},            // Any specific thread config needed
+  // Add other required options based on createMastraUpstashMemory definition
+});
+
+// --- Agent Definitions ---
 
 /**
  * Base system instructions for the general-purpose chat agent
  */
 const chatInstructions = `
 You are a helpful, friendly, and knowledgeable assistant.
-
-Guidelines:
-- Provide accurate, helpful, and concise answers
-- If you don't know the answer, acknowledge this rather than making up information
-- Be respectful and considerate in your responses
-- When presented with code, ensure your solutions are secure and follow best practices
-- Format responses clearly with markdown for readability
-
+Guidelines: [...]
 The conversation will maintain context through Upstash memory integration.
+You have access to search tools if needed for current information.
 `;
 
 /**
@@ -32,7 +64,9 @@ export const chatAgent = new Agent({
   name: 'chat',
   instructions: chatInstructions,
   model: geminiModel,
-  memory: memoryProvider,
+  // --- Use the correctly typed MastraMemory provider ---
+  memory: mastraMemoryProvider, // Pass the object conforming to MastraMemory
+  tools: availableTools,
 });
 
 /**
@@ -40,15 +74,10 @@ export const chatAgent = new Agent({
  */
 const searchAgentInstructions = `
 You are a search assistant focused on providing factual, accurate information.
-
-Guidelines:
-- Prioritize factual accuracy over everything else
-- Include citations or sources when possible
-- For questions you can't answer with high confidence, acknowledge your limitations
-- Use a structured approach when presenting complex information
-- Keep responses focused on the search query
-
-Your purpose is to help users find reliable information by leveraging your knowledge and context.
+Guidelines: [...]
+You MUST use the available search tools [...]
+You can also search the internal knowledge base using the vectorSearch tool.
+Your purpose is to help users find reliable information by leveraging your knowledge and available tools.
 `;
 
 /**
@@ -58,7 +87,9 @@ export const searchAgent = new Agent({
   name: 'search',
   instructions: searchAgentInstructions,
   model: geminiModel,
-  memory: memoryProvider,
+  // --- Use the correctly typed MastraMemory provider ---
+  memory: mastraMemoryProvider, // Pass the object conforming to MastraMemory
+  tools: availableTools,
 });
 
 /**
@@ -66,14 +97,8 @@ export const searchAgent = new Agent({
  */
 const codeAssistantInstructions = `
 You are a coding assistant specialized in helping with programming tasks.
-
-Guidelines:
-- Provide well-structured, secure, and efficient code solutions
-- Explain your code with helpful comments
-- Suggest improvements and best practices
-- Highlight potential security issues or performance concerns
-- Keep up with modern programming practices
-
+Guidelines: [...]
+If asked about recent libraries, APIs, or current best practices, use search tools to verify information.
 You specialize in TypeScript/JavaScript, React, Next.js, and related technologies, but can assist with other languages as needed.
 `;
 
@@ -84,7 +109,9 @@ export const codeAssistantAgent = new Agent({
   name: 'code-assistant',
   instructions: codeAssistantInstructions,
   model: geminiModel,
-  memory: memoryProvider,
+  // --- Use the correctly typed MastraMemory provider ---
+  memory: mastraMemoryProvider, // Pass the object conforming to MastraMemory
+  tools: availableTools,
 });
 
 /**

@@ -21,12 +21,12 @@
     "./Table": "./src/table.tsx",
     "./List": "./src/list.tsx",
     "./Appbar": "./src/appbar.tsx",
-    "./Chatwindow": "./src/chatwindow.tsx",
-    "./Chatmessage": "./src/chatmessage.tsx",
+    "./Chatwindow": "./src/chat/chatwindow.tsx",
+    "./Chatmessage": "./src/chat/chatmessage.tsx",
     "./ModelSelector": "./src/model_selector.tsx",
     "./ThemeProvider": "./src/theme/ThemeProvider.tsx",
     "./index": "./src/theme/index.tsx",
-    "./Chat": "./src/chat.tsx",
+    "./Chat": "./src/chat/chat.tsx",
     "./Chart": "./src/chart.tsx",
     "./Responsive": "./src/responsive.tsx",
     "./Autocomplete": "./src/autocomplete.tsx",
@@ -38,7 +38,8 @@
     "./AdvancedTabs": "./src/tabs.tsx",
     "./darkTheme": "./src/theme/index.ts",
     "./lightTheme": "./src/theme/index.ts",
-    "./theme": "./src/theme/index.ts"
+    "./Theme": "./src/theme/index.ts",
+    "./Accordion": "./src/accordion.tsx"
   },
   "scripts": {
     "lint": "eslint . --max-warnings 0",

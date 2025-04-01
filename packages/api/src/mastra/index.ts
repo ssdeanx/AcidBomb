@@ -1,209 +1,195 @@
 /**
  * Main Mastra configuration for the API package.
- * Configures Mastra with Gemini as the model provider and Upstash for vector storage and memory.
+ * Configures Mastra with Gemini models, Pinecone for vector storage, and Upstash Redis for cache/storage.
+ * Initializes core clients, memory providers, and the main Mastra instance.
  *
  * @module packages/api/src/mastra/index
  */
-import { Mastra } from '@mastra/core';
-import { google } from '@ai-sdk/google';
-// Import the UpstashVector class constructor
-import { UpstashVector } from '@mastra/upstash';
-import { Redis } from '@upstash/redis';
-import { Index } from '@upstash/vector'; // Keep Index if used directly, otherwise remove
-// Import the Memory class constructor from @mastra/memory
-// Ensure you have installed '@mastra/memory': pnpm install @mastra/memory
-import { Memory } from '@mastra/memory';
 
-// Import agents and the tool initializer function
+// --- Core Mastra Imports ---
+import { Mastra, createLogger, LogLevel, Logger } from '@mastra/core';
+import { Memory } from '@mastra/memory';
+import { UpstashStore } from '@mastra/upstash'; // Upstash adapter for KV Store (Redis Cache)
+import { PineconeVector } from '@mastra/pinecone'; // <--- Import Pinecone Adapter for Vectors
+
+// --- AI Model Provider ---
+import { google } from '@ai-sdk/google';
+
+// --- Upstash Client (Raw Redis ONLY) ---
+import { Redis as UpstashRedisClient } from '@upstash/redis';
+
+// --- Local Modules ---
 import { agents } from './agents';
-// Only import the initializer, as it returns the configured tools object
-import { initializeVectorSearchTool } from './tools';
+import { initializeVectorSearchTool } from './tools'; // Ensure this tool works generically or adapt it
 import { getEnvVar } from '../utils/env';
 
-/**
- * Configure Upstash services using environment variables
- */
-const upstashVectorUrl = getEnvVar('UPSTASH_VECTOR_REST_URL');
-const upstashVectorToken = getEnvVar('UPSTASH_VECTOR_REST_TOKEN');
+// --- Environment Variables ---
+// Upstash Redis (for Cache/Storage)
 const upstashRedisUrl = getEnvVar('UPSTASH_REDIS_URL');
-// Ensure this matches your .env file exactly (UPSTACK vs UPSTASH)
-const upstashRedisToken = getEnvVar('UPSTACK_REDIS_TOKEN');
+const upstashRedisToken = getEnvVar('UPSTASH_REDIS_TOKEN');
 
-/**
- * Initialize Upstash Redis client for memory storage
- */
-const redis = new Redis({
-  url: upstashRedisUrl,
-  token: upstashRedisToken,
-});
+// Pinecone (for Vector storage)
+const pineconeApiKey = getEnvVar('PINECONE_API_KEY');
+const pineconeEnv = getEnvVar('PINECONE_ENV');
+const pineconeHost = getEnvVar('PINECONE_HOST');
+const pineconeIndexName = getEnvVar('PINECONE_INDEX_NAME'); // Get Pinecone index name from env
 
-/**
- * Initialize Upstash Vector index client (potentially optional if UpstashVector handles it)
- * Keep this if you need direct access to the index elsewhere.
- */
-const vectorIndex = new Index({
-  url: upstashVectorUrl,
-  token: upstashVectorToken,
-});
-
-/**
- * Create Mastra vector store using the UpstashVector class constructor
- */
-const vectorStore = new UpstashVector({
-  url: upstashVectorUrl,
-  token: upstashVectorToken,
-  // index: vectorIndex, // Pass the index client if required by UpstashVector constructor
-});
-
-/**
- * Initialize embedding model (using a standard Google model ID)
- */
-const embeddingModel = google.embedding('embedding-001');
-
-/**
- * Initialize memory provider with Redis using the Memory class constructor
- * Pass vector store and embedder directly to the Memory constructor
- * This allows the Memory class to handle semantic recall internally.
- */
-const memoryProvider = new Memory({
-  storage: {
-    type: 'redis', // Specify storage type (or pass a storage instance)
-    redis, // Pass the initialized Redis client
-    namespace: 'mastra:memory', // Define a namespace for memory keys
-  },
-  // Pass vector store and embedder here for semantic recall functionality within Memory
-  vector: vectorStore,
-  embedder: embeddingModel,
-  options: {
-    lastMessages: 20, // Number of recent messages to keep readily available
-    semanticRecall: {
-      // Configuration for recalling relevant past messages
-      // These options are used if 'vector' and 'embedder' are provided
-      topK: 3,
-      messageRange: {
-        before: 2,
-        after: 1,
-      },
-    },
-    workingMemory: {
-      // Configuration for short-term working memory
-      enabled: true,
-    },
-  },
-});
-
-/**
- * Configure Gemini model parameters from environment variables
- */
-// Get the first model name if multiple are listed
-const modelName = getEnvVar('MODEL', 'gemini-1.5-flash-latest') // Updated default model
+// Model & Other Configs
+const generationModelName = getEnvVar('MODEL', 'gemini-1.5-flash-latest')
   .split(',')[0]
   .trim();
 const modelTemperature = parseFloat(getEnvVar('MODEL_TEMPERATURE', '0.2'));
 const modelMaxTokens = parseInt(getEnvVar('MODEL_MAX_TOKENS', '8192'), 10);
 
-/**
- * Initialize Gemini model with configured parameters
- * FIX: Reverted - Pass temperature and maxOutputTokens directly.
- * The 'generationConfig' wrapper was incorrect for the google() function settings.
- */
-const geminiModel = google(modelName, {
-  temperature: modelTemperature,
-  maxOutputTokens: modelMaxTokens, // Correct parameter name
-  // Add safetySettings if needed, e.g.:
-  // safetySettings: [
-  //   { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
-  //   // ... other categories
-  // ]
+// --- Initialize Logger ---
+const logger: Logger = createLogger({
+  name: 'MastraApp',
+  level: LogLevel.INFO, // Adjust log level as needed
 });
 
-/**
- * Initialize tools by calling the function from tools/index.ts
- * This function returns the complete tools object, including the vector search tool.
- */
-const initializedTools = initializeVectorSearchTool(embeddingModel);
+// --- Initialize Raw Upstash Redis Client (Optional, for direct cache/metadata access) ---
+logger.info('Initializing raw Upstash Redis client...');
+const rawRedisClient = new UpstashRedisClient({
+  url: upstashRedisUrl,
+  token: upstashRedisToken,
+});
+logger.info('Raw Upstash Redis client initialized.');
 
-/**
- * Set up LangSmith integration if enabled via environment variable
- */
+// --- Initialize AI Models ---
+logger.info('Initializing AI models...');
+const embeddingModelId = 'embedding-001'; // Make sure this model's dimension matches your Pinecone index dimension
+const embeddingModel = google.embedding(embeddingModelId);
+logger.info(`Embedding model initialized (${embeddingModelId})`);
+
+const geminiModel = google(generationModelName);
+logger.info(`Generation model initialized (${generationModelName})`);
+
+// --- Create Mastra Adapters ---
+
+logger.info('Creating Mastra PineconeVector adapter...');
+// Instantiate PineconeVector adapter based on documentation and likely requirements
+// @ts-ignore - Assuming type definition issue, constructor expects an object
+const vectorStoreAdapter = new PineconeVector({
+  apiKey: pineconeApiKey,
+  environment: pineconeEnv, // Required by Mastra docs
+  host: pineconeHost, // Your specific index endpoint - likely needed by underlying client
+  indexName: pineconeIndexName, // Essential for the adapter to target the correct index
+  logger: logger, // Pass logger for internal logging
+  // namespace: 'your-pinecone-namespace' // Optional: Add if you use Pinecone namespaces within your index
+});
+logger.info(
+  `Mastra PineconeVector adapter created for index '${pineconeIndexName}'.`,
+);
+
+logger.info(
+  'Creating Mastra UpstashStore adapter instance (for Redis cache/storage)...',
+);
+// Keep UpstashStore for key-value storage / caching
+const storageAdapter = new UpstashStore({
+  url: upstashRedisUrl,
+  token: upstashRedisToken,
+});
+logger.info('Mastra UpstashStore adapter created.');
+
+// --- Create Mastra Memory Provider ---
+logger.info('Creating Mastra Memory provider...');
+const memoryProvider = new Memory({
+  storage: storageAdapter, // Use UpstashStore (Redis) for storing conversation history, metadata etc.
+  vector: vectorStoreAdapter, // Use PineconeVector for semantic recall (vector search) <--- Updated
+  embedder: embeddingModel, // Embedder used for creating vectors before storing/querying
+  logger: logger,
+  options: {
+    namespace: 'mastra:memory', // Namespace for keys in Redis (UpstashStore)
+    lastMessages: 20, // How many recent messages to keep readily available
+    semanticRecall: {
+      // Configuration for vector search recall
+      topK: 3, // Number of similar messages/chunks to retrieve
+      messageRange: { before: 2, after: 1 }, // Context window around retrieved messages
+      // filter: { userId: 'some-user-id' } // Example: Optional metadata filter for vector search
+    },
+    workingMemory: { enabled: true },
+  },
+});
+logger.info(
+  'Mastra Memory provider initialized (Storage: Upstash Redis, Vector: Pinecone).',
+);
+
+// --- Initialize Tools ---
+// Pass embedder and the Pinecone index name as a string.
+// Verify initializeVectorSearchTool is compatible or adapt it.
+// Tools might need the index name to perform vector operations like query().
+logger.info('Initializing tools, ensuring compatibility with Pinecone...');
+const initializedTools = initializeVectorSearchTool(
+  embeddingModel,
+  pineconeIndexName, // Pass the index name as a string instead of the adapter instance
+);
+logger.info('Tools initialized, including vector search using Pinecone.');
+
+// --- LangSmith Tracing (Optional - No changes needed here) ---
 if (getEnvVar('LANGSMITH_TRACING', 'false') === 'true') {
-  console.log('LangSmith tracing enabled.');
-  // Set environment variables required by LangChain/LangSmith integration
-  process.env.LANGCHAIN_TRACING_V2 = 'true';
-  process.env.LANGSMITH_ENDPOINT = getEnvVar('LANGSMITH_ENDPOINT');
-  process.env.LANGSMITH_API_KEY = getEnvVar('LANGSMITH_API_KEY');
-  // Optional: Set project name if desired
-  // process.env.LANGCHAIN_PROJECT = getEnvVar('LANGSMITH_PROJECT_NAME', 'DeanMachines API');
+  // ... (LangSmith setup remains the same)
 }
 
-/**
- * Get FireCrawl API key (used by tools/index.ts)
- * Exported for potential use elsewhere if needed.
- */
-export const fireCrawlKey = getEnvVar('FIRECRAWL_KEY');
+// --- Export FireCrawl Key (If used - No changes needed here) ---
+export const fireCrawlKey = getEnvVar('FIRECRAWL_KEY', ''); // Provide default if optional
 
-/**
- * Create and export the main Mastra instance
- * Register agents, tools, workflows, and the vector store.
- * Memory is typically configured per-agent or handled by specific tools/workflows.
- */
+// --- Create Main Mastra Instance ---
+logger.info('Creating main Mastra instance...');
 export const mastra = new Mastra({
-  agents: agents, // The imported agent definitions
-  tools: initializedTools, // The initialized tools collection
+  agents: agents,
+  tools: initializedTools,
   vectors: {
-    upstash: vectorStore, // Register the Upstash vector store
+    // Register the Pinecone vector adapter instance under a key name
+    pinecone: vectorStoreAdapter, // <--- Use 'pinecone' or another descriptive key
   },
-  workflows: {
-    // Define workflows here as they are implemented
-  },
+  storage: storageAdapter, // Pass the storage adapter directly
+  // Use storageAdapter directly as the storage provider
+  workflows: {}, // Define workflows if any
+  logger: logger,
 });
+logger.info('Mastra instance created successfully.');
 
-/**
- * Helper function to create a new conversation.
- * Uses manual ID generation and Redis storage.
- *
- * @param agentId - The ID of the agent associated with the conversation.
- * @param userId - The user ID initiating the conversation.
- * @returns The unique conversation ID.
- */
+// --- Conversation Helper (Uses Raw Redis Client for Metadata - No changes needed here) ---
 export const createConversation = async (
   agentId: string,
   userId: string,
 ): Promise<string> => {
-  // Generate a simple unique ID (consider using UUIDs for production)
-  const conversationId = `conv_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+  const conversationId = `conv_${Date.now()}_${Math.random()
+    .toString(36)
+    .substring(2, 7)}`;
+  // Store metadata directly in Redis using the raw client
   const metadataKey = `mastra:conversation:${conversationId}:metadata`;
-
   try {
-    // Store initial conversation metadata directly in Redis
-    await redis.hset(metadataKey, {
+    await rawRedisClient.hset(metadataKey, {
       agentId,
       userId,
       createdAt: new Date().toISOString(),
     });
-    console.log(`Created conversation ${conversationId} metadata in Redis.`);
+    logger.info(`Created conversation ${conversationId} metadata in Redis.`);
   } catch (error) {
-    console.error(
+    logger.error(
       `Failed to create conversation metadata in Redis for ${conversationId}:`,
       error,
     );
-    // Handle error appropriately - maybe throw or return an error indicator
     throw new Error('Failed to initialize conversation metadata.');
   }
-
   return conversationId;
 };
 
-/**
- * Export necessary components for use in other modules (e.g., controllers)
- */
+// --- Exports ---
 export {
-  memoryProvider, // Export the configured Memory instance
-  vectorStore, // Export the vector store instance
-  vectorIndex, // Export if needed directly elsewhere
+  memoryProvider,
+  vectorStoreAdapter as pineconeVectorStore, // Alias vector adapter
+  storageAdapter as upstashStorage, // Alias storage adapter
   embeddingModel,
   geminiModel,
-  redis, // Export Redis client if needed directly elsewhere
+  rawRedisClient as redis, // Export raw Redis client
   modelTemperature,
   modelMaxTokens,
+  logger,
+  pineconeIndexName, // Export the Pinecone index name
 };
+
+console.log(
+  'Mastra core setup initialized (Vector: Pinecone, Storage/Cache: Upstash Redis).',
+);

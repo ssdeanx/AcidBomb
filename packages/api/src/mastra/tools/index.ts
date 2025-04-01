@@ -1,25 +1,26 @@
 /**
  * Mastra tools implementation.
- * Provides specialized tools for agents including web search (FireCrawl, Google) and vector retrieval.
+ * Provides specialized tools for agents including web search and vector retrieval.
  *
  * @module packages/api/src/mastra/tools
  */
 
-import { createTool, Tool } from '@mastra/core'; // Tool type might be needed if used explicitly
-import { createVectorQueryTool } from '@mastra/rag'; // Correct import for vector tool
-// import { google } from '@ai-sdk/google'; // Removed as it's not used directly in this file now
+import { createTool, Tool } from '@mastra/core';
+import { createVectorQueryTool } from '@mastra/rag'; // RAG helper for vector search
 import { z } from 'zod';
-import { getEnvVar } from '../../utils/env'; // Assuming this utility exists and works
+import { getEnvVar } from '../../utils/env'; // Utility for environment variables
+import { EmbeddingModel } from '@ai-sdk/provider'; // Import specific type if available
 
 // --- Environment Variables ---
-// Fetch required API keys directly to avoid circular imports with main mastra/index.ts
+// Fetch required API keys directly within this module
 const fireCrawlKey = getEnvVar('FIRECRAWL_KEY');
 const googleApiKey = getEnvVar('GOOGLE_API_KEY'); // Ensure this is set in your .env
-const googleCx = getEnvVar('GOOGLE_CX'); // Your Programmable Search Engine ID from Google Cloud Console
+const googleCx = getEnvVar('GOOGLE_CX'); // Your Programmable Search Engine ID
 
 // --- Web Search Tool (FireCrawl) ---
+// [ Keep the webSearchTool implementation as it was - it looks good ]
 export const webSearchTool = createTool({
-  id: 'web-search-firecrawl', // Unique ID for this tool
+  id: 'web-search-firecrawl',
   description:
     'Search the web using FireCrawl for current information on a topic. Use for general web searches.',
   inputSchema: z.object({
@@ -35,32 +36,33 @@ export const webSearchTool = createTool({
     results: z.string().describe('Formatted search results as a single string'),
     count: z.number().describe('Number of results returned'),
   }),
-  // Correctly destructure 'query' and 'numResults' from the argument object
-  execute: async ({ query, numResults }) => {
-    // Check if the API key is configured
+  execute: async (input) => {
+    const { query, numResults } = input;
     if (!fireCrawlKey) {
-      console.warn('FireCrawl API key is not configured.');
+      console.warn(
+        `FireCrawl API key is not configured. Cannot perform search for query: "${query}"`,
+      );
       return {
         results: 'Search tool (FireCrawl) is not configured.',
         count: 0,
       };
     }
     try {
-      // Construct the API request URL
       const url = new URL('https://api.firecrawl.dev/search');
       url.searchParams.append('q', query);
-      url.searchParams.append('num', numResults.toString());
+      url.searchParams.append(
+        'pageOptions[fetchOptions][num]',
+        numResults.toString(),
+      ); // Correct parameter for num results
 
-      // Perform the fetch request
       const response = await fetch(url.toString(), {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${fireCrawlKey}`, // Use the fetched API key
+          Authorization: `Bearer ${fireCrawlKey}`,
         },
       });
 
-      // Handle non-successful responses
       if (!response.ok) {
         const errorBody = await response.text();
         console.error(`FireCrawl API Error (${response.status}): ${errorBody}`);
@@ -69,38 +71,35 @@ export const webSearchTool = createTool({
         );
       }
 
-      // Parse the JSON response
       const data = await response.json();
 
-      // Define an interface for the expected result structure for type safety
       interface FireCrawlResult {
         title?: string;
-        url?: string;
-        snippet?: string;
+        url?: string; // Firecrawl might use 'link' or 'url', check API response
+        snippet?: string; // Firecrawl might use 'content' or 'snippet'
+        score?: number; // Firecrawl often includes a relevance score
       }
 
-      // Format the results into a single string
-      const formattedResults = (data.results as FireCrawlResult[])
+      // Adjust mapping based on actual Firecrawl /search response structure
+      const formattedResults = (data.data as FireCrawlResult[]) // Check if results are under 'data' key
         ?.map((result, index) => {
-          // Provide defaults for potentially missing fields
           const title = result.title || 'No Title';
           const url = result.url || 'No URL';
-          const snippet = result.snippet || 'No Snippet';
-          // Format each result clearly
+          const snippet = result.snippet || 'No Snippet available.';
           return `[${index + 1}] ${title}\nURL: ${url}\nSnippet: ${snippet}\n`;
         })
-        .join('\n'); // Join results with newlines
+        .join('\n');
 
-      // Return the formatted results and count
       return {
-        results: formattedResults || 'No results found.', // Handle empty results
-        count: data.results?.length || 0, // Safely get the length
+        results: formattedResults || 'No results found.',
+        count: data.data?.length || 0,
       };
     } catch (error) {
-      // Log the error and return a user-friendly error message
       console.error('Web Search Tool (FireCrawl) Execution Error:', error);
       return {
-        results: `Search failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        results: `Search failed: ${
+          error instanceof Error ? error.message : 'Unknown error'
+        }`,
         count: 0,
       };
     }
@@ -108,8 +107,9 @@ export const webSearchTool = createTool({
 });
 
 // --- Google Search Tool (Custom Search API) ---
+// [ Keep the googleSearchTool implementation as it was - it looks good ]
 export const googleSearchTool = createTool({
-  id: 'web-search-google', // Unique ID for this tool
+  id: 'web-search-google',
   description:
     'Search the web using Google Custom Search for current information on a topic. Use for targeted searches if FireCrawl fails or for specific Google searches.',
   inputSchema: z.object({
@@ -125,12 +125,11 @@ export const googleSearchTool = createTool({
     results: z.string().describe('Formatted search results as a single string'),
     count: z.number().describe('Number of results returned'),
   }),
-  // Correctly destructure 'query' and 'numResults'
-  execute: async ({ query, numResults }) => {
-    // Check if required API keys are configured
+  execute: async (input) => {
+    const { query, numResults } = input;
     if (!googleApiKey || !googleCx) {
       console.warn(
-        'Google API Key or Search Engine ID (CX) is not configured.',
+        `Google API Key or Search Engine ID (CX) is not configured. Cannot perform search for query: "${query}"`,
       );
       return {
         results: 'Search tool (Google) is not configured.',
@@ -138,14 +137,12 @@ export const googleSearchTool = createTool({
       };
     }
     try {
-      // Construct the Google Custom Search API URL
       const url = new URL('https://www.googleapis.com/customsearch/v1');
-      url.searchParams.append('key', googleApiKey); // API Key
-      url.searchParams.append('cx', googleCx); // Search Engine ID
-      url.searchParams.append('q', query); // Search query
-      url.searchParams.append('num', numResults.toString()); // Number of results
+      url.searchParams.append('key', googleApiKey);
+      url.searchParams.append('cx', googleCx);
+      url.searchParams.append('q', query);
+      url.searchParams.append('num', numResults.toString());
 
-      // Perform the fetch request
       const response = await fetch(url.toString(), {
         method: 'GET',
         headers: {
@@ -153,7 +150,6 @@ export const googleSearchTool = createTool({
         },
       });
 
-      // Handle non-successful responses
       if (!response.ok) {
         const errorBody = await response.text();
         console.error(
@@ -164,95 +160,96 @@ export const googleSearchTool = createTool({
         );
       }
 
-      // Parse the JSON response
       const data = await response.json();
 
-      // Handle cases where no items are returned
       if (!data.items || data.items.length === 0) {
         return { results: 'No results found.', count: 0 };
       }
 
-      // Define an interface for the expected result structure
       interface GoogleSearchResult {
         title?: string;
-        link?: string; // Google uses 'link' for the URL
+        link?: string;
         snippet?: string;
       }
 
-      // Format the results into a single string
       const formattedResults = (data.items as GoogleSearchResult[])
         .map((item, index) => {
-          // Provide defaults for potentially missing fields
           const title = item.title || 'No Title';
           const url = item.link || 'No URL';
           const snippet = item.snippet || 'No Snippet';
-          // Format each result clearly
           return `[${index + 1}] ${title}\nURL: ${url}\nSnippet: ${snippet}\n`;
         })
-        .join('\n'); // Join results with newlines
+        .join('\n');
 
-      // Return the formatted results and count
       return {
         results: formattedResults,
         count: data.items.length,
       };
     } catch (error) {
-      // Log the error and return a user-friendly error message
       console.error('Google Search Tool Execution Error:', error);
       return {
-        results: `Search failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        results: `Search failed: ${
+          error instanceof Error ? error.message : 'Unknown error'
+        }`,
         count: 0,
       };
     }
   },
 });
 
-// --- Vector Search Tool ---
+// --- Vector Search Tool Factory ---
 /**
  * Helper function to create the vector search tool using Mastra RAG.
- * Allows agents to search through embedded document vectors.
- * @param model - The embedding model instance (e.g., from @ai-sdk/google). Type should be specific if known.
+ * @param model - The embedding model instance (e.g., from @ai-sdk/google).
+ * @param indexName - The specific Upstash Vector index name to target.
  * @returns The configured vector query tool.
  */
-const createVectorSearchTool = (
-  model: any, // TODO: Replace 'any' with specific model type if possible
+const createVectorSearchToolInstance = (
+  model: EmbeddingModel, // Use a more specific type if possible
+  indexName: string,
 ) =>
   createVectorQueryTool({
-    vectorStoreName: 'upstash', // Must match the name used when configuring the vector store in Mastra
-    indexName: 'documents', // Must match the name of your Upstash Vector index
-    model, // The embedding model used for querying
+    // CRITICAL: This name *must* match the key used in `mastra.vectors` registration (index.ts)
+    vectorStoreName: 'upstash',
+    // CRITICAL: This name *must* match the actual index in Upstash Vector service
+    indexName: indexName, // Use the passed index name
+    model, // The embedding model for querying
     description:
-      'Search through internal knowledge base documents (like project documentation, notes, saved conversations, etc.) to find relevant information based on semantic meaning. Use this for questions about internal project details or past information.',
-    // Optional: Customize input/output schemas if needed
-    // inputSchema: z.object({ ... }),
-    // outputSchema: z.object({ ... }),
+      'Search through internal knowledge base documents (e.g., project docs, notes, past conversations) to find relevant information based on semantic meaning. Use for questions about internal details or past context.',
+    // Optional: Configure topK results, metadata filters, etc.
+    // topK: 5,
+    // filter: { /* metadata filter object */ }
   });
 
 // --- Tool Exports ---
 /**
- * Exported collection of tools available to the Mastra instance.
- * The vectorSearch tool is added dynamically after initialization.
+ * Static collection of tools (excluding dynamically created ones).
  */
-export const tools: Record<string, Tool<any, any, any>> = {
-  // Using Record<string, Tool<any, any, any>> for simplicity, specific types are better if known
-  webSearchFirecrawl: webSearchTool, // Tool for general web search via FireCrawl
-  googleSearch: googleSearchTool, // Tool for web search via Google Custom Search
-  // 'vectorSearch' will be added dynamically by the initializer function below
+export const staticTools: Record<string, Tool<any, any, any>> = {
+  webSearchFirecrawl: webSearchTool,
+  googleSearch: googleSearchTool,
 };
 
 /**
- * Initializes the vector search tool and adds it to the exported tools collection.
- * This function should be called from the main Mastra setup (e.g., mastra/index.ts)
- * after the embedding model has been initialized.
- * @param embeddingModel - The initialized embedding model instance. Type should be specific if known.
- * @returns The complete collection of tools including the initialized vector search tool.
+ * Initializes the vector search tool and merges it with static tools.
+ * Called from `index.ts` after models are ready.
+ * @param embeddingModel - The initialized embedding model instance.
+ * @param vectorIndexName - The name of the Upstash index to use for vector search.
+ * @returns The complete collection of tools.
  */
-export const initializeVectorSearchTool = (embeddingModel: any) => {
-  // TODO: Replace 'any' with specific model type
-  // Create the vector search tool using the provided embedding model
-  const vectorSearchToolInstance = createVectorSearchTool(embeddingModel);
-  // Add the initialized tool to the exported 'tools' object
-  tools.vectorSearch = vectorSearchToolInstance;
-  // Return the mutated 'tools' object containing all tools
-  return tools;
+export const initializeVectorSearchTool = (
+  embeddingModel: EmbeddingModel, // Use specific type
+  vectorIndexName: string,
+): Record<string, Tool<any, any, any>> => {
+  // Create the vector search tool instance dynamically
+  const vectorSearchToolInstance = createVectorSearchToolInstance(
+    embeddingModel,
+    vectorIndexName, // Pass the index name from config
+  );
+
+  // Return a new object containing all tools
+  return {
+    ...staticTools,
+    vectorSearch: vectorSearchToolInstance, // Add the dynamic tool
+  };
 };

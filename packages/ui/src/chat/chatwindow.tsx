@@ -43,8 +43,8 @@ import {
   PictureAsPdf,
 } from '@mui/icons-material';
 import { ChatMessage } from './chatmessage';
-import { ModelSelector } from './model_selector';
-import type { ModelOption } from './model_selector';
+import { ModelSelector } from '../model_selector';
+import type { ModelOption } from '../model_selector';
 
 // Add new interface for chat settings
 interface ChatSettings {

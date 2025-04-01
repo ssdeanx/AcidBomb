@@ -69,6 +69,7 @@
     "@opentelemetry/resources": "1.19.0",
     "@opentelemetry/sdk-logs": "^0.200.0",
     "@paralleldrive/cuid2": "^2.2.2",
+    "@pinecone-database/pinecone": "^5.1.1",
     "@supabase/auth-js": "^2.69.1",
     "@supabase/postgrest-js": "^1.19.4",
     "@supabase/realtime-js": "^2.11.5",

@@ -18,4 +18,4 @@ const chunker = createDocumentChunkerTool({
   },
 });
 
-const { chunks } = await chunker.execute();
+const chunks = await chunker.execute();

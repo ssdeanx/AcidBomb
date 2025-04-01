@@ -4,11 +4,16 @@ import { createVectorQueryTool } from '@mastra/rag';
 const queryTool = createVectorQueryTool({
   vectorStoreName: 'pinecone',
   indexName: 'docs',
-  model: google.embedding('text-embedding-3-small'),
+  model: google.textEmbeddingModel('gemini-embedding-exp-03-07'),
 });
 
-export const executeQuery = async (query) => {
-  const result = await queryTool.execute(query);
+export const executeQuery = async (query, params) => {
+  const result = await queryTool.execute(query, params);
+  return result;
+};
+
+export const executeQueryWithParams = async (query, params) => {
+  const result = await queryTool.execute(query, params);
   return result;
 };
 

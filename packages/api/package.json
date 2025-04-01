@@ -85,6 +85,7 @@
     "@upstash/vector": "^1.2.1",
     "@vercel/otel": "^1.10.4",
     "ai": "4.2.9",
+    "class-validator": "^0.14.1",
     "drizzle-orm": "^0.41.0",
     "express": "^5.1.0",
     "google-auth-library": "^9.15.1",

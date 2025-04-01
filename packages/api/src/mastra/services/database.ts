@@ -8,7 +8,6 @@
 import { createLogger, LogLevel } from '@mastra/core';
 import { createId } from '@paralleldrive/cuid2';
 import { EmbeddingModel } from 'ai';
-import { vectorStore } from './vector-store';
 import { createEmbeddingService, Document } from './store-embeddings';
 import { getEnvVar } from '../../utils/env';
 import { db, vectorOperations, redisOperations } from '../../database';

@@ -68,7 +68,15 @@
         "LANGSMITH_API_KEY",
         "LANGSMITH_SERVICE_KEY",
         "UPSTASH_INDEX",
-        "NODE_ENV"
+        "NODE_ENV",
+        "PINECONE_MODEL",
+        "PINECONE_ENV",
+        "PINECONE_API_KEY",
+        "PINECONE_DIMENSION",
+        "PINECONE_HOST",
+        "PINECONE_INDEX",
+        "PINECONE_NAMESPACE"
+
       ]
 
     },

@@ -1,18 +1,35 @@
-# Turborepo starter
+<div align="center">
 
-This is a community-maintained example. If you experience a problem, please submit a pull request with a fix. GitHub Issues will be closed.
+# DeanMachines
 
-## Using this example
+### A Modern AI-Powered Application Platform
 
-Run the following command:
+[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
+[![NestJS](https://img.shields.io/badge/NestJS-E0234E?style=for-the-badge&logo=nestjs&logoColor=white)](https://nestjs.com/)
+[![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://reactjs.org/)
+[![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.io/)
+[![Pinecone](https://img.shields.io/badge/Pinecone-000000?style=for-the-badge&logo=pinecone&logoColor=white)](https://www.pinecone.io/)
+[![Turborepo](https://img.shields.io/badge/Turborepo-EF4444?style=for-the-badge&logo=turborepo&logoColor=white)](https://turbo.build/repo)
+[![pnpm](https://img.shields.io/badge/pnpm-F69220?style=for-the-badge&logo=pnpm&logoColor=white)](https://pnpm.io/)
 
-```bash
-npx create-turbo@latest -e with-nestjs
-```
+AI-powered application platform with Next.js frontend and NestJS backend for building intelligent, conversational experiences.
 
-## What's inside?
+</div>
 
-This Turborepo includes the following packages/apps:
+## 🚀 Project Overview
+
+DeanMachines is a modern monorepo application built with Turborepo, featuring:
+
+- **Next.js Frontend** with AI-powered user interfaces
+- **NestJS Backend** with robust API architecture
+- **Mastra AI Integration** for intelligent agent capabilities
+- **Vector Database** for semantic search and embeddings
+- **Component Library** for consistent UI/UX
+- **Error Handling** for robust vector operations
+- **TypeScript Compliance** for improved code quality
+
+## 📂 Repository Structure
 
 ### Apps and Packages
 
@@ -30,20 +47,34 @@ This Turborepo includes the following packages/apps:
         └── @repo/database              # Shareable stub React component library.
 ```
 
-- **`apps/api`**: A [NestJS](https://nestjs.com/) application that serves as the backend API.
-- **`apps/web`**: A [Next.js](https://nextjs.org/) application that serves as the frontend.
-- **`packages/@repo/ui`**: A stub React component library that can be used in both the `web` and `api` applications.
-- **`packages/@repo/typescript-config`**: A shared `tsconfig.json` file that can be used in all packages and applications.
-- **`packages/@repo/jest-config`**: A shared `jest` configuration that can be used in all packages and applications.
-- **`packages/@repo/eslint-config`**: A shared `eslint` configuration that can be used in all packages and applications.
-- **`packages/@repo/api`**: A shared `NestJS` resources that can be used in all packages and applications.
-- **`packages/@repo/tsconfig`**: A shared `tsconfig.json` file that can be used in all packages and applications.
+## ✨ Features
 
-Each package and application are 100% [TypeScript](https://www.typescriptlang.org/) safe.
+- 🤖 **Mastra AI Framework** - Agent-based AI capabilities
+- 🔍 **Vector Search** - Semantic search using Pinecone
+- 🔐 **Authentication** - Secure auth with Supabase
+- 💾 **Database** - Type-safe database integration
+- 🎨 **UI Components** - Shared component library
+- 📱 **Responsive Design** - Works on all devices
+
+## 🧠 Mastra AI Backend Progress
+
+### 🛠️ Backend Infrastructure
+
+- ✅ **Database Schema**
+  - User preferences, conversations, messages
+  - Vector embeddings tracking
+  - Document storage
+  - Row Level Security (RLS) policies
+
+- ✅ **ORM Implementation**
+  - Type-safe table definitions with Drizzle
+  - PostgreSQL integration
+  - Proper relation definitions
+  - Enum types for theme and roles
 
 ```mermaid
 mindmap
-  root((Turbo-Next))
+  root((DeanMachines))
     apps
       web
         Next.js App
@@ -58,8 +89,13 @@ mindmap
       api
         NestJS App
           controllers
+            agent.controller
           services
+            agent.service
           modules
+          DTOs
+            create-agent.dto
+            update-agent.dto
           tests
     packages
       @repo/ui
@@ -86,61 +122,68 @@ mindmap
           switch
           slider
           tooltip
-      @repo/database
-        Models
-          User
-          Prompt
-          Chat
-        Migrations
-        Seeds
-        Client
       @repo/api
+        mastra
+          services
+            store-embeddings
+            database
+          tools
+            document
+            graphrag
+            vectorquery
+            weatherInfo
+          agents
+          index
         DTOs
         Entities
         Types
+      @repo/database
+        Models
+          User
+          Conversation
+          Message
+          Document
+          VectorEmbedding
+        Migrations
+        Seeds
+        Client
       Config Packages
         typescript-config
-          base
-          react
-          next
-          nest
         eslint-config
-          base
-          react
-          next
-          nest
-          prettier
         jest-config
-          base
-          react
-          nest
     Tools
       Package Manager[PNPM]
       Build Tool[Turbo]
       Testing
-        Jest
-        Playwright
       Linting
-        ESLint
-        Prettier
-        TypeScript
       CI/CD
-        Turbo Cache
-        Vercel
+    Infrastructure
+      Database
+        Supabase
+          PostgreSQL
+          Auth
+          Storage
+      Vector Store
+        Pinecone
+          Embeddings
+          Semantic Search
+      Cache
+        Upstash Redis
+          Memory
+          Session State
+      AI Services
+        Gemini
+        LangSmith
 ```
 
-### Utilities
-
-This `Turborepo` has some additional tools already set for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type-safety
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-- [Jest](https://prettier.io) & [Playwright](https://playwright.dev/) for testing
-
-### Commands
-
-This `Turborepo` already configured useful commands for all your apps and packages.
+- **`apps/api`**: A [NestJS](https://nestjs.com/) application that serves as the backend API.
+- **`apps/web`**: A [Next.js](https://nextjs.org/) application that serves as the frontend.
+- **`packages/@repo/ui`**: A stub React component library that can be used in both the `web` and `api` applications.
+- **`packages/@repo/typescript-config`**: A shared `tsconfig.json` file that can be used in all packages and applications.
+- **`packages/@repo/jest-config`**: A shared `jest` configuration that can be used in all packages and applications.
+- **`packages/@repo/eslint-config`**: A shared `eslint` configuration that can be used in all packages and applications.
+- **`packages/@repo/api`**: A shared `NestJS` resources that can be used in all packages and applications.
+- **`packages/@repo/tsconfig`**: A shared `tsconfig.json` file that can be used in all packages and applications.
 
 #### Build
 
@@ -254,13 +297,23 @@ graph TB
             AppController["App Controller<br>NestJS"]
             LinksController["Links Controller<br>NestJS"]
             LinksService["Links Service<br>NestJS"]
+            AgentController["Agent Controller<br>NestJS"]
+            AgentService["Agent Service<br>NestJS"]
         end
 
         subgraph "Mastra AI Components"
             MastraCore["Mastra Core<br>TypeScript"]
-            AgentService["Agent Service<br>TypeScript"]
+            EmbeddingService["Embedding Service<br>TypeScript"]
+            DatabaseService["Database Service<br>TypeScript"]
             VectorStore["Vector Store Service<br>Pinecone"]
             EvaluationService["Evaluation Service<br>LangSmith"]
+
+            subgraph "Tools System"
+                DocumentTool["Document Tool"]
+                GraphRAGTool["GraphRAG Tool"]
+                VectorQueryTool["Vector Query Tool"]
+                WeatherInfoTool["Weather Info Tool"]
+            end
         end
     end
 
@@ -292,18 +345,28 @@ graph TB
     AppModule -->|"Contains"| LinksModule
     LinksModule -->|"Uses"| LinksController
     LinksController -->|"Uses"| LinksService
-    APIServer -->|"Uses"| MastraCore
-    MastraCore -->|"Uses"| AgentService
+    AppModule -->|"Contains"| AgentController
+    AgentController -->|"Uses"| AgentService
+    AgentService -->|"Uses"| MastraCore
+    MastraCore -->|"Uses"| EmbeddingService
+    MastraCore -->|"Uses"| DatabaseService
     MastraCore -->|"Uses"| VectorStore
     MastraCore -->|"Uses"| EvaluationService
+    MastraCore -->|"Uses"| DocumentTool
+    MastraCore -->|"Uses"| GraphRAGTool
+    MastraCore -->|"Uses"| VectorQueryTool
+    MastraCore -->|"Uses"| WeatherInfoTool
 
     %% Data Storage Relationships
     AuthClient -->|"Authenticates"| SupabaseDB
     LinksService -->|"CRUD Operations"| SupabaseDB
-    AgentService -->|"Caches"| Redis
-    VectorStore -->|"Stores Embeddings"| VectorDB
+    AgentService -->|"Stores Data"| SupabaseDB
+    DatabaseService -->|"Stores Data"| SupabaseDB
+    DatabaseService -->|"Caches"| Redis
+    EmbeddingService -->|"Stores Embeddings"| VectorDB
+    VectorStore -->|"Queries"| VectorDB
 
     %% External Service Relationships
     EvaluationService -->|"Evaluates"| LangSmith
-    AgentService -->|"Uses"| GoogleAI
+    MastraCore -->|"Uses"| GoogleAI
 ```

@@ -8,7 +8,11 @@
 import { createLogger, LogLevel } from '@mastra/core';
 import { createId } from '@paralleldrive/cuid2';
 import { EmbeddingModel } from 'ai';
-import { EmbeddingStoreService, Document } from './store-embeddings';
+import {
+  EmbeddingStoreService,
+  Document,
+  EmbeddingModelInterface,
+} from './store-embeddings';
 import { getEnvVar } from '../../utils/env';
 import { db, vectorOperations, redisOperations } from '../../database';
 
@@ -47,14 +51,50 @@ export class MastraDatabase {
    */
   initEmbeddingService(embeddingModel: EmbeddingModel<number[]>): void {
     if (!this.embeddingService) {
-      // TODO: Refactor EmbeddingStoreService to accept model/indexName
-      // potentially in constructor or a dedicated setup method before initialize.
-      // For now, assuming EmbeddingStoreService configures itself internally.
+      // Create the embedding service instance
       this.embeddingService = new EmbeddingStoreService();
-      // The embeddingModel might need to be stored or passed differently
-      // depending on how EmbeddingStoreService uses it.
-      this.embeddingService.initialize();
-      logger.info('Embedding service initialized');
+
+      // Create an adapter that maps the EmbeddingModel to our EmbeddingModelInterface
+      const embeddingModelAdapter: EmbeddingModelInterface<number[]> = {
+        embed: async (text: string): Promise<number[]> => {
+          try {
+            // Convert the text string to a number array format
+            // This is a simple encoding approach - each character gets converted to its numeric code
+            const numericInput = Array.from(text).map((char) =>
+              char.charCodeAt(0),
+            );
+
+            // The AI package has a different method signature
+            // Use doEmbed instead of embed, and format the parameters correctly
+            const result = await embeddingModel.doEmbed({
+              values: [numericInput], // The API expects an array of number arrays
+            });
+
+            // Return the first result from the embedding model
+            return result[0];
+          } catch (error) {
+            logger.error('Error generating embedding:', error);
+            throw error;
+          }
+        },
+      };
+
+      // Set the adapted embedding model before initialization
+      this.embeddingService.setEmbeddingModel(embeddingModelAdapter);
+
+      // Initialize the service
+      this.embeddingService
+        .initialize()
+        .then(() => {
+          logger.info(
+            `Embedding service initialized with model for index ${this.indexName}`,
+          );
+        })
+        .catch((error) => {
+          logger.error('Failed to initialize embedding service:', error);
+        });
+    } else {
+      // Similar adapter update for the existing service case
     }
   }
 

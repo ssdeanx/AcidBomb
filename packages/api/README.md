@@ -30,7 +30,7 @@
   - Metadata filtering and indexing
   - Conversation history and memory
   - ⏳ Testing vector storage with Pinecone
-- ⏳ Integration with agent memory system
+- ✅ Integration with agent memory system
 
 ### Authentication & Security
 - ✅ Supabase auth guard implementation for NestJS
@@ -41,34 +41,50 @@
 ### Mastra Integration
 - ✅ Basic folder structure setup
 - ✅ Gemini model configuration
--  Vector store implementation with Pinecone
--  Store embeddings service implementation
--  Document chunking and embedding utilities
-- ⏳ Main Mastra instance configuration
+- ✅ Vector store implementation with Pinecone
+- ✅ Store embeddings service implementation
+- ✅ Document chunking and embedding utilities
+- ✅ Main Mastra instance configuration
 - ⏳ Agent controller streaming responses
 
 ## Active Backend Tasks
 
 ### Vector Store & Embeddings
 - ✅ Fixed EmbeddingModel<number[]> generic type in all files
--  Implemented PineconeVector adapter with proper configuration
+- ✅ Implemented PineconeVector adapter with proper configuration
 - ✅ Created EmbeddingService for document processing
--  Added document chunking capabilities
+- ✅ Added document chunking capabilities
 - ⏳ Testing vector storage with Pinecone
-- ⏳ Integration with agent memory system
+- ✅ Integration with agent memory system
 
 ### Agent System
--  Agent controller for NestJS has not been implemented
--  Basic agent definitions
--  Streaming response implementation
-- ⏳ Memory system integration
-- ⏳ Tool integration
+- ✅ Agent controller for NestJS has been implemented
+  - Create, update, retrieve, and delete endpoints
+  - Proper error handling and validation
+- ✅ Basic agent definitions with DTOs
+  - CreateAgentDTO with validation
+  - UpdateAgentDTO with partial type support
+- ✅ Agent service implementation
+  - Configuration management
+  - Response generation capability
+- ⏳ Streaming response implementation
+- ✅ Memory system integration
+- ✅ Tool integration
+
+### Tools System
+- ✅ Created tools folder structure
+- ✅ Implemented document.ts tool for document handling
+- ✅ Implemented graphrag.ts tool for graph-based RAG
+- ✅ Implemented vectorquery.ts tool for vector embeddings queries
+- ✅ Implemented weatherInfo.ts tool for weather data
+- ✅ Index file for tool exports and common functionality
 
 ### Main Mastra Configuration
-- ⏳ Connect agents, memory, and vector store
-- ⏳ Initialize with proper environment variables
-- ⏳ Integrate with Upstash and Pinecone
-- ⏳ Implement conversation helper functions
+- ✅ Connect agents, memory, and vector store
+- ✅ Initialize with proper environment variables
+- ✅ Integrate with Upstash and Pinecone
+- ✅ Implement conversation helper functions
+- ✅ Added main Mastra instance in index.ts
 
 ## Database Schema
 

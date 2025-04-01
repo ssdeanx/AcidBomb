@@ -31,6 +31,14 @@ export interface QueryResult {
   vector?: number[];
 }
 
+// Add this near the top of the file with other interfaces
+/**
+ * Interface for the embedding model that converts text to vector embeddings
+ */
+export interface EmbeddingModelInterface<T> {
+  embed(text: string): Promise<T>;
+}
+
 // --- Configuration (Load from environment variables) ---
 const pineconeApiKey = process.env.PINECONE_API_KEY;
 const pineconeEnvironment = process.env.PINECONE_ENVIRONMENT;
@@ -69,6 +77,8 @@ export class EmbeddingStoreService {
   public isInitialized: boolean = false;
   public readonly indexName: string;
   public readonly dimension: number;
+  private embeddingModel: EmbeddingModelInterface<number[]> | null = null;
+  private embeddingModelName: string;
 
   constructor() {
     // Config validated above
@@ -77,9 +87,46 @@ export class EmbeddingStoreService {
     this.pineconeStore = new PineconeVector(pineconeApiKey!);
     this.indexName = pineconeIndexName!;
     this.dimension = embeddingDimension;
+    this.embeddingModelName = process.env.PINECONE_MODEL || 'llama-text-embed-v2';
+    console.log(`Using embedding model: ${this.embeddingModelName}`);
     console.log(
       `EmbeddingStoreService instance created for Pinecone index: ${this.indexName}`,
     );
+  }
+
+  /**
+   * Sets the embedding model to use for text-to-vector conversion
+   * @param model The embedding model that converts text to vectors
+   */
+  setEmbeddingModel(model: EmbeddingModelInterface<number[]>): void {
+    this.embeddingModel = model;
+    console.log(`[${this.indexName}] Embedding model set to ${this.embeddingModelName}`);
+  }
+
+  /**
+   * Generates an embedding vector from text using the configured model
+   * @param text Text to convert to an embedding vector
+   * @returns Promise resolving to a numeric vector
+   * @throws Error if no embedding model is set
+   */
+  async generateEmbedding(text: string): Promise<number[]> {
+    if (!this.embeddingModel) {
+      throw new Error(`[${this.indexName}] No embedding model set. Call setEmbeddingModel() first.`);
+    }
+
+    try {
+      const embedding = await this.embeddingModel.embed(text);
+      if (embedding.length !== this.dimension) {
+        console.warn(
+          `[${this.indexName}] Embedding dimension mismatch: got ${embedding.length}, expected ${this.dimension}`,
+        );
+      }
+      return embedding;
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.error(`[${this.indexName}] Failed to generate embedding: ${message}`);
+      throw error;
+    }
   }
 
   /**
@@ -295,11 +342,14 @@ export class EmbeddingStoreService {
           `[${this.indexName}] Failed to delete vector with ID "${id}"${nsInfo}: ${message}`,
         );
         if (stack) {
-          console.error(`[${this.indexName}] Stack trace for ID "${id}":`, stack);
+          console.error(
+            `[${this.indexName}] Stack trace for ID "${id}":`,
+            stack,
+          );
         }
         // Decide: continue deleting others or throw immediately?
         // For now, continue and report summary.
-            }
+      }
     }
 
     console.log(
@@ -358,39 +408,42 @@ export class EmbeddingStoreService {
     console.log(`[${this.indexName}] Processing document for storage...`);
 
     try {
-      // Simple implementation - in production you'd want to:
-      // 1. Split document into chunks if it's large
-      // 2. Generate embeddings for each chunk
-      // 3. Store embeddings with metadata
-
-      // For now, treat the whole document as one chunk
+      // Create a unique ID for this document chunk
       const id = `doc-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
-      // Generate embedding for the document text
-      // In a real implementation, you would call your embedding model here
-      // For now we'll log that this needs to be implemented
-      console.log(`[${this.indexName}] TODO: Generate embedding for document`);
+      // Generate embedding vector from text
+      let embedding: number[];
 
-      // Placeholder for the embedding vector (would come from model)
-      // This is just a placeholder and should be replaced with actual embedding
-      const embedding = new Array(this.dimension).fill(0);
+      if (this.embeddingModel) {
+        // Use the configured embedding model
+        embedding = await this.generateEmbedding(document.text);
+        console.log(`[${this.indexName}] Generated embedding with dimension: ${embedding.length}`);
+      } else {
+        // Fallback to placeholder if no model is available
+        console.warn(`[${this.indexName}] No embedding model set, using placeholder vector`);
+        embedding = new Array(this.dimension).fill(0);
+      }
 
-      // Create embedding data
+      // Create embedding data object
       const embeddingData: EmbeddingData = {
         id,
         vector: embedding,
         metadata: {
           ...document.metadata,
-          text: document.text.substring(0, 100) + '...', // Store preview in metadata
+          // Store a preview of the text in metadata
+          text: document.text.length > 100
+            ? document.text.substring(0, 100) + '...'
+            : document.text,
+          fullTextLength: document.text.length,
+          timestamp: new Date().toISOString(),
         }
       };
 
-      // Store the embedding
+      // Store the embedding in Pinecone
       await this.upsertEmbeddings([embeddingData]);
 
       console.log(`[${this.indexName}] Document processed and stored with ID: ${id}`);
-      return [id]; // Return array of chunk IDs (just one in this simple case)
-
+      return [id];
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : String(error);
       const stack = error instanceof Error ? error.stack : undefined;
@@ -398,7 +451,7 @@ export class EmbeddingStoreService {
       if (stack) {
         console.error('Stack:', stack);
       }
-      throw error; // Re-throw
+      throw error;
     }
   }
 
@@ -413,12 +466,14 @@ export class EmbeddingStoreService {
     query: string,
     topK: number = 10,
     filter?: QueryFilter,
-  ): Promise<Array<{
-    id: string;
-    score: number;
-    text: string;
-    metadata: Record<string, any>;
-  }>> {
+  ): Promise<
+    Array<{
+      id: string;
+      score: number;
+      text: string;
+      metadata: Record<string, any>;
+    }>
+  > {
     this.ensureInitialized();
 
     if (!query || query.trim() === '') {
@@ -426,28 +481,34 @@ export class EmbeddingStoreService {
       return [];
     }
 
-    console.log(`[${this.indexName}] Searching for documents similar to query...`);
+    console.log(
+      `[${this.indexName}] Searching for documents similar to query...`,
+    );
 
     try {
-      // Generate embedding for the query text
-      // In a real implementation, you would call your embedding model here
-      console.log(`[${this.indexName}] TODO: Generate embedding for query text`);
+      // Generate embedding for query text
+      let queryVector: number[];
 
-      // Placeholder for the query vector (would come from model)
-      // This is just a placeholder and should be replaced with actual embedding
-      const queryVector = new Array(this.dimension).fill(0);
+      if (this.embeddingModel) {
+        // Use the configured embedding model
+        queryVector = await this.generateEmbedding(query);
+        console.log(`[${this.indexName}] Generated query embedding with dimension: ${queryVector.length}`);
+      } else {
+        // Fallback to placeholder if no model is available
+        console.warn(`[${this.indexName}] No embedding model set, using placeholder vector for query`);
+        queryVector = new Array(this.dimension).fill(0);
+      }
 
-      // Query the vector store
+      // Query the vector store using the generated embedding
       const results = await this.queryEmbeddings(queryVector, topK, filter);
 
-      // Format results to include text from metadata
+      // Format results
       return results.map(result => ({
         id: result.id,
         score: result.score,
         text: result.metadata?.text || '',
         metadata: result.metadata || {},
       }));
-
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : String(error);
       const stack = error instanceof Error ? error.stack : undefined;
@@ -456,7 +517,6 @@ export class EmbeddingStoreService {
         console.error('Stack:', stack);
       }
       // Return empty results rather than throwing
-      console.warn(`[${this.indexName}] Returning empty results due to error.`);
       return [];
     }
   }

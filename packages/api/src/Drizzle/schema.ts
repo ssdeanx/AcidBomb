@@ -14,6 +14,7 @@ import { relations, sql } from 'drizzle-orm';
  * Users table for storing basic user information.
  * This is typically linked with Supabase Auth users.
  */
+
 export const users = pgTable('users', {
   id: uuid('id').primaryKey(),
   fullName: text('full_name'),
@@ -42,7 +43,9 @@ export const roleEnum = pgEnum('role', ['user', 'assistant', 'system']);
  */
 export const userPreferences = pgTable('user_preferences', {
   id: uuid('id').primaryKey().defaultRandom(),
-  userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
   theme: themeEnum('theme').default('system'),
   language: text('language'),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
@@ -57,7 +60,9 @@ export const userPreferences = pgTable('user_preferences', {
  */
 export const conversations = pgTable('conversations', {
   id: uuid('id').primaryKey().defaultRandom(),
-  userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
   agentId: text('agent_id').notNull(),
   title: text('title').notNull(),
   metadata: jsonb('metadata'),
@@ -110,7 +115,9 @@ export const vectorEmbeddings = pgTable('vector_embeddings', {
  */
 export const documents = pgTable('documents', {
   id: uuid('id').primaryKey().defaultRandom(),
-  userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
   title: text('title').notNull(),
   description: text('description'),
   contentType: text('content_type').notNull(),
@@ -128,7 +135,9 @@ export const documents = pgTable('documents', {
  */
 export const userActivities = pgTable('user_activities', {
   id: uuid('id').primaryKey().defaultRandom(),
-  userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
   activityType: text('activity_type').notNull(),
   resourceType: text('resource_type'),
   resourceId: text('resource_id'),
@@ -141,13 +150,16 @@ export const userActivities = pgTable('user_activities', {
 /**
  * Relations for the conversations table.
  */
-export const conversationsRelations = relations(conversations, ({ many, one }) => ({
-  messages: many(messages),
-  user: one(users, {
-    fields: [conversations.userId],
-    references: [users.id],
+export const conversationsRelations = relations(
+  conversations,
+  ({ many, one }) => ({
+    messages: many(messages),
+    user: one(users, {
+      fields: [conversations.userId],
+      references: [users.id],
+    }),
   }),
-}));
+);
 
 /**
  * Relations for the messages table.
@@ -162,12 +174,15 @@ export const messagesRelations = relations(messages, ({ one }) => ({
 /**
  * Relations for the user preferences table.
  */
-export const userPreferencesRelations = relations(userPreferences, ({ one }) => ({
-  user: one(users, {
-    fields: [userPreferences.userId],
-    references: [users.id],
+export const userPreferencesRelations = relations(
+  userPreferences,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [userPreferences.userId],
+      references: [users.id],
+    }),
   }),
-}));
+);
 
 /**
  * Relations for documents table

@@ -6,8 +6,8 @@
  */
 
 import { Agent } from '@mastra/core';
-import { staticTools } from '../tools';
-
+import { staticTools } from './../tools';
+import * as tools from "../tools";
 // Import model and memory from index after it's initialized there
 // We'll import these later since we need to avoid circular dependencies
 let memoryProvider;

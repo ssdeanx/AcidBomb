@@ -1,5 +1,5 @@
 {
-  "extends": "@repo/typescript-config/nestjs.json",
+  "extends": "../typescript-config/nestjs.json", // Adjusted path assuming typescript-config is a sibling package
   "compilerOptions": {
     "allowJs": true,
     "jsx": "react-jsx",

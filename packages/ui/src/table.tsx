@@ -22,7 +22,6 @@ import {
   styled,
   alpha,
   useTheme,
-  TableRow,
 } from '@mui/material';
 
 /**
@@ -146,6 +145,25 @@ const StyledTableHead = styled(MuiTableHead)(({ theme }) => ({
   backgroundColor: alpha(theme.palette.primary.main, 0.1),
 }));
 
+const StyledTableRow = styled(MuiTableRow)(({ theme }) => ({
+  '&:nth-of-type(odd)': {
+    backgroundColor: alpha(theme.palette.primary.main, 0.02),
+  },
+  '&:hover': {
+    backgroundColor: alpha(theme.palette.primary.main, 0.04),
+  },
+  '&.Mui-selected': {
+    backgroundColor: alpha(theme.palette.primary.main, 0.08),
+    '&:hover': {
+      backgroundColor: alpha(theme.palette.primary.main, 0.12),
+    },
+  },
+  // Hide last border
+  '&:last-child td, &:last-child th': {
+    borderBottom: 0,
+  },
+}));
+
 const StyledTableSortLabel = styled(MuiTableSortLabel)(({ theme }) => ({
   '&:hover': {
     color: theme.palette.primary.main,
@@ -187,9 +205,21 @@ const StyledTableSortLabel = styled(MuiTableSortLabel)(({ theme }) => ({
  * />
  * ```
  */
-export const Table = React.forwardRef<HTMLTableElement, TableProps<any>>(
+
+// Define the type for the table component with displayName support
+type TableComponentType = (<T extends { id: React.Key }>(
+  props: TableProps<T> & React.RefAttributes<HTMLTableElement>
+) => React.ReactElement) & {
+  displayName?: string;
+};
+
+// Cast the forwardRef component to include the displayName property
+export const Table = React.forwardRef(
   <T extends { id: React.Key }>(
-    {
+    props: TableProps<T>,
+    ref: React.ForwardedRef<HTMLTableElement>
+  ) => {
+    const {
       data,
       columns,
       rowSelection = false,
@@ -201,18 +231,17 @@ export const Table = React.forwardRef<HTMLTableElement, TableProps<any>>(
       tableRowProps,
       checkboxProps,
       selectAllAriaLabel = 'select all',
-      ...props
-    }: TableProps<T>,
-    ref: React.ForwardedRef<HTMLTableElement>
-  ) => {
+      ...restProps
+    } = props;
+
     const [order, setOrder] = React.useState<'asc' | 'desc'>('asc');
-    const [orderBy, setOrderBy] = React.useState<string | null>(null);
+    const [orderBy, setOrderBy] = React.useState<keyof T | null>(null);
     const [selected, setSelected] = React.useState<React.Key[]>([]);
     const theme = useTheme();
 
     const handleRequestSort = (
       event: React.MouseEvent<unknown>,
-      property: string
+      property: keyof T
     ) => {
       const isAsc = orderBy === property && order === 'asc';
       setOrder(isAsc ? 'desc' : 'asc');
@@ -253,48 +282,54 @@ export const Table = React.forwardRef<HTMLTableElement, TableProps<any>>(
 
     const isSelected = (id: React.Key) => selected.indexOf(id) !== -1;
 
-    const EnhancedTableHead = () => (
-      <StyledTableHead {...tableHeadProps}>
-        <TableRow {...tableRowProps}>
-          {rowSelection && (
-            <StyledTableCell padding="checkbox">
-              <MuiCheckbox
-                color="primary"
-                indeterminate={selected.length > 0 && selected.length < data.length}
-                checked={data.length > 0 && selected.length === data.length}
-                onChange={handleSelectAllClick}
-                inputProps={{
-                  'aria-label': selectAllAriaLabel,
-                }}
-                {...checkboxProps}
-              />
-            </StyledTableCell>
-          )}
-          {columns.map((column) => (
-            <StyledTableCell
-              key={String(column.id)}
-              align="left"
-              padding="normal"
-              sortDirection={orderBy === column.id ? order : false}
-              {...column.cellProps}
-            >
-              {column.sortable ? (
-                <StyledTableSortLabel
-                  active={orderBy === column.id}
-                  direction={orderBy === column.id ? order : 'asc'}
-                  onClick={(event) => handleRequestSort(event, String(column.id))}
-                  {...column.sortLabelProps}
-                >
-                  {column.label}
-                </StyledTableSortLabel>
-              ) : (
-                column.label
-              )}
-            </StyledTableCell>
-          ))}
-        </TableRow>
-      </StyledTableHead>
-    );
+    const EnhancedTableHead = () => {
+      const headCheckboxSlotProps = {
+        input: {
+          'aria-label': selectAllAriaLabel,
+        },
+      };
+
+      return (
+        <StyledTableHead {...tableHeadProps}>
+          <StyledTableRow {...tableRowProps}>
+            {rowSelection && (
+              <StyledTableCell padding="checkbox">
+                <MuiCheckbox
+                  color="primary"
+                  indeterminate={selected.length > 0 && selected.length < data.length}
+                  checked={data.length > 0 && selected.length === data.length}
+                  onChange={handleSelectAllClick}
+                  slotProps={headCheckboxSlotProps}
+                  {...checkboxProps}
+                />
+              </StyledTableCell>
+            )}
+            {columns.map((column) => (
+              <StyledTableCell
+                key={String(column.id)}
+                align="left"
+                padding="normal"
+                sortDirection={orderBy === column.id ? order : false}
+                {...column.cellProps}
+              >
+                {column.sortable ? (
+                  <StyledTableSortLabel
+                    active={orderBy === column.id}
+                    direction={orderBy === column.id ? order : 'asc'}
+                    onClick={(event) => handleRequestSort(event, column.id)}
+                    {...column.sortLabelProps}
+                  >
+                    {column.label}
+                  </StyledTableSortLabel>
+                ) : (
+                  column.label
+                )}
+              </StyledTableCell>
+            ))}
+          </StyledTableRow>
+        </StyledTableHead>
+      );
+    };
 
     const sortedData = React.useMemo(() => {
       if (!orderBy) {
@@ -306,33 +341,34 @@ export const Table = React.forwardRef<HTMLTableElement, TableProps<any>>(
         return data;
       }
 
-      const comparator = sortColumn.comparator || ((a: any, b: any) => {
-        const aValue = a[orderBy as keyof T];
-        const bValue = b[orderBy as keyof T];
+      const comparator = sortColumn.comparator || ((a: T[keyof T], b: T[keyof T]) => {
+        if (a == null && b == null) return 0;
+        if (a == null) return order === 'asc' ? -1 : 1;
+        if (b == null) return order === 'asc' ? 1 : -1;
 
-        if (aValue == null && bValue == null) return 0;
-        if (aValue == null) return order === 'asc' ? -1 : 1;
-        if (bValue == null) return order === 'asc' ? 1 : -1;
-
-        if (typeof aValue === 'string' && typeof bValue === 'string') {
+        if (typeof a === 'string' && typeof b === 'string') {
           return order === 'asc'
-            ? aValue.localeCompare(bValue)
-            : bValue.localeCompare(aValue);
+            ? a.localeCompare(b)
+            : b.localeCompare(a);
         }
 
-        if (typeof aValue === 'number' && typeof bValue === 'number') {
-          return order === 'asc' ? aValue - bValue : bValue - aValue;
+        if (typeof a === 'number' && typeof b === 'number') {
+          return order === 'asc' ? a - b : b - a;
         }
 
         // Add date comparison
-        if (aValue instanceof Date && bValue instanceof Date) {
-          return order === 'asc' ? aValue.getTime() - bValue.getTime() : bValue.getTime() - aValue.getTime();
+        if (a instanceof Date && b instanceof Date) {
+          return order === 'asc' ? a.getTime() - b.getTime() : b.getTime() - a.getTime();
         }
 
         return 0;
       });
 
-      return [...data].sort((a, b) => comparator(a[orderBy as keyof T], b[orderBy as keyof T]));
+      return [...data].sort((a, b) => {
+        const aValue = a[orderBy];
+        const bValue = b[orderBy];
+        return comparator(aValue, bValue);
+      });
     }, [data, order, orderBy, columns]);
 
     return (
@@ -340,7 +376,7 @@ export const Table = React.forwardRef<HTMLTableElement, TableProps<any>>(
         <StyledTable
           ref={ref}
           aria-label="enhanced table"
-          {...props}
+          {...restProps}
           sx={{
             borderCollapse: 'separate',
             borderSpacing: 0,
@@ -362,7 +398,7 @@ export const Table = React.forwardRef<HTMLTableElement, TableProps<any>>(
               const labelId = `enhanced-table-checkbox-${row.id}`;
 
               return (
-                <TableRow
+                <StyledTableRow
                   hover
                   onClick={(event) => handleClick(event, row.id)}
                   role="checkbox"
@@ -377,8 +413,10 @@ export const Table = React.forwardRef<HTMLTableElement, TableProps<any>>(
                       <MuiCheckbox
                         color="primary"
                         checked={isItemSelected}
-                        inputProps={{
-                          'aria-labelledby': labelId,
+                        slotProps={{
+                          input: {
+                            'aria-labelledby': labelId,
+                          },
                         }}
                         {...checkboxProps}
                       />
@@ -396,7 +434,7 @@ export const Table = React.forwardRef<HTMLTableElement, TableProps<any>>(
                       </StyledTableCell>
                     );
                   })}
-                </TableRow>
+                </StyledTableRow>
               );
             })}
           </MuiTableBody>
@@ -404,6 +442,6 @@ export const Table = React.forwardRef<HTMLTableElement, TableProps<any>>(
       </StyledTableContainer>
     );
   }
-);
+) as TableComponentType;
 
 Table.displayName = 'Table';

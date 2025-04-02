@@ -4,88 +4,41 @@ import * as React from 'react';
 import {
   Box,
   Container,
-  Grid as MuiGrid, // Import as MuiGrid to avoid conflicts
   Paper,
   Typography,
   Card,
   CardContent,
-  IconButton,
-  Button,
-  Chip,
   useTheme,
   useMediaQuery,
   styled,
   alpha,
 } from '@mui/material';
+import Grid from '@mui/material/Grid'; // Updated to the new Grid API from MUI v7
 import {
-  Memory,
+  Psychology,
+  CloudQueue,
   Speed,
   Timer,
   BarChart,
   TrendingUp,
   TrendingDown,
-  Psychology,
-  CloudQueue,
 } from '@mui/icons-material';
 
-export interface PromptMetrics {
-  id: string;
-  name: string;
-  totalCalls: number;
-  avgLatency: number;
-  successRate: number;
-  costPerCall: number;
-  lastUsed: string;
-}
-
-export interface ModelMetrics {
-  id: string;
-  name: string;
-  provider: string;
-  totalTokens: number;
-  avgResponseTime: number;
-  totalCost: number;
-  status: 'active' | 'inactive';
-}
-
 export interface DashboardProps {
-  /**
-   * Dashboard title
-   */
   title?: string;
-
-  /**
-   * User data
-   */
   user?: {
     name: string;
     avatar?: string;
     role?: string;
   };
-
-  /**
-   * Key metrics
-   */
   metrics?: {
     totalCalls: number;
     avgLatency: number;
     successRate: number;
     totalCost: number;
   };
-
-  /**
-   * Prompt usage data
-   */
-  prompts?: PromptMetrics[];
-
-  /**
-   * Model performance data
-   */
-  models?: ModelMetrics[];
-
-  /**
-   * Custom className
-   */
+  prompts?: any[];
+  models?: any[];
   className?: string;
 }
 
@@ -107,48 +60,27 @@ const MetricValue = styled(Typography)(({ theme }) => ({
   marginBottom: theme.spacing(1),
 }));
 
-const StatusChip = styled(Chip)<{ status?: 'success' | 'warning' | 'error' }>(
-  ({ theme, status = 'success' }) => ({
-    backgroundColor: alpha(
-      status === 'success'
-        ? theme.palette.success.main
-        : status === 'warning'
-        ? theme.palette.warning.main
-        : theme.palette.error.main,
-      0.1
-    ),
-    color: status === 'success'
-      ? theme.palette.success.main
-      : status === 'warning'
-      ? theme.palette.warning.main
-      : theme.palette.error.main,
-    fontWeight: 500,
-  })
-);
-
-// Create styled Grid components that maintain the original Grid's functionality
-// In MUI v7, the API for Grid has changed
-const Grid = styled(MuiGrid)(({ theme }) => ({}));
-
 export const Dashboard = React.forwardRef<HTMLDivElement, DashboardProps>(
-  ({
-    title = 'AI Analytics Dashboard',
-    user,
-    metrics,
-    prompts = [],
-    models = [],
-    className,
-    ...props
-  }, ref) => {
+  (
+    {
+      title = 'AI Analytics Dashboard',
+      user,
+      metrics,
+      prompts = [],
+      models = [],
+      className,
+      ...props
+    },
+    ref
+  ) => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
-    const formatNumber = (num: number) => {
-      return new Intl.NumberFormat('en-US', {
+    const formatNumber = (num: number) =>
+      new Intl.NumberFormat('en-US', {
         notation: 'compact',
         maximumFractionDigits: 1,
       }).format(num);
-    };
 
     const metricCards = [
       {
@@ -192,10 +124,10 @@ export const Dashboard = React.forwardRef<HTMLDivElement, DashboardProps>(
             )}
           </Box>
 
-          {/* Metrics Grid */}
-          <MuiGrid container spacing={3} sx={{ mb: 4 }}>
+          {/* Metrics Grid using the new Grid API */}
+          <Grid container spacing={3} sx={{ mb: 4 }}>
             {metricCards.map((metric, index) => (
-              <MuiGrid item xs={12} sm={6} md={3} key={index}>
+              <Grid size={{ xs: 12, sm: 6, md: 3 }} key={index}>
                 <StyledMetricCard>
                   <CardContent>
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
@@ -223,7 +155,9 @@ export const Dashboard = React.forwardRef<HTMLDivElement, DashboardProps>(
                         )}
                         <Typography
                           variant="caption"
-                          color={metric.trend > 0 ? 'success.main' : 'error.main'}
+                          color={
+                            metric.trend > 0 ? 'success.main' : 'error.main'
+                          }
                         >
                           {Math.abs(metric.trend)}%
                         </Typography>
@@ -231,13 +165,13 @@ export const Dashboard = React.forwardRef<HTMLDivElement, DashboardProps>(
                     </Box>
                   </CardContent>
                 </StyledMetricCard>
-              </MuiGrid>
+              </Grid>
             ))}
-          </MuiGrid>
+          </Grid>
 
-          {/* Prompts and Models Section */}
-          <MuiGrid container spacing={3}>
-            <MuiGrid item xs={12} md={6}>
+          {/* Prompts and Models Section using the new Grid API */}
+          <Grid container spacing={3}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <Paper sx={{ p: 3 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
                   <Psychology sx={{ mr: 1 }} />
@@ -245,9 +179,9 @@ export const Dashboard = React.forwardRef<HTMLDivElement, DashboardProps>(
                 </Box>
                 {/* Prompts table or list would go here */}
               </Paper>
-            </MuiGrid>
+            </Grid>
 
-            <MuiGrid item xs={12} md={6}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <Paper sx={{ p: 3 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
                   <CloudQueue sx={{ mr: 1 }} />
@@ -255,8 +189,8 @@ export const Dashboard = React.forwardRef<HTMLDivElement, DashboardProps>(
                 </Box>
                 {/* Models table or list would go here */}
               </Paper>
-            </MuiGrid>
-          </MuiGrid>
+            </Grid>
+          </Grid>
         </Container>
       </Box>
     );

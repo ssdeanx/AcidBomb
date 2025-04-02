@@ -278,13 +278,17 @@ graph TB
         WebApp["Web Application<br>Next.js"]
 
         subgraph "Frontend Components"
-            ThemeProvider["Theme Provider<br>MUI"]
-            AppBar["App Bar<br>React"]
-            AuthClient["Auth Client<br>Supabase"]
-            Router["Router<br>Next.js"]
-            Dashboard["Dashboard<br>React"]
-            Chat["Chat Interface<br>React"]
+            AuthModule["Auth Module<br>Supabase Auth"]
+            Router["Router<br>Next.js Router"]
             UIComponents["UI Components<br>React/MUI"]
+            ChatComponents["Chat Interface<br>React"]
+
+            subgraph "UI Library Components"
+                AppBar["AppBar<br>React"]
+                ThemeProvider["Theme Provider<br>MUI"]
+                Charts["Charts<br>D3.js"]
+                Dashboard["Dashboard<br>React"]
+            end
         end
     end
 
@@ -292,81 +296,62 @@ graph TB
         APIServer["API Server<br>NestJS"]
 
         subgraph "API Components"
-            AppModule["App Module<br>NestJS"]
-            LinksModule["Links Module<br>NestJS"]
             AppController["App Controller<br>NestJS"]
-            LinksController["Links Controller<br>NestJS"]
-            LinksService["Links Service<br>NestJS"]
+            LinksModule["Links Module<br>NestJS"]
             AgentController["Agent Controller<br>NestJS"]
-            AgentService["Agent Service<br>NestJS"]
-        end
-
-        subgraph "Mastra AI Components"
-            MastraCore["Mastra Core<br>TypeScript"]
-            EmbeddingService["Embedding Service<br>TypeScript"]
-            DatabaseService["Database Service<br>TypeScript"]
-            VectorStore["Vector Store Service<br>Pinecone"]
-            EvaluationService["Evaluation Service<br>LangSmith"]
-
-            subgraph "Tools System"
-                DocumentTool["Document Tool"]
-                GraphRAGTool["GraphRAG Tool"]
-                VectorQueryTool["Vector Query Tool"]
-                WeatherInfoTool["Weather Info Tool"]
-            end
+            MastraService["Mastra Service<br>Node.js"]
         end
     end
 
     subgraph "Data Storage Container"
         SupabaseDB[("Primary Database<br>Supabase")]
-        Redis[("Cache<br>Redis/Upstash")]
-        VectorDB[("Vector Database<br>Pinecone")]
+        RedisCache[("Cache Layer<br>Redis/Upstash")]
+        VectorStore[("Vector Store<br>Pinecone")]
     end
 
-    subgraph "External Services"
-        LangSmith["LangSmith<br>API"]
-        GoogleAI["Google AI<br>API"]
+    subgraph "AI Services Container"
+        MastraCore["Mastra Core<br>TypeScript"]
+
+        subgraph "AI Components"
+            AgentSystem["Agent System<br>Mastra"]
+            VectorService["Vector Service<br>Pinecone"]
+            EvalService["Evaluation Service<br>LangSmith"]
+            ToolsService["Tools Service<br>Mastra"]
+        end
     end
 
     %% Frontend Relationships
     User -->|"Accesses"| WebApp
-    WebApp -->|"Uses"| ThemeProvider
-    WebApp -->|"Uses"| AppBar
-    WebApp -->|"Uses"| Router
-    Router -->|"Renders"| Dashboard
-    Router -->|"Renders"| Chat
-    Dashboard -->|"Uses"| UIComponents
-    Chat -->|"Uses"| UIComponents
-    WebApp -->|"Authenticates"| AuthClient
+    WebApp -->|"Uses"| AuthModule
+    WebApp -->|"Routes via"| Router
+    WebApp -->|"Renders"| UIComponents
+    WebApp -->|"Implements"| ChatComponents
+    UIComponents -->|"Uses"| AppBar
+    UIComponents -->|"Uses"| ThemeProvider
+    UIComponents -->|"Uses"| Charts
+    UIComponents -->|"Uses"| Dashboard
 
     %% Backend Relationships
     WebApp -->|"API Calls"| APIServer
-    APIServer -->|"Routes"| AppModule
-    AppModule -->|"Contains"| LinksModule
-    LinksModule -->|"Uses"| LinksController
-    LinksController -->|"Uses"| LinksService
-    AppModule -->|"Contains"| AgentController
-    AgentController -->|"Uses"| AgentService
-    AgentService -->|"Uses"| MastraCore
-    MastraCore -->|"Uses"| EmbeddingService
-    MastraCore -->|"Uses"| DatabaseService
-    MastraCore -->|"Uses"| VectorStore
-    MastraCore -->|"Uses"| EvaluationService
-    MastraCore -->|"Uses"| DocumentTool
-    MastraCore -->|"Uses"| GraphRAGTool
-    MastraCore -->|"Uses"| VectorQueryTool
-    MastraCore -->|"Uses"| WeatherInfoTool
+    APIServer -->|"Routes to"| AppController
+    APIServer -->|"Routes to"| LinksModule
+    APIServer -->|"Routes to"| AgentController
+    APIServer -->|"Uses"| MastraService
 
     %% Data Storage Relationships
-    AuthClient -->|"Authenticates"| SupabaseDB
-    LinksService -->|"CRUD Operations"| SupabaseDB
-    AgentService -->|"Stores Data"| SupabaseDB
-    DatabaseService -->|"Stores Data"| SupabaseDB
-    DatabaseService -->|"Caches"| Redis
-    EmbeddingService -->|"Stores Embeddings"| VectorDB
-    VectorStore -->|"Queries"| VectorDB
+    APIServer -->|"Queries"| SupabaseDB
+    APIServer -->|"Caches in"| RedisCache
+    APIServer -->|"Stores vectors in"| VectorStore
 
-    %% External Service Relationships
-    EvaluationService -->|"Evaluates"| LangSmith
-    MastraCore -->|"Uses"| GoogleAI
+    %% AI Service Relationships
+    MastraService -->|"Uses"| MastraCore
+    MastraCore -->|"Manages"| AgentSystem
+    MastraCore -->|"Uses"| VectorService
+    MastraCore -->|"Evaluates with"| EvalService
+    MastraCore -->|"Implements"| ToolsService
+
+    %% Cross-Container Relationships
+    AgentSystem -->|"Stores data in"| SupabaseDB
+    VectorService -->|"Manages"| VectorStore
+    ChatComponents -->|"Interacts with"| AgentSystem
 ```

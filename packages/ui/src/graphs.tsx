@@ -2,75 +2,60 @@
 
 import * as React from 'react';
 import { Box, Paper } from '@mui/material';
-import { useTheme } from '/ThemeProvider';
-
+import { useTheme } from './theme/ThemeProvider';
 import type { Layout, Config } from 'plotly.js';
+import type { PlotParams } from 'react-plotly.js'; // Import PlotParams type
 
-// Use React.lazy instead of next/dynamic
-const Plot = React.lazy(() => import('react-plotly.js'));
+// Explicitly type the lazy loaded component
+const Plot = React.lazy(() =>
+  import('react-plotly.js').then(module => ({ default: module.default as unknown as React.ComponentType<PlotParams> }))
+);
 
-export interface GraphProps {
-  /**
-   * The type of graph to render
-   */
+interface GraphProps {
   type: 'line' | 'bar' | 'scatter' | 'pie' | 'heatmap' | 'candlestick';
-
-  /**
-   * The data to be plotted
-   */
   data: any[];
-
-  /**
-   * Layout configuration for the plot
-   */
   layout?: Partial<Layout>;
-
-  /**
-   * Plot configuration options
-   */
   config?: Partial<Config>;
-
-  /**
-   * Width of the graph
-   * @default '100%'
-   */
   width?: number | string;
-
-  /**
-   * Height of the graph
-   * @default 400
-   */
   height?: number | string;
-
-  /**
-   * Enable cross-linking with other plots
-   * @default false
-   */
   crossLink?: boolean;
-
-  /**
-   * Callback when range is updated (for cross-linking)
-   */
   onRangeChange?: (range: [Date, Date]) => void;
 }
 
+class GraphErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean }> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+  render() {
+    if (this.state.hasError) {
+      return <Box sx={{ p: 2, color: 'error.main' }}>Error loading graph.</Box>;
+    }
+    return this.props.children;
+  }
+}
+
 export const Graphs = React.forwardRef<HTMLDivElement, GraphProps>(
-  ({
-    type,
-    data,
-    layout = {},
-    config = {},
-    width = '100%',
-    height = 400,
-    crossLink = false,
-    onRangeChange,
-    ...props
-  }, ref) => {
+  (props, ref) => {
+    const {
+      type,
+      data,
+      layout = {},
+      config = {},
+      width = '100%',
+      height = 400,
+      crossLink = false,
+      onRangeChange,
+      ...rest
+    } = props;
+
     const theme = useTheme();
 
-    // Add Suspense boundary inside the component
     return (
-      <Box ref={ref} {...props}>
+      <Box ref={ref} {...rest}>
         <Paper
           elevation={0}
           sx={{
@@ -79,42 +64,44 @@ export const Graphs = React.forwardRef<HTMLDivElement, GraphProps>(
             backdropFilter: 'blur(8px)',
           }}
         >
-          <React.Suspense fallback={<div>Loading graph...</div>}>
-            <Plot
-              data={data}
-              layout={{
-                width,
-                height,
-                paper_bgcolor: 'transparent',
-                plot_bgcolor: 'transparent',
-                font: {
-                  family: theme.typography.fontFamily,
-                  color: theme.palette.text.primary,
-                },
-                margin: { t: 30, r: 10, l: 10, b: 30 },
-                xaxis: {
-                  gridcolor: theme.palette.divider,
-                  zerolinecolor: theme.palette.divider,
-                },
-                yaxis: {
-                  gridcolor: theme.palette.divider,
-                  zerolinecolor: theme.palette.divider,
-                },
-                ...layout,
-              }}
-              config={{
-                responsive: true,
-                displayModeBar: true,
-                displaylogo: false,
-                modeBarButtonsToRemove: ['lasso2d', 'select2d'],
-                ...config,
-              }}
-              onRelayout={(eventData: any) => {
-                if (crossLink && onRangeChange && eventData['xaxis.range']) {
-                  onRangeChange(eventData['xaxis.range']);
-                }
-              }}
-            />
+          <React.Suspense fallback={<Box sx={{ p: 2 }}>Loading graph...</Box>}>
+            <GraphErrorBoundary>
+              <Plot
+                data={data}
+                layout={{
+                  width: typeof width === 'number' ? width : undefined,
+                  height: typeof height === 'number' ? height : undefined,
+                  paper_bgcolor: 'transparent',
+                  plot_bgcolor: 'transparent',
+                  font: {
+                    family: theme.typography.fontFamily,
+                    color: theme.palette.text.primary,
+                  },
+                  margin: { t: 30, r: 10, l: 10, b: 30 },
+                  xaxis: {
+                    gridcolor: theme.palette.divider,
+                    zerolinecolor: theme.palette.divider,
+                  },
+                  yaxis: {
+                    gridcolor: theme.palette.divider,
+                    zerolinecolor: theme.palette.divider,
+                  },
+                  ...layout,
+                }}
+                config={{
+                  responsive: true,
+                  displayModeBar: true,
+                  displaylogo: false,
+                  modeBarButtonsToRemove: ['lasso2d', 'select2d'],
+                  ...config,
+                }}
+                onRelayout={(eventData: any) => {
+                  if (crossLink && onRangeChange && eventData['xaxis.range']) {
+                    onRangeChange(eventData['xaxis.range']);
+                  }
+                }}
+              />
+            </GraphErrorBoundary>
           </React.Suspense>
         </Paper>
       </Box>

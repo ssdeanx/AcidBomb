@@ -42,7 +42,7 @@ import {
   AudioFile,
   PictureAsPdf,
 } from '@mui/icons-material';
-import { ChatMessage } from './chatmessage';
+import { ChatMessage } from './ChatMessage';
 import { ModelSelector } from '../model_selector';
 import type { ModelOption } from '../model_selector';
 

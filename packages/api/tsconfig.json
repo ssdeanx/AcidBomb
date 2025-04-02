@@ -11,6 +11,6 @@
     "module": "esnext", // Allow top-level await
     "target": "esnext" // Ensure target is ES2017 or higher
   },
-  "include": ["src/Drizzle/index.ts", "src/Drizzle/**/*.tsx", "src"], // Added index.tsx and Drizzle/** pattern
+  "include": ["src/mastra/index.ts", "mastra.config.ts", "src"], // Added index.tsx and Drizzle/** pattern
   "exclude": ["node_modules", "test", "dist", "**/*spec.ts"]
 }

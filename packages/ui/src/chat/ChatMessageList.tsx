@@ -1,11 +1,14 @@
 'use client';
 
 import * as React from 'react';
-import { Box, CircularProgress, Typography, styled, alpha } from '@mui/material';
+import { Box, Typography, styled } from '@mui/material';
 import { ChatMessage } from './ChatMessage';
 import { ChatTypingIndicator } from './ChatTypingIndicator';
 import type { Message } from './types';
 
+/**
+ * Props interface for the ChatMessageList component
+ */
 export interface ChatMessageListProps {
   /**
    * Array of messages to display
@@ -57,12 +60,17 @@ const EmptyStateContainer = styled(Box)(({ theme }) => ({
 
 /**
  * Hook for automatic scrolling of messages
+ *
+ * @param messages - The array of chat messages
+ * @param isTyping - Boolean indicating if a typing indicator is showing
+ * @param deps - Additional dependencies for the effect
+ * @returns Object with refs for the message list and end anchor element
  */
 const useChatScroll = (
   messages: Message[],
   isTyping: boolean,
   deps: any[] = []
-) => {
+): { endRef: React.RefObject<HTMLDivElement | null>; listRef: React.RefObject<HTMLDivElement | null> } => {
   const endRef = React.useRef<HTMLDivElement>(null);
   const listRef = React.useRef<HTMLDivElement>(null);
 
@@ -101,6 +109,8 @@ const useChatScroll = (
 
 /**
  * ChatMessageList displays a scrollable list of chat messages with automatic scrolling
+ *
+ * @component
  */
 export const ChatMessageList: React.FC<ChatMessageListProps> = ({
   messages,
@@ -134,11 +144,13 @@ export const ChatMessageList: React.FC<ChatMessageListProps> = ({
             timestamp={message.timestamp}
             model={message.model}
             status={message.status}
-          attachments={message.attachments}
-          enableCodeHighlighting={enableCodeHighlighting}
-          enableMarkdown={enableMarkdown}
-        />
-      ))}
+            // Pass attachments if they exist in the message
+            attachments={message.attachments}
+            // Pass the formatting props
+            enableCodeHighlighting={enableCodeHighlighting}
+            enableMarkdown={enableMarkdown}
+          />
+        ))}
 
       {isTyping && <ChatTypingIndicator />}
 
@@ -149,3 +161,5 @@ export const ChatMessageList: React.FC<ChatMessageListProps> = ({
 };
 
 ChatMessageList.displayName = 'ChatMessageList';
+
+export default ChatMessageList;

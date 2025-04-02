@@ -1,5 +1,5 @@
 import { Mastra } from '@mastra/core';
-import { createLogger } from '@mastra/core';
+import { createLogger } from '@mastra/core/logger';
 
 export const mastra: Mastra = new Mastra({
   // ... other config

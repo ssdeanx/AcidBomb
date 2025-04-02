@@ -6,3 +6,5 @@ export * from './ChatHeader';
 export * from './ChatMessageList';
 export * from './ChatContainer';
 export * from './EmojiPicker';
+export * from './ChatAgentPanel';
+export * from './ChatToolsPanel';

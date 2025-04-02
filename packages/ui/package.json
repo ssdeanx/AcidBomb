@@ -48,13 +48,20 @@
     "./EmojiPicker": "./src/chat/EmojiPicker.tsx",
     "./ChatHeader": "./src/chat/chatheader.tsx",
     "./ChatAccordion": "./src/chat/chataccordion.tsx",
-    "./useChat": "./src/chat/useChat.tsx",
     "./Label": "./src/label.tsx",
     "./Popover": "./src/popover.tsx",
     "./ScrollArea": "./src/scrollarea.tsx",
     "./Dropdown": "./src/dropdrown.tsx",
     "./Form": "./src/form.tsx",
-    "./Collapsible": "./src/collapsible.tsx"
+    "./Collapsible": "./src/collapsible.tsx",
+    "./ChatAttachment": "./src/chat/chatattachment.tsx",
+    "./ChatCommandInput": "./src/chat/chatcommandinput.tsx",
+    "./ChatSlashCommands": "./src/chat/chatslashcommands.tsx",
+    "./ChatToolsPanel": "./src/chat/chattoolspanel.tsx",
+    "./ChatInterface": "./src/chat/chatinterface.tsx",
+    "./ChatAgentPanel": "./src/chat/chatagentpanel.tsx",
+    "./ChatWorkflowPanel": "./src/chat/chatworkflowpanel.tsx"
+
   },
   "scripts": {
     "lint": "eslint . --max-warnings 0",

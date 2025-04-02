@@ -87,7 +87,9 @@ export const useChat = ({
       role: 'user',
       timestamp: new Date(),
       status: 'sent',
+      // Initialize uploadProgress to 0 for new attachments
       attachments: attachments?.map(file => ({
+        uploadProgress: 0, // Add initial upload progress
         id: uuidv4(),
         name: file.name,
         type: file.type,

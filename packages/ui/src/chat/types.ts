@@ -36,6 +36,7 @@ export interface Message {
    * Optional array of attachment metadata
    */
   attachments?: Array<{
+    uploadProgress: number;
     id: string;
     name: string;
     type: string;
@@ -133,6 +134,7 @@ export interface ChatSettings {
  * Represents a file attachment
  */
 export interface Attachment {
+
   /**
    * Unique identifier for the attachment
    */
@@ -162,4 +164,9 @@ export interface Attachment {
    * Optional file content as base64
    */
   content?: string;
+
+  uploadProgress?: number;
+  /**
+   * Optional timestamp for when the attachment was uploaded
+   */
 }

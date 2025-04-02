@@ -144,8 +144,8 @@ export const ChatMessageList: React.FC<ChatMessageListProps> = ({
             timestamp={message.timestamp}
             model={message.model}
             status={message.status}
-            // Pass attachments if they exist in the message
-            attachments={message.attachments}
+            // Pass attachments if they exist in the message, ensuring uploadProgress is present
+            attachments={message.attachments?.map(att => ({ ...att, uploadProgress: att.uploadProgress ?? 100 }))}
             // Pass the formatting props
             enableCodeHighlighting={enableCodeHighlighting}
             enableMarkdown={enableMarkdown}

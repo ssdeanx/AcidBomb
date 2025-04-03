@@ -84,36 +84,26 @@ export default function AboutPage() {
           <Typography variant="h4" sx={{ mb: 4 }}>
             Built with Cutting-Edge Technology
           </Typography>
-          <Grid container spacing={3} justifyContent="center">
+          <Stack
+            direction="row"
+            spacing={2}
+            justifyContent="center"
+            flexWrap="wrap" // Allow items to wrap onto the next line
+            sx={{ gap: 2 }} // Add gap between wrapped items
+          >
             {techStack.map((tech, index) => (
-              <Grid item xs={6} sm={4} md={3} lg={2} key={index}>
-                <Paper
-                  variant="outlined"
-                  sx={{
-                    p: 2.5,
-                    textAlign: 'center',
-                    height: '100%',
-                    bgcolor: 'background.default',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: 1,
-                    borderRadius: 1,
-                    '&:hover': {
-                      borderColor: 'primary.light',
-                      boxShadow: (theme) => theme.shadows[2]
-                    }
-                  }}
-                >
-                  {tech.icon}
-                  <Typography variant="caption" display="block" fontWeight="medium">
-                    {tech.name}
-                  </Typography>
-                </Paper>
-              </Grid>
+              <Paper
+          variant="outlined"
+          key={index}
+          sx={{ p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 120 }} // Add padding and center content
+              >
+          {tech.icon}
+          <Typography variant="caption" display="block" fontWeight="medium" sx={{ mt: 1 }}> {/* Add margin top */}
+            {tech.name}
+          </Typography>
+              </Paper>
             ))}
-          </Grid>
+          </Stack>
         </Box>
 
         {/* Team/Creator Section */}

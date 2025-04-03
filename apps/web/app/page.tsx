@@ -1,63 +1,51 @@
-import { Suspense } from 'react';
-import type { Metadata } from 'next';
-import Link from 'next/link';
-import { cookies } from 'next/headers';
-import {
-  Box,
-  Container,
-  Grid,
-  Typography,
-  Paper,
-  Link as MuiLink,
-  Stack,
-  Divider,
-  alpha
-} from '@mui/material';
-import {
-  Psychology,
-  Storage as StorageIcon,
-  Code as CodeIcon
-} from '@mui/icons-material';
-
+import { Box, Container, Typography, Paper, Link as MuiLink, Stack } from '@mui/material';
+import Grid from '@mui/material/Grid'; // Explicitly import Grid v2
+import { Psychology, Storage as StorageIcon, Code as CodeIcon } from '@mui/icons-material';
 import { Hero } from '@repo/ui/Hero';
-import { Card } from '@repo/ui/Card';
+import { Card } from '@repo/ui/Card'; // No variant prop needed now
 import { Code } from '@repo/ui/Code';
 import { Button } from '@repo/ui/Button';
+import Link from 'next/link';
+import { cookies } from 'next/headers';
+import type { Metadata } from 'next'; // Import Metadata type
 import { createClient } from './utils/supabase/server';
 import styles from './page.module.css';
 
-/**
- * Link interface representing resource links fetched from Supabase
- */
-interface Link {
+interface LinkData {
   id: string;
   title: string;
   url: string;
   description: string;
 }
 
-/**
- * Generate SEO metadata for the home page
- * @returns Metadata object with title, description, and keywords
- */
 export async function generateMetadata(): Promise<Metadata> {
   return {
     title: 'DeanMachines AI: Build & Deploy Advanced Conversational Agents',
-    description: 'Leverage Mastra, Pinecone vector search, and robust backend tools to create intelligent AI experiences with persistent memory and RAG.',
+    description:
+      'Leverage Mastra, Pinecone vector search, and robust backend tools to create intelligent AI experiences with persistent memory and RAG.',
     keywords: [
-      'AI agents', 'Mastra', 'Pinecone', 'Redis', 'Upstash', 'Vector Database',
-      'RAG', 'Conversational AI', 'NestJS', 'Next.js', 'Developer Platform',
-      'Gemini AI', 'LangSmith', 'TypeScript', 'Large Language Models',
-      'Vector Embeddings', 'Semantic Search'
-    ],
+      'AI agents',
+      'Mastra',
+      'Pinecone',
+      'Redis',
+      'Upstash',
+      'Vector Database',
+      'RAG',
+      'Conversational AI',
+      'NestJS',
+      'Next.js',
+      'Developer Platform',
+      'Gemini AI',
+      'LangSmith',
+      'TypeScript',
+      'Large Language Models',
+      'Vector Embeddings',
+      'Semantic Search'
+    ]
   };
 }
 
-/**
- * Fetches resource links from the Supabase database
- * @returns Array of Link objects or empty array on error
- */
-async function fetchLinks(): Promise<Link[]> {
+async function fetchLinks(): Promise<LinkData[]> {
   try {
     const supabase = createClient(cookies());
     const { data, error } = await supabase
@@ -70,7 +58,6 @@ async function fetchLinks(): Promise<Link[]> {
       console.error('Error fetching links:', error.message);
       return [];
     }
-
     return data || [];
   } catch (error) {
     console.error('Error fetching links:', error);
@@ -78,14 +65,8 @@ async function fetchLinks(): Promise<Link[]> {
   }
 }
 
-/**
- * Home page component with hero section, features, code demo, and resources
- */
 export default async function HomePage() {
-  // Fetch links from Supabase
   const links = await fetchLinks();
-
-  // Get user authentication status for conditional CTA rendering
   const supabase = createClient(cookies());
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -115,7 +96,7 @@ export default async function HomePage() {
           <Button
             component={Link}
             href="/documentation"
-            variant="outline"
+            variant="primary"
             size="lg"
           >
             View Documentation
@@ -126,19 +107,13 @@ export default async function HomePage() {
       {/* Features Section */}
       <Box component="section" sx={{ py: { xs: 8, md: 12 }, bgcolor: 'background.default' }}>
         <Container maxWidth="lg">
-          <Typography
-            variant="h3"
-            align="center"
-            sx={{ mb: 8, fontWeight: 700 }}
-          >
+          <Typography variant="h4" align="center" sx={{ mb: 6, fontWeight: 700 }}>
             Powerful AI Features
           </Typography>
-          <Grid container component="div" spacing={4} justifyContent="center">
-            <Grid component="div" xs={12} sm={6} md={4}>
+          <Grid container spacing={4} justifyContent="center">
+            <Grid sx={{ xs: 12, sm: 6, md: 4 }} key="card-1">
               <Card
-                variant="outlined"
                 title="Mastra AI Integration"
-                icon={<Psychology sx={{ fontSize: 48, color: 'primary.main' }} />}
                 description="Build advanced conversational agents powered by Mastra with custom tool integration, memory chains, and intelligent reasoning."
                 sx={{
                   height: '100%',
@@ -156,13 +131,13 @@ export default async function HomePage() {
                     boxShadow: (theme) => theme.shadows[8]
                   }
                 }}
-              />
+              >
+                <Psychology sx={{ fontSize: 48, color: 'primary.main', mb: 2 }} />
+              </Card>
             </Grid>
-            <Grid item xs={12} sm={6} md={4}>
+            <Grid sx={{ xs: 12, sm: 6, md: 4 }} key="card-2">
               <Card
-                variant="outlined"
                 title="Persistent Memory"
-                icon={<StorageIcon sx={{ fontSize: 48, color: 'primary.main' }} />}
                 description="Store and retrieve conversation context with Pinecone vector embeddings and Redis for short-term memory, enabling truly contextual AI interactions."
                 sx={{
                   height: '100%',
@@ -180,13 +155,13 @@ export default async function HomePage() {
                     boxShadow: (theme) => theme.shadows[8]
                   }
                 }}
-              />
+              >
+                 <StorageIcon sx={{ fontSize: 48, color: 'primary.main', mb: 2 }} />
+              </Card>
             </Grid>
-            <Grid item xs={12} sm={6} md={4}>
+            <Grid sx={{ xs: 12, sm: 6, md: 4 }} key="card-3">
               <Card
-                variant="outlined"
                 title="Developer-First Stack"
-                icon={<CodeIcon sx={{ fontSize: 48, color: 'primary.main' }} />}
                 description="Built on Next.js, NestJS, TypeScript, and Supabase, with comprehensive tools for development, deployment, and monitoring of production-ready AI solutions."
                 sx={{
                   height: '100%',
@@ -204,7 +179,9 @@ export default async function HomePage() {
                     boxShadow: (theme) => theme.shadows[8]
                   }
                 }}
-              />
+              >
+                <CodeIcon sx={{ fontSize: 48, color: 'primary.main', mb: 2 }} />
+              </Card>
             </Grid>
           </Grid>
         </Container>
@@ -214,7 +191,6 @@ export default async function HomePage() {
       <Box component="section" sx={{ py: { xs: 8, md: 12 } }}>
         <Container maxWidth="md" sx={{ my: { xs: 10, md: 16 } }}>
           <Paper
-            variant="outlined"
             sx={{
               p: { xs: 3, sm: 4 },
               bgcolor: 'grey.900',
@@ -281,50 +257,41 @@ export const weatherTool = definePluginTool({
       {/* Links Section */}
       <Box component="section" sx={{ py: { xs: 8, md: 12 }, bgcolor: 'background.default' }}>
         <Container maxWidth="lg">
-          <Typography
-            variant="h4"
-            align="center"
-            sx={{ mb: 6, fontWeight: 700 }}
-          >
+          <Typography variant="h4" align="center" sx={{ mb: 6, fontWeight: 700 }}>
             Resources & Updates
           </Typography>
-
           {links.length === 0 ? (
             <Typography variant="body1" component="p" align="center" color="text.secondary">
-              No resources posted yet.
             </Typography>
           ) : (
-            <Grid container component="div" spacing={4}>
+            <Grid container spacing={4}>
               {links.map((link) => (
-                <Grid component="div" xs={12} sm={6} md={4} key={link.id}>
+                <Grid sx={{ xs: 12, sm: 6, md: 4 }} key={link.id}>
                   <MuiLink
-                    component={Link}
-                    href={link.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    sx={{
-                      textDecoration: 'none',
-                      display: 'block',
-                      height: '100%'
-                    }}
+                  component={Link}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  sx={{
+                    height: '100%'
+                  }}
                   >
-                    <Card
-                      variant="outline"
-                      title={link.title}
-                      description={link.description}
-                      sx={{
-                        height: '100%',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        bgcolor: 'background.paper',
-                        border: 1,
-                        borderColor: 'divider',
-                        '&:hover': {
-                          borderColor: 'primary.light',
-                          boxShadow: (theme) => theme.shadows[4]
-                        }
-                      }}
-                    />
+                  <Card
+                    title={link.title}
+                    description={link.description}
+                    sx={{
+                    height: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    bgcolor: 'background.paper',
+                    border: 1,
+                    borderColor: 'divider',
+                    '&:hover': {
+                      borderColor: 'primary.light',
+                      boxShadow: (theme) => theme.shadows[4]
+                    }
+                    }}
+                  />
                   </MuiLink>
                 </Grid>
               ))}

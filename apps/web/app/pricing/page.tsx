@@ -98,9 +98,8 @@ export default function PricingPage() {
         alignItems="stretch"
       >
         {/* Free Tier */}
-        <Grid item xs={12} md={5}>
+
           <Card
-            variant="outlined"
             sx={{
               height: '100%',
               display: 'flex',
@@ -159,9 +158,8 @@ export default function PricingPage() {
         </Grid>
 
         {/* Pro Tier */}
-        <Grid item xs={12} md={5}>
+
           <Card
-            variant="outlined"
             sx={{
               height: '100%',
               display: 'flex',
@@ -179,13 +177,15 @@ export default function PricingPage() {
               title="Pro"
               subheader="For developers & small teams"
               sx={{ bgcolor: (theme) => alpha(theme.palette.primary.main, 0.1) }}
-              titleTypographyProps={{
-                align: 'center',
-                variant: 'h4',
-                fontWeight: 'medium'
-              }}
-              subheaderTypographyProps={{
-                align: 'center'
+              slotProps={{
+                title: {
+                  align: 'center',
+                  variant: 'h4',
+                  fontWeight: 'medium'
+                },
+                subheader: {
+                  align: 'center'
+                }
               }}
             />
             <CardContent sx={{ flexGrow: 1 }}>
@@ -222,8 +222,6 @@ export default function PricingPage() {
               </Button>
             </CardActions>
           </Card>
-        </Grid>
-      </Grid>
 
       {/* FAQ Section */}
       <Box mt={10} maxWidth="md" mx="auto">

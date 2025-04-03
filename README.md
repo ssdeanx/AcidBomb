@@ -275,15 +275,14 @@ graph TB
     User((External User))
 
     subgraph "Frontend Container"
-        WebApp["Web Application<br>(Next.js)"]
+        WebApp["Next.js Web App<br>(Next.js)"]
 
         subgraph "Frontend Components"
             AuthComponent["Authentication<br>(Next Auth)"]
             ChatInterface["Chat Interface<br>(React)"]
-            Dashboard["Dashboard<br>(React)"]
-            ThemeProvider["Theme Provider<br>(MUI)"]
-            AppBar["App Bar<br>(MUI)"]
-            SupabaseClient["Supabase Client<br>(Supabase SDK)"]
+            DocumentationUI["Documentation UI<br>(React)"]
+            ThemeProvider["Theme Provider<br>(React)"]
+            SupabaseClient["Supabase Client<br>(Supabase JS)"]
         end
     end
 
@@ -291,76 +290,65 @@ graph TB
         NestAPI["API Server<br>(NestJS)"]
 
         subgraph "API Components"
-            AppController["App Controller<br>(NestJS)"]
             ChatModule["Chat Module<br>(NestJS)"]
             LinksModule["Links Module<br>(NestJS)"]
+            AgentController["Agent Controller<br>(NestJS)"]
             MastraCoreModule["Mastra Core Module<br>(NestJS)"]
-            HttpExceptionFilter["Exception Filter<br>(NestJS)"]
+            HttpExceptionFilter["HTTP Exception Filter<br>(NestJS)"]
         end
     end
 
     subgraph "Database Container"
         SupabaseDB[("Primary Database<br>(Supabase/PostgreSQL)")]
-        VectorStore[("Vector Store<br>(Upstash)")]
-        RedisCache[("Cache<br>(Redis)")]
+        VectorStore[("Vector Store<br>(Pinecone)")]
+        RedisCache[("Cache Layer<br>(Redis/Upstash)")]
 
         subgraph "Database Components"
-            UserPrefs["User Preferences<br>(SQL Table)"]
-            Conversations["Conversations<br>(SQL Table)"]
-            Messages["Messages<br>(SQL Table)"]
-            VectorOps["Vector Operations<br>(Upstash SDK)"]
-            RedisOps["Redis Operations<br>(Redis SDK)"]
+            UserPreferences["User Preferences<br>(PostgreSQL)"]
+            Conversations["Conversations<br>(PostgreSQL)"]
+            Messages["Messages<br>(PostgreSQL)"]
+            VectorOperations["Vector Operations<br>(Pinecone)"]
         end
     end
 
-    subgraph "Mastra Container"
-        MastraCore["Mastra Core<br>(TypeScript)"]
+    subgraph "Shared Services Container"
+        MastraService["Mastra Service<br>(TypeScript)"]
 
         subgraph "Mastra Components"
-            AgentController["Agent Controller<br>(NestJS)"]
             AgentService["Agent Service<br>(TypeScript)"]
-            EmbeddingService["Embedding Service<br>(TypeScript)"]
+            VectorStoreService["Vector Store Service<br>(TypeScript)"]
             DatabaseService["Database Service<br>(TypeScript)"]
+            EvaluationService["Evaluation Service<br>(LangSmith)"]
         end
     end
 
     %% Relationships
     User -->|"Interacts with"| WebApp
-    WebApp -->|"API Calls"| NestAPI
-    WebApp -->|"Auth/Data"| SupabaseClient
+    WebApp -->|"Authenticates via"| AuthComponent
+    WebApp -->|"Makes API calls"| NestAPI
+    AuthComponent -->|"Uses"| SupabaseClient
+    ChatInterface -->|"Communicates with"| ChatModule
 
-    %% Frontend Component Relationships
-    WebApp -->|"Uses"| AuthComponent
-    WebApp -->|"Uses"| ChatInterface
-    WebApp -->|"Uses"| Dashboard
-    WebApp -->|"Uses"| ThemeProvider
-    WebApp -->|"Uses"| AppBar
-
-    %% Backend Component Relationships
-    NestAPI -->|"Routes to"| AppController
-    NestAPI -->|"Uses"| ChatModule
-    NestAPI -->|"Uses"| LinksModule
+    NestAPI -->|"Routes to"| ChatModule
+    NestAPI -->|"Routes to"| LinksModule
+    NestAPI -->|"Routes to"| AgentController
     NestAPI -->|"Uses"| MastraCoreModule
-    NestAPI -->|"Error Handling"| HttpExceptionFilter
+    NestAPI -->|"Handles errors with"| HttpExceptionFilter
 
-    %% Database Component Relationships
-    SupabaseDB -->|"Stores"| UserPrefs
-    SupabaseDB -->|"Stores"| Conversations
-    SupabaseDB -->|"Stores"| Messages
-    VectorStore -->|"Uses"| VectorOps
-    RedisCache -->|"Uses"| RedisOps
+    ChatModule -->|"Uses"| MastraService
+    AgentController -->|"Uses"| MastraService
 
-    %% Mastra Component Relationships
-    MastraCore -->|"Controls"| AgentController
-    MastraCore -->|"Uses"| AgentService
-    MastraCore -->|"Uses"| EmbeddingService
-    MastraCore -->|"Uses"| DatabaseService
+    MastraService -->|"Uses"| AgentService
+    MastraService -->|"Uses"| VectorStoreService
+    MastraService -->|"Uses"| DatabaseService
+    MastraService -->|"Uses"| EvaluationService
 
-    %% Cross-Container Relationships
-    NestAPI -->|"Queries"| SupabaseDB
-    NestAPI -->|"Vectors"| VectorStore
-    NestAPI -->|"Caches"| RedisCache
-    MastraCore -->|"Integrates"| NestAPI
     DatabaseService -->|"Manages"| SupabaseDB
-    EmbeddingService -->|"Stores"| VectorStore
+    VectorStoreService -->|"Manages"| VectorStore
+    DatabaseService -->|"Caches in"| RedisCache
+
+    SupabaseDB -->|"Contains"| UserPreferences
+    SupabaseDB -->|"Contains"| Conversations
+    SupabaseDB -->|"Contains"| Messages
+    VectorStore -->|"Implements"| VectorOperations
 ```

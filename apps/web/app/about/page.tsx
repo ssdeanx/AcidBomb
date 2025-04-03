@@ -5,7 +5,6 @@ import {
   Box,
   Stack,
   Typography,
-  Grid,
   Paper,
 } from '@mui/material';
 import {
@@ -128,7 +127,7 @@ export default function AboutPage() {
             spacing={2}
             justifyContent="center"
           >
-            <Link href="https://github.com/ssdeanxs" target="_blank" rel="noopener noreferrer" passHref legacyBehavior>
+            <Link href="https://github.com/ssdeanx" target="_blank" rel="noopener noreferrer" passHref legacyBehavior>
               <Button
                 variant="outline"
                 startIcon={<GitHub />}

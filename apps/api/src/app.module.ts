@@ -1,12 +1,14 @@
 import { Module } from '@nestjs/common';
-
-import { LinksModule } from './links/links.module';
-
-import { AppService } from './app.service';
 import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { MastraCoreModule } from './mastra-core/mastra-core.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
-  imports: [LinksModule],
+  imports: [
+    MastraCoreModule,
+    ChatModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

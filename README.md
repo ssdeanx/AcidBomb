@@ -272,93 +272,95 @@ Learn more about the power of Turborepo:
 
 ```mermaid
 graph TB
-    User((User))
+    User((External User))
 
     subgraph "Frontend Container"
         WebApp["Web Application<br>(Next.js)"]
 
         subgraph "Frontend Components"
-            AppLayout["Layout Component<br>(React)"]
-            ThemeProvider["Theme Provider<br>(MUI)"]
-            AppBar["App Bar<br>(React/MUI)"]
+            AuthComponent["Authentication<br>(Next Auth)"]
             ChatInterface["Chat Interface<br>(React)"]
-
-            subgraph "Chat Components"
-                ChatContainer["Chat Container<br>(React)"]
-                ChatHeader["Chat Header<br>(React)"]
-                ChatMessageList["Message List<br>(React)"]
-                ChatInput["Chat Input<br>(React)"]
-                ChatToolsPanel["Tools Panel<br>(React)"]
-                ChatWorkflowPanel["Workflow Panel<br>(React)"]
-            end
-
-            subgraph "Auth Components"
-                AuthGuard["Auth Guard<br>(Next.js)"]
-                LoginPage["Login Page<br>(React)"]
-            end
+            Dashboard["Dashboard<br>(React)"]
+            ThemeProvider["Theme Provider<br>(MUI)"]
+            AppBar["App Bar<br>(MUI)"]
+            SupabaseClient["Supabase Client<br>(Supabase SDK)"]
         end
     end
 
     subgraph "Backend Container"
-        APIServer["API Server<br>(NestJS)"]
+        NestAPI["API Server<br>(NestJS)"]
 
         subgraph "API Components"
             AppController["App Controller<br>(NestJS)"]
+            ChatModule["Chat Module<br>(NestJS)"]
             LinksModule["Links Module<br>(NestJS)"]
-            AgentController["Agent Controller<br>(NestJS)"]
-
-            subgraph "Mastra Services"
-                MastraService["Mastra Service<br>(Node.js)"]
-                DatabaseService["Database Service<br>(Node.js)"]
-                VectorStoreService["Vector Store Service<br>(Node.js)"]
-                EmbeddingService["Embedding Service<br>(Node.js)"]
-            end
+            MastraCoreModule["Mastra Core Module<br>(NestJS)"]
+            HttpExceptionFilter["Exception Filter<br>(NestJS)"]
         end
     end
 
-    subgraph "Data Storage Container"
-        SupabaseDB[("Supabase Database<br>(PostgreSQL)")]
-        VectorStore[("Vector Store<br>(Pinecone)")]
-        RedisCache[("Cache<br>(Redis/Upstash)")]
+    subgraph "Database Container"
+        SupabaseDB[("Primary Database<br>(Supabase/PostgreSQL)")]
+        VectorStore[("Vector Store<br>(Upstash)")]
+        RedisCache[("Cache<br>(Redis)")]
+
+        subgraph "Database Components"
+            UserPrefs["User Preferences<br>(SQL Table)"]
+            Conversations["Conversations<br>(SQL Table)"]
+            Messages["Messages<br>(SQL Table)"]
+            VectorOps["Vector Operations<br>(Upstash SDK)"]
+            RedisOps["Redis Operations<br>(Redis SDK)"]
+        end
     end
 
-    subgraph "External Services"
-        LangSmith["LangSmith<br>(API)"]
-        Supabase["Supabase Auth<br>(Auth Service)"]
+    subgraph "Mastra Container"
+        MastraCore["Mastra Core<br>(TypeScript)"]
+
+        subgraph "Mastra Components"
+            AgentController["Agent Controller<br>(NestJS)"]
+            AgentService["Agent Service<br>(TypeScript)"]
+            EmbeddingService["Embedding Service<br>(TypeScript)"]
+            DatabaseService["Database Service<br>(TypeScript)"]
+        end
     end
 
-    %% Frontend Relationships
-    User -->|"Accesses"| WebApp
-    WebApp -->|"Uses"| AppLayout
-    AppLayout -->|"Contains"| ThemeProvider
-    AppLayout -->|"Contains"| AppBar
+    %% Relationships
+    User -->|"Interacts with"| WebApp
+    WebApp -->|"API Calls"| NestAPI
+    WebApp -->|"Auth/Data"| SupabaseClient
+
+    %% Frontend Component Relationships
+    WebApp -->|"Uses"| AuthComponent
     WebApp -->|"Uses"| ChatInterface
-    ChatInterface -->|"Contains"| ChatContainer
-    ChatContainer -->|"Uses"| ChatHeader
-    ChatContainer -->|"Uses"| ChatMessageList
-    ChatContainer -->|"Uses"| ChatInput
-    ChatContainer -->|"Uses"| ChatToolsPanel
-    ChatContainer -->|"Uses"| ChatWorkflowPanel
-    WebApp -->|"Protected by"| AuthGuard
-    AuthGuard -->|"Redirects to"| LoginPage
+    WebApp -->|"Uses"| Dashboard
+    WebApp -->|"Uses"| ThemeProvider
+    WebApp -->|"Uses"| AppBar
 
-    %% Backend Relationships
-    WebApp -->|"API Calls"| APIServer
-    APIServer -->|"Routes to"| AppController
-    APIServer -->|"Routes to"| LinksModule
-    APIServer -->|"Routes to"| AgentController
-    AgentController -->|"Uses"| MastraService
-    MastraService -->|"Uses"| DatabaseService
-    MastraService -->|"Uses"| VectorStoreService
-    MastraService -->|"Uses"| EmbeddingService
+    %% Backend Component Relationships
+    NestAPI -->|"Routes to"| AppController
+    NestAPI -->|"Uses"| ChatModule
+    NestAPI -->|"Uses"| LinksModule
+    NestAPI -->|"Uses"| MastraCoreModule
+    NestAPI -->|"Error Handling"| HttpExceptionFilter
 
-    %% Data Storage Relationships
-    DatabaseService -->|"Stores/Retrieves"| SupabaseDB
-    VectorStoreService -->|"Stores/Queries"| VectorStore
-    DatabaseService -->|"Caches"| RedisCache
+    %% Database Component Relationships
+    SupabaseDB -->|"Stores"| UserPrefs
+    SupabaseDB -->|"Stores"| Conversations
+    SupabaseDB -->|"Stores"| Messages
+    VectorStore -->|"Uses"| VectorOps
+    RedisCache -->|"Uses"| RedisOps
 
-    %% External Service Relationships
-    MastraService -->|"Evaluates"| LangSmith
-    AuthGuard -->|"Authenticates"| Supabase
-    WebApp -->|"Auth API"| Supabase
+    %% Mastra Component Relationships
+    MastraCore -->|"Controls"| AgentController
+    MastraCore -->|"Uses"| AgentService
+    MastraCore -->|"Uses"| EmbeddingService
+    MastraCore -->|"Uses"| DatabaseService
+
+    %% Cross-Container Relationships
+    NestAPI -->|"Queries"| SupabaseDB
+    NestAPI -->|"Vectors"| VectorStore
+    NestAPI -->|"Caches"| RedisCache
+    MastraCore -->|"Integrates"| NestAPI
+    DatabaseService -->|"Manages"| SupabaseDB
+    EmbeddingService -->|"Stores"| VectorStore
 ```

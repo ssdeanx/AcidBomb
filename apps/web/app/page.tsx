@@ -1,187 +1,354 @@
 import { Suspense } from 'react';
-import Image from 'next/image';
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import { cookies } from 'next/headers';
+import {
+  Box,
+  Container,
+  Grid,
+  Typography,
+  Paper,
+  Link as MuiLink,
+  Stack,
+  Divider,
+  alpha
+} from '@mui/material';
+import {
+  Psychology,
+  Storage as StorageIcon,
+  Code as CodeIcon
+} from '@mui/icons-material';
 
-// Define the Link interface locally
+import { Hero } from '@repo/ui/Hero';
+import { Card } from '@repo/ui/Card';
+import { Code } from '@repo/ui/Code';
+import { Button } from '@repo/ui/Button';
+import { createClient } from './utils/supabase/server';
+import styles from './page.module.css';
+
+/**
+ * Link interface representing resource links fetched from Supabase
+ */
 interface Link {
+  id: string;
   title: string;
   url: string;
   description: string;
 }
 
-import { Card } from '@repo/ui/Card';
-import { Code } from '@repo/ui/Code';
-import { Button } from '@repo/ui/Button';
-import { cookies } from 'next/headers'
-import styles from './page.module.css';
-import { createClient } from './utils/supabase/server';
+/**
+ * Generate SEO metadata for the home page
+ * @returns Metadata object with title, description, and keywords
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: 'DeanMachines AI: Build & Deploy Advanced Conversational Agents',
+    description: 'Leverage Mastra, Pinecone vector search, and robust backend tools to create intelligent AI experiences with persistent memory and RAG.',
+    keywords: [
+      'AI agents', 'Mastra', 'Pinecone', 'Redis', 'Upstash', 'Vector Database',
+      'RAG', 'Conversational AI', 'NestJS', 'Next.js', 'Developer Platform',
+      'Gemini AI', 'LangSmith', 'TypeScript', 'Large Language Models',
+      'Vector Embeddings', 'Semantic Search'
+    ],
+  };
+}
 
+/**
+ * Fetches resource links from the Supabase database
+ * @returns Array of Link objects or empty array on error
+ */
+async function fetchLinks(): Promise<Link[]> {
+  try {
+    const supabase = createClient(cookies());
+    const { data, error } = await supabase
+      .from('links')
+      .select('id, title, url, description')
+      .order('created_at', { ascending: false })
+      .limit(6);
 
-
-
-
-const Gradient = ({
-  conic,
-  className,
-  small,
-}: Readonly<{
-  small?: boolean;
-  conic?: boolean;
-  className?: string;
-}>) => {
-  return (
-    <span
-      className={[
-        styles.gradient,
-        conic ? styles.glowConic : undefined,
-        small ? styles.gradientSmall : styles.gradientLarge,
-        className,
-      ]
-        .filter(Boolean)
-        .join(' ')}
-    />
-  );
-};
-
-const LinksSection = async () => {
-  const fetchLinks = async (): Promise<Link[]> => {
-    try {
-      return await (await fetch('http://localhost:3000/links')).json();
-    } catch (_) {
+    if (error) {
+      console.error('Error fetching links:', error.message);
       return [];
     }
-  };
 
+    return data || [];
+  } catch (error) {
+    console.error('Error fetching links:', error);
+    return [];
+  }
+}
+
+/**
+ * Home page component with hero section, features, code demo, and resources
+ */
+export default async function HomePage() {
+  // Fetch links from Supabase
   const links = await fetchLinks();
 
-  return (
-    <div className={styles.grid}>
-      {links.map(({ title, url, description }) => (
-        <Card className={styles.card} href={url} key={title} title={title}>
-          {description}
-        </Card>
-      ))}
-    </div>
-  );
-};
-
-const LinksSectionForTest = () => {
-  return (
-    <div className={styles.grid}>
-      <Card className={styles.card} href={'url'} title={'title'}>
-        description
-      </Card>
-    </div>
-  );
-};
-
-const RootPage = async ({ params }: { params: { forTest?: boolean } }) => {
-
-  const cookieStore = await cookies()
-  const supabase = createClient(Promise.resolve(cookieStore))
-  const { data: todos } = await supabase.from('todos').select()
+  // Get user authentication status for conditional CTA rendering
+  const supabase = createClient(cookies());
+  const { data: { user } } = await supabase.auth.getUser();
 
   return (
-    <main className={styles.main}>
-      <ul>
-        {todos?.map((todo) => (
-          <li key={todo.id}>{JSON.stringify(todo)}</li>
-        ))}
-      </ul>
-      <div>
-        {todos?.map((todo) => (
-          <li key={todo.id}>{JSON.stringify(todo)}</li>
-        ))}
-      </div>
-      <div className={styles.description}>
-        <p>
-          examples/<Code className={styles.code}>with-nestjs</Code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-turbo&utm_medium=basic&utm_campaign=create-turbo"
-            rel="noopener noreferrer"
-            target="_blank"
+    <Box component="main">
+      {/* Hero Section */}
+      <Box component="section" sx={{ py: { xs: 8, md: 12 } }}>
+        <Hero
+          title="Build Smarter Bots, Faster."
+          highlightText="DeanMachines AI"
+          description="The integrated platform for developers crafting next-generation conversational AI. Go beyond simple chatbots with persistent memory, RAG, and custom tool integration powered by Mastra."
+        />
+        <Stack
+          direction={{ xs: 'column', sm: 'row' }}
+          spacing={2}
+          justifyContent="center"
+          sx={{ mt: 4 }}
+        >
+          <Button
+            component={Link}
+            href={user ? '/chat' : '/signup'}
+            variant="primary"
+            size="lg"
           >
-            By{' '}
-            <Image
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              height={24}
-              priority
-              src="/vercel.svg"
-              width={100}
-            />
-          </a>
-        </div>
-      </div>
+            {user ? 'Go to Dashboard' : 'Sign Up Free'}
+          </Button>
+          <Button
+            component={Link}
+            href="/documentation"
+            variant="outline"
+            size="lg"
+          >
+            View Documentation
+          </Button>
+        </Stack>
+      </Box>
 
-      <Button className={styles.button}>
-        Click me!
-      </Button>
-
-      <div className={styles.hero}>
-        <div className={styles.heroContent}>
-          <div className={styles.logos}>
-            <div className={styles.circles}>
-              <Image
-                alt=""
-                height={614}
-                src="circles.svg"
-                width={614}
-                style={{ pointerEvents: 'none' }}
+      {/* Features Section */}
+      <Box component="section" sx={{ py: { xs: 8, md: 12 }, bgcolor: 'background.default' }}>
+        <Container maxWidth="lg">
+          <Typography
+            variant="h3"
+            align="center"
+            sx={{ mb: 8, fontWeight: 700 }}
+          >
+            Powerful AI Features
+          </Typography>
+          <Grid container component="div" spacing={4} justifyContent="center">
+            <Grid component="div" xs={12} sm={6} md={4}>
+              <Card
+                variant="outlined"
+                title="Mastra AI Integration"
+                icon={<Psychology sx={{ fontSize: 48, color: 'primary.main' }} />}
+                description="Build advanced conversational agents powered by Mastra with custom tool integration, memory chains, and intelligent reasoning."
+                sx={{
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  p: 4,
+                  textAlign: 'center',
+                  bgcolor: 'background.paper',
+                  border: 1,
+                  borderColor: 'divider',
+                  borderRadius: 2,
+                  '&:hover': {
+                    borderColor: 'primary.main',
+                    transform: 'translateY(-5px)',
+                    boxShadow: (theme) => theme.shadows[8]
+                  }
+                }}
               />
-            </div>
-            <div className={styles.logoGradientContainer}>
-              <Gradient className={styles.logoGradient} conic small />
-            </div>
-
-            <div className={styles.logo}>
-              <Image
-                alt="Turborepo"
-                height={120}
-                priority
-                src="turborepo.svg"
-                width={120}
-                style={{ pointerEvents: 'none' }}
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <Card
+                variant="outlined"
+                title="Persistent Memory"
+                icon={<StorageIcon sx={{ fontSize: 48, color: 'primary.main' }} />}
+                description="Store and retrieve conversation context with Pinecone vector embeddings and Redis for short-term memory, enabling truly contextual AI interactions."
+                sx={{
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  p: 4,
+                  textAlign: 'center',
+                  bgcolor: 'background.paper',
+                  border: 1,
+                  borderColor: 'divider',
+                  borderRadius: 2,
+                  '&:hover': {
+                    borderColor: 'primary.main',
+                    transform: 'translateY(-5px)',
+                    boxShadow: (theme) => theme.shadows[8]
+                  }
+                }}
               />
-            </div>
-          </div>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <Card
+                variant="outlined"
+                title="Developer-First Stack"
+                icon={<CodeIcon sx={{ fontSize: 48, color: 'primary.main' }} />}
+                description="Built on Next.js, NestJS, TypeScript, and Supabase, with comprehensive tools for development, deployment, and monitoring of production-ready AI solutions."
+                sx={{
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  p: 4,
+                  textAlign: 'center',
+                  bgcolor: 'background.paper',
+                  border: 1,
+                  borderColor: 'divider',
+                  borderRadius: 2,
+                  '&:hover': {
+                    borderColor: 'primary.main',
+                    transform: 'translateY(-5px)',
+                    boxShadow: (theme) => theme.shadows[8]
+                  }
+                }}
+              />
+            </Grid>
+          </Grid>
+        </Container>
+      </Box>
 
-          <Gradient className={styles.backgroundGradient} conic />
+      {/* Code Demo Section */}
+      <Box component="section" sx={{ py: { xs: 8, md: 12 } }}>
+        <Container maxWidth="md" sx={{ my: { xs: 10, md: 16 } }}>
+          <Paper
+            variant="outlined"
+            sx={{
+              p: { xs: 3, sm: 4 },
+              bgcolor: 'grey.900',
+              border: 1,
+              borderColor: 'rgba(255, 255, 255, 0.1)',
+              borderRadius: 2
+            }}
+          >
+            <Typography variant="h4" sx={{ mb: 3 }}>
+              Example: Defining a Mastra Tool
+            </Typography>
+            <Code variant="block" highlight={true}>
+{`import { definePluginTool } from '@mastra/core';
 
-          <div className={styles.turborepoWordmarkContainer}>
-            <svg
-              className={styles.turborepoWordmark}
-              viewBox="0 0 506 50"
-              width={200}
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <title>Turborepo logo</title>
-              <path d="M53.7187 12.0038V1.05332H0.945312V12.0038H20.8673V48.4175H33.7968V12.0038H53.7187Z" />
-              <path d="M83.5362 49.1431C99.764 49.1431 108.67 40.8972 108.67 27.3081V1.05332H95.7401V26.0547C95.7401 33.6409 91.7821 37.9287 83.5362 37.9287C75.2904 37.9287 71.3324 33.6409 71.3324 26.0547V1.05332H58.4029V27.3081C58.4029 40.8972 67.3084 49.1431 83.5362 49.1431Z" />
-              <path d="M128.462 32.7174H141.325L151.484 48.4175H166.327L154.848 31.3321C161.313 29.0232 165.271 23.8778 165.271 16.8853C165.271 6.72646 157.685 1.05332 146.141 1.05332H115.532V48.4175H128.462V32.7174ZM128.462 22.4925V11.8719H145.481C150.033 11.8719 152.54 13.8509 152.54 17.2152C152.54 20.3816 150.033 22.4925 145.481 22.4925H128.462Z" />
-              <path d="M171.287 48.4175H205.128C215.683 48.4175 221.752 43.404 221.752 35.0262C221.752 29.419 218.189 25.593 213.967 23.8778C216.87 22.4925 220.432 19.1942 220.432 13.9828C220.432 5.60502 214.495 1.05332 204.006 1.05332H171.287V48.4175ZM183.689 19.59V11.542H202.687C206.249 11.542 208.228 12.9273 208.228 15.566C208.228 18.2047 206.249 19.59 202.687 19.59H183.689ZM183.689 29.2871H203.875C207.371 29.2871 209.284 31.0022 209.284 33.5749C209.284 36.1476 207.371 37.8628 203.875 37.8628H183.689V29.2871Z" />
-              <path d="M253.364 0.261719C236.806 0.261719 224.866 10.6185 224.866 24.7354C224.866 38.8523 236.806 49.2091 253.364 49.2091C269.922 49.2091 281.796 38.8523 281.796 24.7354C281.796 10.6185 269.922 0.261719 253.364 0.261719ZM253.364 11.4761C262.072 11.4761 268.602 16.6215 268.602 24.7354C268.602 32.8493 262.072 37.9947 253.364 37.9947C244.656 37.9947 238.126 32.8493 238.126 24.7354C238.126 16.6215 244.656 11.4761 253.364 11.4761Z" />
-              <path d="M300.429 32.7174H313.292L323.451 48.4175H338.294L326.815 31.3321C333.28 29.0232 337.238 23.8778 337.238 16.8853C337.238 6.72646 329.652 1.05332 318.108 1.05332H287.499V48.4175H300.429V32.7174ZM300.429 22.4925V11.8719H317.448C322 11.8719 324.507 13.8509 324.507 17.2152C324.507 20.3816 322 22.4925 317.448 22.4925H300.429Z" />
-              <path d="M343.254 1.05332V48.4175H389.299V37.467H355.92V29.7489H385.539V19.0622H355.92V12.0038H389.299V1.05332H343.254Z" />
-              <path d="M408.46 33.3111H425.677C437.221 33.3111 444.807 27.7699 444.807 17.2152C444.807 6.59453 437.221 1.05332 425.677 1.05332H395.53V48.4175H408.46V33.3111ZM408.46 22.5585V11.8719H424.951C429.569 11.8719 432.076 13.8509 432.076 17.2152C432.076 20.5135 429.569 22.5585 424.951 22.5585H408.46Z" />
-              <path d="M476.899 0.261719C460.341 0.261719 448.401 10.6185 448.401 24.7354C448.401 38.8523 460.341 49.2091 476.899 49.2091C493.456 49.2091 505.33 38.8523 505.33 24.7354C505.33 10.6185 493.456 0.261719 476.899 0.261719ZM476.899 11.4761C485.606 11.4761 492.137 16.6215 492.137 24.7354C492.137 32.8493 485.606 37.9947 476.899 37.9947C468.191 37.9947 461.66 32.8493 461.66 24.7354C461.66 16.6215 468.191 11.4761 476.899 11.4761Z" />
-            </svg>
-          </div>
-        </div>
-      </div>
+export const weatherTool = definePluginTool({
+  name: "weather",
+  description: "Get current weather data for a location",
+  parameters: {
+    type: "object",
+    properties: {
+      location: {
+        type: "string",
+        description: "City name, e.g. 'New York'",
+      },
+      units: {
+        type: "string",
+        enum: ["metric", "imperial"],
+        description: "Units for the temperature (C or F)",
+        default: "metric"
+      },
+    },
+    required: ["location"],
+  },
+  handler: async ({ location, units = "metric" }) => {
+    try {
+      const API_KEY = process.env.WEATHER_API_KEY;
+      const response = await fetch(
+        \`https://api.openweathermap.org/data/2.5/weather?q=\${location}&units=\${units}&appid=\${API_KEY}\`
+      );
+      const data = await response.json();
 
-      {/**
-       * @note Unsupported async component testing.
-       * Should limit the following constrain for a specific environment (dev or testing).
-       */}
+      if (data.cod !== 200) {
+        throw new Error(\`Weather API error: \${data.message}\`);
+      }
 
-      {params.forTest ? (
-        <LinksSectionForTest />
-      ) : (
-        <Suspense fallback={'Loading links...'}>{<LinksSection />}</Suspense>
-      )}
-    </main>
+      return {
+        temperature: data.main.temp,
+        conditions: data.weather[0].description,
+        humidity: data.main.humidity,
+        wind: data.wind.speed,
+        location: \`\${data.name}, \${data.sys.country}\`,
+        units: units === "metric" ? "°C" : "°F"
+      };
+    } catch (error) {
+      return { error: error.message };
+    }
+  },
+});`}
+            </Code>
+          </Paper>
+        </Container>
+      </Box>
+
+      {/* Links Section */}
+      <Box component="section" sx={{ py: { xs: 8, md: 12 }, bgcolor: 'background.default' }}>
+        <Container maxWidth="lg">
+          <Typography
+            variant="h4"
+            align="center"
+            sx={{ mb: 6, fontWeight: 700 }}
+          >
+            Resources & Updates
+          </Typography>
+
+          {links.length === 0 ? (
+            <Typography variant="body1" component="p" align="center" color="text.secondary">
+              No resources posted yet.
+            </Typography>
+          ) : (
+            <Grid container component="div" spacing={4}>
+              {links.map((link) => (
+                <Grid component="div" xs={12} sm={6} md={4} key={link.id}>
+                  <MuiLink
+                    component={Link}
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    sx={{
+                      textDecoration: 'none',
+                      display: 'block',
+                      height: '100%'
+                    }}
+                  >
+                    <Card
+                      variant="outline"
+                      title={link.title}
+                      description={link.description}
+                      sx={{
+                        height: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        bgcolor: 'background.paper',
+                        border: 1,
+                        borderColor: 'divider',
+                        '&:hover': {
+                          borderColor: 'primary.light',
+                          boxShadow: (theme) => theme.shadows[4]
+                        }
+                      }}
+                    />
+                  </MuiLink>
+                </Grid>
+              ))}
+            </Grid>
+          )}
+        </Container>
+      </Box>
+
+      {/* Final CTA */}
+      <Box component="section" sx={{ py: { xs: 8, md: 12 } }}>
+        <Container sx={{ textAlign: 'center', py: { xs: 10, md: 16 } }}>
+          <Typography variant="h4" sx={{ mb: 4 }}>
+            Ready to build smarter AI?
+          </Typography>
+          <Button
+            component={Link}
+            href={user ? '/chat' : '/signup'}
+            variant="primary"
+            size="lg"
+          >
+            {user ? 'Start Chatting Now' : 'Sign Up For Free'}
+          </Button>
+        </Container>
+      </Box>
+    </Box>
   );
 }
-export default RootPage;

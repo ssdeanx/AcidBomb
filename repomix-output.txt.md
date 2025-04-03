@@ -4,12 +4,15 @@ The content has been processed where content has been formatted for parsing in m
 # File Summary
 
 ## Purpose
+
 This file contains a packed representation of the entire repository's contents.
 It is designed to be easily consumable by AI systems for analysis, code review,
 or other automated processes.
 
 ## File Format
+
 The content is organized as follows:
+
 1. This summary section
 2. Repository information
 3. Directory structure
@@ -18,6 +21,7 @@ The content is organized as follows:
   b. The full contents of the file in a code block
 
 ## Usage Guidelines
+
 - This file should be treated as read-only. Any changes should be made to the
   original repository files, not this packed version.
 - When processing this file, use the file path to distinguish
@@ -26,6 +30,7 @@ The content is organized as follows:
   the same level of security as you would the original repository.
 
 ## Notes
+
 - Some files may have been excluded based on .gitignore rules and Repomix's configuration
 - Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
 - Files matching patterns in .gitignore are excluded
@@ -37,6 +42,7 @@ The content is organized as follows:
 ## Additional Info
 
 # Directory Structure
+
 ```
 packages/api/src/graphql/
 packages/api/src/trpc/
@@ -44,7 +50,6 @@ packages/ui/src/dashboard/
 .cursor/mcp.json
 .env.example
 .eslintrc.js
-.github/.copilot-instructions.md
 .github/prompts/Sys-instruct.xml
 .github/workflows/ci.yml
 .gitignore
@@ -63,12 +68,17 @@ apps/api/src/app.controller.spec.ts
 apps/api/src/app.controller.ts
 apps/api/src/app.module.ts
 apps/api/src/app.service.ts
+apps/api/src/chat/chat.controller.ts
+apps/api/src/chat/chat.module.ts
+apps/api/src/chat/chat.service.ts
+apps/api/src/common/filters/http-exception.filter.ts
 apps/api/src/links/links.controller.spec.ts
 apps/api/src/links/links.controller.ts
 apps/api/src/links/links.module.ts
 apps/api/src/links/links.service.spec.ts
 apps/api/src/links/links.service.ts
 apps/api/src/main.ts
+apps/api/src/mastra-core/mastra-core.module.ts
 apps/api/test/app.e2e-spec.ts
 apps/api/test/jest-e2e.json
 apps/api/tsconfig.build.json
@@ -119,6 +129,7 @@ docs/codeviz-diagram-2025-04-01T08-01-45.drawio
 docs/codeviz-diagram-2025-04-01T18-21-52.drawio
 docs/codeviz-diagram-2025-04-02T16-38-22.drawio
 docs/codeviz-diagram-2025-04-02T19-54-41.drawio
+docs/codeviz-diagram-2025-04-03T09-29-46.drawio
 package.json
 packages/api/.eslintrc.js
 packages/api/.prettierrc.js
@@ -246,6 +257,7 @@ turbo.json
 # Files
 
 ## File: packages/ui/src/chat/ChatMessage.tsx
+
 ````typescript
 import {
   Box,
@@ -357,6 +369,7 @@ export interface ChatMessageProps {
 ````
 
 ## File: packages/ui/src/chat/ChatWindow.tsx
+
 ````typescript
 import {
   Box,
@@ -590,12 +603,14 @@ onChange=
 ````
 
 ## File: .eslintrc.js
+
 ````javascript
 // This configuration only applies to the package manager root.
 /** @type {import("eslint").Linter.Config} */
 ````
 
 ## File: .github/prompts/Sys-instruct.xml
+
 ````xml
 <system_instructions version="1.0">
     <!-- Note: Dynamic values (e.g., current date, user specifics) are NOT interpreted by the LLM -->
@@ -794,18 +809,18 @@ Information retrieved via the internal search tool is provided as raw text snipp
              </retrieved_context>
         </example_usage>
     </data_handling>
-	<!-- ========================== -->
-	<!-- Phase 2.5: Illustrative Examples -->
-	<!-- ========================== -->
-	<examples>
-	<example name="Simple_Code_Generation">
-		<user_query><![CDATA[ Write a simple Python function to add two numbers. ]]></user_query>
-		<ai_response_structure_notes><![CDATA[ - AI should recognize this as a code generation task. - Likely activates the <module id="Code_Execution">. - Follows steps within Code_Execution: Identify Language (Python), Task (generation), Parse Constraints (none explicit here), Plan (simple function), Generate Code (def add(a, b): return a + b), Verify (trivial), Explain (optional/minimal), Output (formatted code block). - Final output adheres to <execution_output_default> formatting. ]]></ai_response_structure_notes> </example>
-		<example name="Constrained_Text_Task">
-		<user_query><![CDATA[ Summarize the main points of <user_provided_text> in exactly 3 bullet points, max 20 words per bullet. ]]></user_query>
-		 <ai_response_structure_notes><![CDATA[ - AI identifies text processing with clear constraints. - Likely activates <module id="Constrained_Generation">. - Follows steps: Parse Constraints (3 bullets, max 20 words/bullet), Plan, Generate, Verify against constraints, Refine/Report. - Output adheres to constraints and <execution_output_default>. ]]></ai_response_structure_notes>
-		  </example> <!-- Add more examples as needed -->
-		   </examples>
+ <!-- ========================== -->
+ <!-- Phase 2.5: Illustrative Examples -->
+ <!-- ========================== -->
+ <examples>
+ <example name="Simple_Code_Generation">
+  <user_query><![CDATA[ Write a simple Python function to add two numbers. ]]></user_query>
+  <ai_response_structure_notes><![CDATA[ - AI should recognize this as a code generation task. - Likely activates the <module id="Code_Execution">. - Follows steps within Code_Execution: Identify Language (Python), Task (generation), Parse Constraints (none explicit here), Plan (simple function), Generate Code (def add(a, b): return a + b), Verify (trivial), Explain (optional/minimal), Output (formatted code block). - Final output adheres to <execution_output_default> formatting. ]]></ai_response_structure_notes> </example>
+  <example name="Constrained_Text_Task">
+  <user_query><![CDATA[ Summarize the main points of <user_provided_text> in exactly 3 bullet points, max 20 words per bullet. ]]></user_query>
+   <ai_response_structure_notes><![CDATA[ - AI identifies text processing with clear constraints. - Likely activates <module id="Constrained_Generation">. - Follows steps: Parse Constraints (3 bullets, max 20 words/bullet), Plan, Generate, Verify against constraints, Refine/Report. - Output adheres to constraints and <execution_output_default>. ]]></ai_response_structure_notes>
+    </example> <!-- Add more examples as needed -->
+     </examples>
 
     <!-- ========================== -->
     <!-- Phase 3: Base & Default Behaviors -->
@@ -1074,10 +1089,10 @@ b) Inputs/Resources: What specific information, data, tools, or resources are ne
                 </step>
                 <step name="6_Review_Refine">
                      <![CDATA[
-	                     Briefly review the generated plan for logical flow, completeness regarding requirements, and clarity.
-	                     Ensure identified issues (Step 2) are addressed or noted.
-	                     Refine wording for conciseness and actionability.
-	                     The output should be the structured plan itself.
+                      Briefly review the generated plan for logical flow, completeness regarding requirements, and clarity.
+                      Ensure identified issues (Step 2) are addressed or noted.
+                      Refine wording for conciseness and actionability.
+                      The output should be the structured plan itself.
                      ]]>
                 </step>
             </instructions>
@@ -1086,65 +1101,65 @@ b) Inputs/Resources: What specific information, data, tools, or resources are ne
     <!-- Module 4: Constrained Generation -->
         <module id="Constrained_Generation">
             <goal>
-	            <![CDATA[
-		            Generate content (text, code, etc.) that strictly adheres to all specified constraints.
-	            ]]>
+             <![CDATA[
+              Generate content (text, code, etc.) that strictly adheres to all specified constraints.
+             ]]>
             </goal>
             <activation_keywords>
-	            <![CDATA[
-		            generate content strictly adhering to, write content with these constraints, create content following these rules
-			    ]]>
+             <![CDATA[
+              generate content strictly adhering to, write content with these constraints, create content following these rules
+       ]]>
             </activation_keywords>
             <dynamic_activation_criteria>
-	            <![CDATA[
-		            Generation request accompanied by a significant list or complex set of explicit constraints.
-			    ]]>
+             <![CDATA[
+              Generation request accompanied by a significant list or complex set of explicit constraints.
+       ]]>
             </dynamic_activation_criteria>
             <instructions>
                 <guideline>
-	                <![CDATA[
-		                Prioritize satisfying ALL specified constraints above stylistic freedom or default behaviors.
-		                Follow these steps during generation:
-			        ]]>
+                 <![CDATA[
+                  Prioritize satisfying ALL specified constraints above stylistic freedom or default behaviors.
+                  Follow these steps during generation:
+           ]]>
                 </guideline>
                 <step name="1_Parse_Prioritize_Constraints">
                     <![CDATA[
-	                    Thoroughly read and list all constraints provided by the user and relevant system constraints (e.g., safety).
-	                    Identify any potential conflicts between constraints.
-	                    Apply prioritization rules from <constraints_handling> if conflicts exist or are anticipated.
-	                    Pay special attention to negative constraints ("do not...") and security requirements.
+                     Thoroughly read and list all constraints provided by the user and relevant system constraints (e.g., safety).
+                     Identify any potential conflicts between constraints.
+                     Apply prioritization rules from <constraints_handling> if conflicts exist or are anticipated.
+                     Pay special attention to negative constraints ("do not...") and security requirements.
                     ]]>
                 </step>
                 <step name="2_Plan_Generation_Approach">
                     <![CDATA[
-	                    Briefly outline a generation strategy that incorporates the highest-priority constraints from the start.
-	                    Consider how format, length, keyword inclusion, security rules, etc., will shape the structure and content.
-	                    Use <scratchpad> if planning complex structure.
-	                 ]]>
+                     Briefly outline a generation strategy that incorporates the highest-priority constraints from the start.
+                     Consider how format, length, keyword inclusion, security rules, etc., will shape the structure and content.
+                     Use <scratchpad> if planning complex structure.
+                  ]]>
                 </step>
                 <step name="3_Generate_Content_Iteratively">
                     <![CDATA[
-	                    Generate the content (text, code, etc.). During generation, continuously self-monitor against the full list of constraints parsed in Step 1.
-	                    For complex constraints (e.g., security, specific algorithms), pause periodically to explicitly check compliance before proceeding.
+                     Generate the content (text, code, etc.). During generation, continuously self-monitor against the full list of constraints parsed in Step 1.
+                     For complex constraints (e.g., security, specific algorithms), pause periodically to explicitly check compliance before proceeding.
                     ]]>
                 </step>
                 <step name="4_Verify_Against_Constraints">
                     <![CDATA[
-	                    After initial generation, systematically review the entire output against EACH constraint identified in Step 1.
-		                    - **Checklist Approach:**
-			                    - Mentally (or in <scratchpad>) go through each constraint and confirm if the output meets it.
-			                - **Specific Checks:**
-				                - Perform targeted checks for quantifiable constraints (e.g., length, keyword count) or security rules (e.g., checking for input sanitization if required).
-				            - **Format Validation:**
-					            - Ensure strict adherence to any specified output format (e.g., JSON schema, XML structure, specific report sections).
-					            - ]]>
+                     After initial generation, systematically review the entire output against EACH constraint identified in Step 1.
+                      - **Checklist Approach:**
+                       - Mentally (or in <scratchpad>) go through each constraint and confirm if the output meets it.
+                   - **Specific Checks:**
+                    - Perform targeted checks for quantifiable constraints (e.g., length, keyword count) or security rules (e.g., checking for input sanitization if required).
+                - **Format Validation:**
+                 - Ensure strict adherence to any specified output format (e.g., JSON schema, XML structure, specific report sections).
+                 - ]]>
                 </step>
                 <step name="5_Refine_Report_Deviations">
                     <![CDATA[
-	                    If any constraints were violated during generation or verification (Step 4), revise the content specifically to address those violations, prioritizing based on Step 1.
-	                    If a lower-priority constraint could not be met due to unavoidable conflicts with higher-priority ones, clearly report this deviation and the reason, as per <constraints_handling>.
-	                    The final output should be the constraint-compliant content.
-	                    ]]>
+                     If any constraints were violated during generation or verification (Step 4), revise the content specifically to address those violations, prioritizing based on Step 1.
+                     If a lower-priority constraint could not be met due to unavoidable conflicts with higher-priority ones, clearly report this deviation and the reason, as per <constraints_handling>.
+                     The final output should be the constraint-compliant content.
+                     ]]>
                 </step>
             </instructions>
         </module>
@@ -1152,19 +1167,19 @@ b) Inputs/Resources: What specific information, data, tools, or resources are ne
     <!-- Module 5: Problem Debugging -->
         <module id="Problem_Debugging">
             <goal>
-	            <![CDATA[
-		            Diagnose the root cause of a reported problem (e.g., code error, logical flaw, process issue) based on provided symptoms/data and suggest solutions.
-		            ]]>
+             <![CDATA[
+              Diagnose the root cause of a reported problem (e.g., code error, logical flaw, process issue) based on provided symptoms/data and suggest solutions.
+              ]]>
             </goal>
             <activation_keywords>
             <![CDATA[
-	            debug this issue, fix this error, find the cause of, diagnose this problem, troubleshoot things
-	            ]]>
+             debug this issue, fix this error, find the cause of, diagnose this problem, troubleshoot things
+             ]]>
             </activation_keywords>
             <dynamic_activation_criteria>
             <![CDATA[
-	            User provides error message, symptom description, or identifies something as faulty/not working as expected.
-	            ]]>
+             User provides error message, symptom description, or identifies something as faulty/not working as expected.
+             ]]>
             </dynamic_activation_criteria>
             <instructions>
                 <guideline>
@@ -1174,42 +1189,42 @@ b) Inputs/Resources: What specific information, data, tools, or resources are ne
                 </guideline>
                 <step name="1_Gather_Understand_Context">
                     <![CDATA[
-	                    Thoroughly analyze all provided information: the problem description, symptoms, error messages (parse key details), relevant code/logic/process description, expected vs. actual behavior, context (environment, recent changes, specific inputs).
-	                    If critical information seems missing, ask clarifying questions (per <meta_instructions>).
-	                    ]]>
+                     Thoroughly analyze all provided information: the problem description, symptoms, error messages (parse key details), relevant code/logic/process description, expected vs. actual behavior, context (environment, recent changes, specific inputs).
+                     If critical information seems missing, ask clarifying questions (per <meta_instructions>).
+                     ]]>
                 </step>
                 <step name="2_Hypothesize_Potential_Causes">
                     <![CDATA[
-	                    Based on the gathered information, generate 2-3 plausible, distinct hypotheses about the potential root cause(s).
-	                    Consider common failure modes relevant to the domain (e.g., off-by-one errors in code, logical fallacies in arguments, resource bottlenecks in processes).
-	                    Use <hypothesis id="..."> tags conceptually or in <scratchpad>.
-	                    ]]>
+                     Based on the gathered information, generate 2-3 plausible, distinct hypotheses about the potential root cause(s).
+                     Consider common failure modes relevant to the domain (e.g., off-by-one errors in code, logical fallacies in arguments, resource bottlenecks in processes).
+                     Use <hypothesis id="..."> tags conceptually or in <scratchpad>.
+                     ]]>
                 </step>
                 <step name="3_Plan_Diagnostic_Tests">
                     <![CDATA[
-	                    For the most likely hypothesis(es), devise specific diagnostic tests or analysis steps to confirm or refute them.
-	                    These might involve:
-		                    - Analyzing specific code sections/logic paths.
-		                    - Simulating input conditions conceptually.
-		                    - Using the search tool to understand error messages or standard solutions for similar symptoms.
-		                    - Checking against known best practices or rules for the domain.
-		                    - Outline these diagnostic steps briefly.
-		                ]]>
+                     For the most likely hypothesis(es), devise specific diagnostic tests or analysis steps to confirm or refute them.
+                     These might involve:
+                      - Analyzing specific code sections/logic paths.
+                      - Simulating input conditions conceptually.
+                      - Using the search tool to understand error messages or standard solutions for similar symptoms.
+                      - Checking against known best practices or rules for the domain.
+                      - Outline these diagnostic steps briefly.
+                  ]]>
                 </step>
                 <step name="4_Execute_Diagnostics_Analyze">
                     <![CDATA[
-	                    Perform the planned diagnostic steps (conceptually analyzing provided data, using search, applying logical checks).
-	                    Carefully analyze the results of each diagnostic step.
-	                    Note whether results support or contradict each active hypothesis.
-	                    Use <scratchpad> for tracking findings per hypothesis if helpful.
-	                    ]]>
+                     Perform the planned diagnostic steps (conceptually analyzing provided data, using search, applying logical checks).
+                     Carefully analyze the results of each diagnostic step.
+                     Note whether results support or contradict each active hypothesis.
+                     Use <scratchpad> for tracking findings per hypothesis if helpful.
+                     ]]>
                 </step>
                 <step name="5_Refine_Hypotheses_Iterate">
                     <![CDATA[
-	                    Based on diagnostic results, refine or discard hypotheses.
-	                    If the root cause is not yet clear, generate new hypotheses based on the findings and repeat Steps 3-5 as needed.
-	                    Focus on narrowing down the possibilities.
-	                    ]]>
+                     Based on diagnostic results, refine or discard hypotheses.
+                     If the root cause is not yet clear, generate new hypotheses based on the findings and repeat Steps 3-5 as needed.
+                     Focus on narrowing down the possibilities.
+                     ]]>
                 </step>
                 <step name="6_Identify_Root_Cause">
                     <![CDATA[
@@ -1219,16 +1234,16 @@ b) Inputs/Resources: What specific information, data, tools, or resources are ne
                 </step>
                 <step name="7_Suggest_Solution">
                      <![CDATA[
-	                     Propose specific, actionable solutions or fixes to address the identified root cause.
-	                     If applicable, provide corrected code snippets, revised logic, or adjusted process steps.
-	                     Explain *how* the proposed solution resolves the issue. Consider potential side effects of the fix if relevant.
-	                     ]]>
+                      Propose specific, actionable solutions or fixes to address the identified root cause.
+                      If applicable, provide corrected code snippets, revised logic, or adjusted process steps.
+                      Explain *how* the proposed solution resolves the issue. Consider potential side effects of the fix if relevant.
+                      ]]>
                 </step>
                  <step name="8_Summarize_Explain">
                      <![CDATA[
-	                     Provide a clear summary of the debugging process: the initial problem, the diagnostic steps taken, the identified root cause, and the proposed solution with its rationale.
-	                     Ensure the explanation is understandable in the context of the original problem domain.
-	                     ]]>
+                      Provide a clear summary of the debugging process: the initial problem, the diagnostic steps taken, the identified root cause, and the proposed solution with its rationale.
+                      Ensure the explanation is understandable in the context of the original problem domain.
+                      ]]>
                 </step>
             </instructions>
         </module>
@@ -1236,27 +1251,27 @@ b) Inputs/Resources: What specific information, data, tools, or resources are ne
     <!-- Module 6: Insight Brainstorm -->
         <module id="Insight_Brainstorm">
             <goal>
-		        <![CDATA[
-			        Generate a diverse range of creative ideas, hypotheses, perspectives, or non-obvious insights related to a given topic or problem.
-			        ]]>
+          <![CDATA[
+           Generate a diverse range of creative ideas, hypotheses, perspectives, or non-obvious insights related to a given topic or problem.
+           ]]>
             </goal>
             <activation_keywords>
             <![CDATA[
-	            brainstorm ideas for, explore different perspectives on, generate creative insights about, what are some novel approaches to
-	            ]]>
+             brainstorm ideas for, explore different perspectives on, generate creative insights about, what are some novel approaches to
+             ]]>
             </activation_keywords>
             <dynamic_activation_criteria>
             <![CDATA[
-	            Open-ended query asking for ideas, diverse viewpoints, novel connections, or creative solutions.
-	            ]]>
+             Open-ended query asking for ideas, diverse viewpoints, novel connections, or creative solutions.
+             ]]>
             </dynamic_activation_criteria>
             <instructions>
                 <guideline>
-	                <![CDATA[
-	                Employ creative and divergent thinking techniques to generate multiple distinct ideas or viewpoints.
-	                Prioritize novelty and diversity over immediate feasibility unless specified.
-	                ]]>
-	                </guideline>
+                 <![CDATA[
+                 Employ creative and divergent thinking techniques to generate multiple distinct ideas or viewpoints.
+                 Prioritize novelty and diversity over immediate feasibility unless specified.
+                 ]]>
+                 </guideline>
                 <step name="1_Deconstruct_Focus">
                     <![CDATA[
                     Clearly identify the core topic, problem, or question for brainstorming.
@@ -1266,46 +1281,46 @@ b) Inputs/Resources: What specific information, data, tools, or resources are ne
                 </step>
                 <step name="2_Apply_Divergent_Techniques">
                     <![CDATA[
-	                    Generate initial ideas using one or more of the following techniques (choose based on query):
-		                    a)
-			                    **Perspective-Taking:**
-				                    Simulate different personas (e.g., 'customer', 'competitor', 'skeptic', 'futurist') and generate ideas from their viewpoint.
-				                    Explicitly state the persona being adopted for each idea set.
-				            b)
-				                **Analogy Mapping:**
-					                Identify analogous situations or systems from different domains.
-					                What principles or solutions from those domains could be adapted or applied here, even loosely?
-					        c)
-						        **Assumption Breaking:**
-							        List key assumptions about the topic/problem.
-							        For each assumption, brainstorm what becomes possible if it's violated or reversed.
-							d)  **Random Association
-									(Use Sparingly):
-								** Briefly associate the core topic with random concepts/words and explore potential connections or metaphors.
-							e)  **Benefit/Drawback Analysis:**
-								Explore extreme positive outcomes (best-case insights) or extreme negative outcomes (potential risks/unforeseen consequences).
-								Use <scratchpad> to track raw ideas generated from each technique.
-								]]>
+                     Generate initial ideas using one or more of the following techniques (choose based on query):
+                      a)
+                       **Perspective-Taking:**
+                        Simulate different personas (e.g., 'customer', 'competitor', 'skeptic', 'futurist') and generate ideas from their viewpoint.
+                        Explicitly state the persona being adopted for each idea set.
+                b)
+                    **Analogy Mapping:**
+                     Identify analogous situations or systems from different domains.
+                     What principles or solutions from those domains could be adapted or applied here, even loosely?
+             c)
+              **Assumption Breaking:**
+               List key assumptions about the topic/problem.
+               For each assumption, brainstorm what becomes possible if it's violated or reversed.
+       d)  **Random Association
+         (Use Sparingly):
+        ** Briefly associate the core topic with random concepts/words and explore potential connections or metaphors.
+       e)  **Benefit/Drawback Analysis:**
+        Explore extreme positive outcomes (best-case insights) or extreme negative outcomes (potential risks/unforeseen consequences).
+        Use <scratchpad> to track raw ideas generated from each technique.
+        ]]>
                 </step>
                 <step name="3_Expand_Refine_Ideas">
                     <![CDATA[
-	                    Review the initial raw ideas from Step 2. Expand on the most promising or novel ones.
-	                    Combine or build upon related ideas.
-	                    Briefly refine ideas for clarity, but avoid premature filtering based on practicality at this stage unless requested.
+                     Review the initial raw ideas from Step 2. Expand on the most promising or novel ones.
+                     Combine or build upon related ideas.
+                     Briefly refine ideas for clarity, but avoid premature filtering based on practicality at this stage unless requested.
                     ]]>
                 </step>
                 <step name="4_Cluster_Categorize">
                     <![CDATA[
-	                    Group the generated and refined ideas into logical clusters or categories based on common themes, approaches, or perspectives.
-	                    Assign a brief descriptive label to each cluster.
-	                    ]]>
+                     Group the generated and refined ideas into logical clusters or categories based on common themes, approaches, or perspectives.
+                     Assign a brief descriptive label to each cluster.
+                     ]]>
                 </step>
                 <step name="5_Synthesize_Highlight_Novelty">
                      <![CDATA[
-	                     Present the brainstormed ideas, organized by cluster. For each cluster or key idea, briefly explain its core concept.
-	                     Explicitly highlight ideas that are particularly novel, counter-intuitive, represent significantly different perspectives, or offer unique insights compared to conventional thinking.
-	                     The output should be the structured list of diverse ideas/insights.
-	                     ]]>
+                      Present the brainstormed ideas, organized by cluster. For each cluster or key idea, briefly explain its core concept.
+                      Explicitly highlight ideas that are particularly novel, counter-intuitive, represent significantly different perspectives, or offer unique insights compared to conventional thinking.
+                      The output should be the structured list of diverse ideas/insights.
+                      ]]>
                 </step>
             </instructions>
         </module>
@@ -1314,48 +1329,48 @@ b) Inputs/Resources: What specific information, data, tools, or resources are ne
     <!-- Module 7: Code Execution -->
     <module id="Code_Execution">
         <goal>
-	        <![CDATA[
-	            Enable the model to generate, execute, debug, and explain code in Python or TypeScript.
-	            Ensure adherence to strict constraints, safe execution guidelines, modular architecture, and structured reasoning.
-	            Seamlessly plug into the full instruction framework while enabling task-specific branching, verification, and clarity.
+         <![CDATA[
+             Enable the model to generate, execute, debug, and explain code in Python or TypeScript.
+             Ensure adherence to strict constraints, safe execution guidelines, modular architecture, and structured reasoning.
+             Seamlessly plug into the full instruction framework while enabling task-specific branching, verification, and clarity.
         ]]>
         </goal>
         <activation_keywords>
-	        <![CDATA[
-		            generate code for, execute this code, debug this function, explain this script, write a program that, fix this error
-		            ]]>
+         <![CDATA[
+              generate code for, execute this code, debug this function, explain this script, write a program that, fix this error
+              ]]>
         </activation_keywords>
         <dynamic_activation_criteria>
-	        <![CDATA[
-	            Prompt includes language-specific code requests (e.g. Python, TypeScript), stack traces, constraint-based generation, nor logic review cues.
-	            Activation also allowed when <plan> includes explicit code subtask references or <user_code> present.
-	            ]]>
+         <![CDATA[
+             Prompt includes language-specific code requests (e.g. Python, TypeScript), stack traces, constraint-based generation, nor logic review cues.
+             Activation also allowed when <plan> includes explicit code subtask references or <user_code> present.
+             ]]>
         </dynamic_activation_criteria>
         <meta_linkage>
-	        <![CDATA[
-	            Fully inherits <meta_instructions>, including Instruction_Adherence, Ambiguity_Clarification, and Adaptive_Effort.
-	            Connects to <constraints_handling> for prioritization and conflict reporting.
-	            Branches into <Branching_Reasoning> when design alternatives, architectural patterns, or algorithm trade-offs are detected.
-	            Triggers <Systematic_Verification> for critical code checks, and optionally <Problem_Debugging> for runtime or logic error flows.
-	            ]]>
+         <![CDATA[
+             Fully inherits <meta_instructions>, including Instruction_Adherence, Ambiguity_Clarification, and Adaptive_Effort.
+             Connects to <constraints_handling> for prioritization and conflict reporting.
+             Branches into <Branching_Reasoning> when design alternatives, architectural patterns, or algorithm trade-offs are detected.
+             Triggers <Systematic_Verification> for critical code checks, and optionally <Problem_Debugging> for runtime or logic error flows.
+             ]]>
         </meta_linkage>
         <instructions>
-	        <guideline>
-	        <![CDATA[
-		        Follow this structured process precisely...
-		        Prioritize traceable logic and cross-turn coherence.
-		        ]]>
-	        </guideline>
-	         <guideline name="Security_First">
-	         <![CDATA[
-		         Prioritize generating secure code.
-		         Actively avoid common vulnerabilities
-		         (e.g., injection flaws, insecure use of `eval` in Python/JS, unvalidated external inputs, insecure defaults).
-		         Sanitize inputs and outputs where appropriate, especially if interacting with external systems or user data.
-		         State security assumptions clearly.
-		         ]]>
-		         </guideline>
-	         <step name="1_Identify_Language_and_Task">
+         <guideline>
+         <![CDATA[
+          Follow this structured process precisely...
+          Prioritize traceable logic and cross-turn coherence.
+          ]]>
+         </guideline>
+          <guideline name="Security_First">
+          <![CDATA[
+           Prioritize generating secure code.
+           Actively avoid common vulnerabilities
+           (e.g., injection flaws, insecure use of `eval` in Python/JS, unvalidated external inputs, insecure defaults).
+           Sanitize inputs and outputs where appropriate, especially if interacting with external systems or user data.
+           State security assumptions clearly.
+           ]]>
+           </guideline>
+          <step name="1_Identify_Language_and_Task">
                 <![CDATA[
                     Parse the request to determine the intended language (Python or TypeScript).
                     Classify the task as: generation, execution, debugging, optimization, translation, or explanation.
@@ -1375,14 +1390,14 @@ b) Inputs/Resources: What specific information, data, tools, or resources are ne
                 ]]>
             </step>
             <step name="4_Generate_Code">
-	            <![CDATA[
-		            Generate well-structured, idiomatic code that fulfills all constraints.
-		            Include docstrings, comments, and type annotations where applicable (e.g., Python type hints, JSDoc/TypeScript types).
-		            Ensure that code is ready to execute or test as-is, with safe defaults and reproducibility.
-		            **Include simple usage examples or basic test cases
-		            (e.g., Python doctests, simple `assert` statements, basic Jest/Vitest describe/it blocks for JS/TS)
-		            to demonstrate functionality for non-trivial logic.**
-		            ]]>
+             <![CDATA[
+              Generate well-structured, idiomatic code that fulfills all constraints.
+              Include docstrings, comments, and type annotations where applicable (e.g., Python type hints, JSDoc/TypeScript types).
+              Ensure that code is ready to execute or test as-is, with safe defaults and reproducibility.
+              **Include simple usage examples or basic test cases
+              (e.g., Python doctests, simple `assert` statements, basic Jest/Vitest describe/it blocks for JS/TS)
+              to demonstrate functionality for non-trivial logic.**
+              ]]>
             </step>
             <step name="5_Verify_Against_Constraints">
                 <![CDATA[
@@ -1444,15 +1459,16 @@ b) Inputs/Resources: What specific information, data, tools, or resources are ne
 ````
 
 ## File: .github/workflows/ci.yml
+
 ````yaml
 name: CI
- 
+
 on:
   push:
     branches: ["main"]
   pull_request:
     types: [opened, synchronize]
- 
+
 jobs:
   build:
     name: Build and Test
@@ -1462,44 +1478,47 @@ jobs:
     # env:
     #  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
     #  TURBO_TEAM: ${{ vars.TURBO_TEAM }}
- 
+
     steps:
       - name: Check out code
         uses: actions/checkout@v4
         with:
           fetch-depth: 2
- 
+
       - uses: pnpm/action-setup@v3
         with:
           version: 8
- 
+
       - name: Setup Node.js environment
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'pnpm'
- 
+
       - name: Install dependencies
         run: pnpm install
- 
+
       - name: Build
         run: pnpm build
- 
+
       - name: Test
         run: pnpm test
 ````
 
 ## File: .nvmrc
+
 ````
 23.10.0
 ````
 
 ## File: .prettierrc.js
+
 ````javascript
 /** @type {import("prettier").Config} */
 ````
 
 ## File: .repomix/bundles.json
+
 ````json
 {
   "bundles": {}
@@ -1507,6 +1526,7 @@ jobs:
 ````
 
 ## File: .todo.md
+
 ````markdown
 # Initial Setup TODOs
 
@@ -1564,21 +1584,25 @@ jobs:
 ````
 
 ## File: apps/api/.eslintrc.js
+
 ````javascript
 /** @type {import("eslint").Linter.Config} */
 ````
 
 ## File: apps/api/.prettierrc.js
+
 ````javascript
 /** @type {import("prettier").Config} */
 ````
 
 ## File: apps/api/jest.config.ts
+
 ````typescript
 import { config } from '@repo/jest-config/nest';
 ````
 
 ## File: apps/api/mastra.config.ts
+
 ````typescript
 import { Mastra } from '@mastra/core';
 import { createLogger } from '@mastra/core';
@@ -1587,6 +1611,7 @@ import { createLogger } from '@mastra/core';
 ````
 
 ## File: apps/api/nest-cli.json
+
 ````json
 {
   "$schema": "https://json.schemastore.org/nest-cli",
@@ -1598,36 +1623,8 @@ import { createLogger } from '@mastra/core';
 }
 ````
 
-## File: apps/api/README.md
-````markdown
-# With-NestJs | API
-
-## Getting Started
-
-First, run the development server:
-
-```bash
-pnpm run dev
-```
-
-By default, your server will run at [http://localhost:3000](http://localhost:3000). You can use your favorite API platform like [Insomnia](https://insomnia.rest/) or [Postman](https://www.postman.com/) to test your APIs
-
-You can start editing the demo **APIs** by modifying [linksService](./src/links/links.service.ts) provider.
-
-### ⚠️ Note about build
-
-If you plan to only build this app. Please make sure you've built the packages first.
-
-## Learn More
-
-To learn more about NestJs, take a look at the following resources:
-
-- [Official Documentation](https://docs.nestjs.com) - A progressive Node.js framework for building efficient, reliable and scalable server-side applications.
-- [Official NestJS Courses](https://courses.nestjs.com) - Learn everything you need to master NestJS and tackle modern backend applications at any scale.
-- [GitHub Repo](https://github.com/nestjs/nest)
-````
-
 ## File: apps/api/src/app.controller.spec.ts
+
 ````typescript
 import { Test, TestingModule } from '@nestjs/testing';
 import { describe, it, expect, beforeEach } from '@jest/globals';
@@ -1636,6 +1633,7 @@ import { AppService } from './app.service';
 ````
 
 ## File: apps/api/src/app.controller.ts
+
 ````typescript
 import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
@@ -1647,19 +1645,8 @@ constructor(private readonly appService: AppService)
 getHello(): string
 ````
 
-## File: apps/api/src/app.module.ts
-````typescript
-import { Module } from '@nestjs/common';
-⋮----
-import { LinksModule } from './links/links.module';
-⋮----
-import { AppService } from './app.service';
-import { AppController } from './app.controller';
-⋮----
-export class AppModule
-````
-
 ## File: apps/api/src/app.service.ts
+
 ````typescript
 import { Injectable } from '@nestjs/common';
 ⋮----
@@ -1668,7 +1655,165 @@ export class AppService {
 getHello(): string
 ````
 
+## File: apps/api/src/chat/chat.controller.ts
+
+````typescript
+import {
+  Controller,
+  Post,
+  Body,
+  Param,
+  UseGuards,
+  Req,
+  HttpCode,
+  HttpStatus,
+  Logger,
+  Query,
+  ValidationPipe,
+  Sse,
+  MessageEvent,
+} from '@nestjs/common';
+import { ChatService } from './chat.service';
+import { SupabaseAuthGuard } from '@repo/api/supabase/supabase-auth.guard';
+import { Observable, from, map, catchError, finalize, switchMap } from 'rxjs';
+import { StreamTextResult } from 'ai'; // Import result type from 'ai'
+⋮----
+// Define DTO for request body validation
+import { IsString, IsOptional, IsNotEmpty } from 'class-validator';
+⋮----
+export class ChatRequestDto {
+⋮----
+// Define a type for the request object after guard adds user
+interface RequestWithUser extends Request {
+  user: { id: string; [key: string]: any };
+}
+⋮----
+@UseGuards(SupabaseAuthGuard) // Apply guard to the whole controller
+export class ChatController {
+⋮----
+constructor(private readonly chatService: ChatService)
+⋮----
+// Endpoint for Single Response (Generate)
+⋮----
+async handleChatMessage(
+    @Param('agentName') agentName: string,
+    @Body(new ValidationPipe()) body: ChatRequestDto,
+    @Req() req: RequestWithUser,
+): Promise<any>
+⋮----
+userId, // resourceId
+⋮----
+// Endpoint for Streaming Response (Stream via SSE)
+⋮----
+handleChatStream(
+    @Param('agentName') agentName: string,
+    @Query('prompt') prompt: string,
+    @Query('threadId') threadId: string | undefined,
+    @Req() req: RequestWithUser,
+): Observable<MessageEvent>
+⋮----
+// Validate that prompt is provided
+⋮----
+// Helper function to create the SSE Observable
+private createSseObservable(
+    agentName: string,
+    prompt: string,
+    threadId: string | undefined,
+    userId: string
+): Observable<MessageEvent>
+⋮----
+// Convert the StreamTextResult to an Observable of stream items
+⋮----
+return from(streamResult.textStream); // RxJS 'from' can handle async iterators
+⋮----
+// Map each delta to an SSE MessageEvent
+````
+
+## File: apps/api/src/chat/chat.module.ts
+
+````typescript
+import { Module } from '@nestjs/common';
+import { ChatController } from './chat.controller';
+import { ChatService } from './chat.service';
+⋮----
+export class ChatModule
+````
+
+## File: apps/api/src/chat/chat.service.ts
+
+````typescript
+import { Injectable, Inject, NotFoundException, InternalServerErrorException, Logger } from '@nestjs/common';
+import { Agent } from '@mastra/core';
+import { MASTRA_AGENTS_TOKEN, MASTRA_DATABASE_TOKEN } from '../mastra-core/mastra-core.module';
+import { MastraDatabase } from '@repo/api/mastra/services/database';
+import { GenerateTextResult, StreamTextResult } from 'ai';
+⋮----
+// Define a type for the injected agents object for better type safety
+type MastraAgents = { [key: string]: Agent };
+⋮----
+export class ChatService {
+⋮----
+constructor(
+⋮----
+// Inject database service if needed for context enrichment or logging
+⋮----
+// Helper to get agent instance or throw NotFoundException
+private getAgent(agentName: string): Agent
+⋮----
+// Implement method for single response generation
+async processMessage(
+    agentName: string,
+    prompt: string,
+    threadId?: string,
+    resourceId?: string, // Often userId for context/memory/auth
+): Promise<GenerateTextResult<any, unknown>>
+⋮----
+resourceId?: string, // Often userId for context/memory/auth
+⋮----
+// Add any post-processing or application-specific DB saving logic here
+⋮----
+// Implement method for initiating a streaming response
+async streamMessage(
+    agentName: string,
+    prompt: string,
+    threadId?: string,
+    resourceId?: string,
+): Promise<StreamTextResult<any, unknown>>
+````
+
+## File: apps/api/src/common/filters/http-exception.filter.ts
+
+````typescript
+import {
+  ExceptionFilter,
+  Catch,
+  ArgumentsHost,
+  HttpException,
+  HttpStatus,
+  Logger,
+} from '@nestjs/common';
+import { HttpAdapterHost } from '@nestjs/core';
+⋮----
+// Helper to check if an object is like a ServiceError
+function isServiceError(error: any): error is
+⋮----
+// Helper to map ActionErrorCode to HttpStatus
+function mapActionCodeToHttpStatus(code: string): HttpStatus
+⋮----
+// Add mappings for other ActionErrorCodes
+⋮----
+@Catch() // Catch all exceptions
+export class GlobalHttpExceptionFilter implements ExceptionFilter {
+⋮----
+constructor(private readonly httpAdapterHost: HttpAdapterHost)
+⋮----
+catch(exception: unknown, host: ArgumentsHost): void
+⋮----
+// Ensure response is sent only once
+````
+
 ## File: apps/api/src/links/links.controller.spec.ts
+
 ````typescript
 import { Test, TestingModule } from '@nestjs/testing';
 import { describe, it, expect, beforeEach } from '@jest/globals';
@@ -1678,6 +1823,7 @@ import { LinksService } from './links.service';
 ````
 
 ## File: apps/api/src/links/links.controller.ts
+
 ````typescript
 import {
   Controller,
@@ -1709,6 +1855,7 @@ remove(@Param('id') id: string)
 ````
 
 ## File: apps/api/src/links/links.module.ts
+
 ````typescript
 import { Module } from '@nestjs/common';
 ⋮----
@@ -1719,6 +1866,7 @@ export class LinksModule
 ````
 
 ## File: apps/api/src/links/links.service.spec.ts
+
 ````typescript
 import { Test, TestingModule } from '@nestjs/testing';
 import { describe, it, expect, beforeEach } from '@jest/globals';
@@ -1726,6 +1874,7 @@ import { LinksService } from './links.service';
 ````
 
 ## File: apps/api/src/links/links.service.ts
+
 ````typescript
 import { Injectable } from '@nestjs/common';
 ⋮----
@@ -1747,15 +1896,53 @@ update(id: number, updateLinkDto: UpdateLinkDto)
 remove(id: number)
 ````
 
-## File: apps/api/src/main.ts
+## File: apps/api/src/mastra-core/mastra-core.module.ts
+
 ````typescript
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
+import { Module, Global, OnModuleInit, Inject, Logger } from '@nestjs/common';
 ⋮----
-async function bootstrap()
+// Import necessary components from the shared 'packages/api'
+import { initializeAgents, agents as mastraAgentsObjectRef } from '@repo/api/mastra/agents/index';
+import { Agent } from '@mastra/core'; // For typing
+import { MastraDatabase } from '@repo/api/mastra/services/database';
+import { EmbeddingStoreService, initializeGlobalEmbeddingStore } from '@repo/api/mastra/services/store-embeddings';
+⋮----
+// Define unique Injection Tokens
+⋮----
+@Global() // Make these providers available globally in the NestJS app
+⋮----
+// --- Provider for Mastra Agents ---
+⋮----
+const logger = new Logger('MastraAgentsInit'); // Create a logger instance
+⋮----
+// Call the initialization function with dependencies
+⋮----
+return mastraAgentsObjectRef; // Return the initialized agents object
+⋮----
+// Re-throw the error to prevent the application from starting with uninitialized agents
+⋮----
+inject: [MASTRA_DATABASE_TOKEN, EMBEDDING_STORE_SERVICE_TOKEN], // Inject dependencies
+⋮----
+// --- Provider for MastraDatabase Service ---
+⋮----
+inject: [EMBEDDING_STORE_SERVICE_TOKEN], // Inject EmbeddingStoreService if needed for init
+⋮----
+// --- Provider for EmbeddingStoreService ---
+⋮----
+// This uses the singleton pattern from the store-embeddings file
+⋮----
+], // Export tokens for injection in other modules
+⋮----
+export class MastraCoreModule implements OnModuleInit {
+⋮----
+// Inject providers to ensure factories run during bootstrap
+constructor(
+⋮----
+onModuleInit()
 ````
 
 ## File: apps/api/test/app.e2e-spec.ts
+
 ````typescript
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
@@ -1765,6 +1952,7 @@ import { AppModule } from './../src/app.module';
 ````
 
 ## File: apps/api/test/jest-e2e.json
+
 ````json
 {
   "moduleFileExtensions": ["js", "json", "ts"],
@@ -1778,6 +1966,7 @@ import { AppModule } from './../src/app.module';
 ````
 
 ## File: apps/api/tsconfig.build.json
+
 ````json
 {
   "extends": "./tsconfig.json",
@@ -1785,18 +1974,8 @@ import { AppModule } from './../src/app.module';
 }
 ````
 
-## File: apps/api/tsconfig.json
-````json
-{
-  "extends": "@repo/typescript-config/nestjs.json",
-  "compilerOptions": {
-    "baseUrl": "./",
-    "outDir": "./dist",
-  }
-}
-````
-
 ## File: apps/web/app/auth/confirm/route.ts
+
 ````typescript
 import { type EmailOtpType } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
@@ -1813,11 +1992,13 @@ export async function GET(request: NextRequest)
 ````
 
 ## File: apps/web/app/error/page.tsx
+
 ````typescript
 export default function ErrorPage()
 ````
 
 ## File: apps/web/app/globals.css
+
 ````css
 :root {
 ⋮----
@@ -1831,6 +2012,7 @@ a {
 ````
 
 ## File: apps/web/app/login/actions.ts
+
 ````typescript
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
@@ -1851,6 +2033,7 @@ export async function signup(formData: FormData)
 ````
 
 ## File: apps/web/app/login/page.tsx
+
 ````typescript
 import { login, signup } from './actions'
 ⋮----
@@ -1858,6 +2041,7 @@ export default function LoginPage()
 ````
 
 ## File: apps/web/app/middleware.ts
+
 ````typescript
 import { type NextRequest } from 'next/server';
 import { updateSession } from './utils/supabase/middleware';
@@ -1874,6 +2058,7 @@ export async function middleware(request: NextRequest)
 ````
 
 ## File: apps/web/app/page.module.css
+
 ````css
 .main {
 ⋮----
@@ -1954,6 +2139,7 @@ export async function middleware(request: NextRequest)
 ````
 
 ## File: apps/web/app/pages/dashboard/page.tsx
+
 ````typescript
 import { useState } from 'react';
 import { Box, CssBaseline } from '@mui/material';
@@ -1991,11 +2177,13 @@ const handleSidebarCollapse = (collapsed: boolean) =>
 ````
 
 ## File: apps/web/app/pages/documentation/architecture.tsx
+
 ````typescript
 // app/web/app/pages/architecture.tsx
 ````
 
 ## File: apps/web/app/pages/documentation/page.tsx
+
 ````typescript
 import { Box, Typography, Container, Paper, Divider } from '@mui/material';
 import React from 'react';
@@ -2005,6 +2193,7 @@ import { Code } from '@repo/ui/Code';
 ````
 
 ## File: apps/web/app/pages/page.tsx
+
 ````typescript
 import { Box, Typography, Container, Paper, Divider } from '@mui/material';
 import React from 'react';
@@ -2014,6 +2203,7 @@ import { Code } from '@repo/ui/Code';
 ````
 
 ## File: apps/web/app/private/page.tsx
+
 ````typescript
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
@@ -2024,6 +2214,7 @@ export default async function PrivatePage()
 ````
 
 ## File: apps/web/app/utils/supabase/client.ts
+
 ````typescript
 // This file is responsible for creating a Supabase client that can be used in server components.
 // It uses the `createServerClient` function from the `@supabase/ssr` package to create a client that can be used in server components.
@@ -2039,6 +2230,7 @@ setAll(cookiesToSet)
 ````
 
 ## File: apps/web/app/utils/supabase/server.ts
+
 ````typescript
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { cookies } from 'next/headers';
@@ -2054,6 +2246,7 @@ setAll(cookiesToSet)
 ````
 
 ## File: apps/web/instrumentation.ts
+
 ````typescript
 import { registerOTel } from '@vercel/otel';
 ⋮----
@@ -2061,11 +2254,13 @@ export function register()
 ````
 
 ## File: apps/web/jest.config.ts
+
 ````typescript
 import config from '@repo/jest-config/next';
 ````
 
 ## File: apps/web/mastra.config.ts
+
 ````typescript
 import { Mastra } from '@mastra/core';
 import { createLogger } from '@mastra/core/logger';
@@ -2074,11 +2269,13 @@ import { createLogger } from '@mastra/core/logger';
 ````
 
 ## File: apps/web/next.config.js
+
 ````javascript
 /** @type {import('next').NextConfig} */
 ````
 
 ## File: apps/web/playwright.config.ts
+
 ````typescript
 import { defineConfig, devices } from '@playwright/test';
 ⋮----
@@ -2147,32 +2344,35 @@ import { defineConfig, devices } from '@playwright/test';
 ````
 
 ## File: apps/web/public/circles.svg
+
 ````
 <?xml version="1.0" encoding="UTF-8"?>
 <svg id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 100 100" width="614" height="614">
   <defs xmlns="http://www.w3.org/2000/svg">
-		<radialGradient id="radial" gradientUnits="userSpaceOnUse">
-			<stop offset="0" stop-color="#fff"></stop>
-			<stop offset="60%" stop-color="#fff" stop-opacity="0"></stop>
-		</radialGradient>
-	</defs>
-	<circle cx="50" cy="50" r="25" stroke-width=".2" style="fill:none; stroke:rgba(255,255,255,.1);">
-		<animate attributeName="opacity" values="1;0.1;0.1;1" dur="3s" begin="0.2s" repeatCount="indefinite"></animate>
-	</circle>
+  <radialGradient id="radial" gradientUnits="userSpaceOnUse">
+   <stop offset="0" stop-color="#fff"></stop>
+   <stop offset="60%" stop-color="#fff" stop-opacity="0"></stop>
+  </radialGradient>
+ </defs>
+ <circle cx="50" cy="50" r="25" stroke-width=".2" style="fill:none; stroke:rgba(255,255,255,.1);">
+  <animate attributeName="opacity" values="1;0.1;0.1;1" dur="3s" begin="0.2s" repeatCount="indefinite"></animate>
+ </circle>
   <circle cx="50" cy="50" r="25" stroke-width=".2" style="fill:url(#radial); fill-opacity:.1;">
-		<animate attributeName="opacity" values="1;0.5;0.5;1" dur="3s" repeatCount="indefinite"></animate>
-	</circle><circle cx="50" cy="50" r="45" stroke-width=".2" style="fill:none; stroke:rgba(255,255,255,.1);">
-		<animate attributeName="opacity" values="1;0.1;0.1;1" dur="3s" begin="0.4s" repeatCount="indefinite"></animate>
-	</circle>
+  <animate attributeName="opacity" values="1;0.5;0.5;1" dur="3s" repeatCount="indefinite"></animate>
+ </circle><circle cx="50" cy="50" r="45" stroke-width=".2" style="fill:none; stroke:rgba(255,255,255,.1);">
+  <animate attributeName="opacity" values="1;0.1;0.1;1" dur="3s" begin="0.4s" repeatCount="indefinite"></animate>
+ </circle>
 </svg>
 ````
 
 ## File: apps/web/public/next.svg
+
 ````
 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 394 80"><path fill="#000" d="M262 0h68.5v12.7h-27.2v66.6h-13.6V12.7H262V0ZM149 0v12.7H94v20.4h44.3v12.6H94v21h55v12.6H80.5V0h68.7zm34.3 0h-17.8l63.8 79.4h17.9l-32-39.7 32-39.6h-17.9l-23 28.6-23-28.6zm18.3 56.7-9-11-27.1 33.7h17.8l18.3-22.7z"/><path fill="#000" d="M81 79.3 17 0H0v79.3h13.6V17l50.2 62.3H81Zm252.6-.4c-1 0-1.8-.4-2.5-1s-1.1-1.6-1.1-2.6.3-1.8 1-2.5 1.6-1 2.6-1 1.8.3 2.5 1a3.4 3.4 0 0 1 .6 4.3 3.7 3.7 0 0 1-3 1.8zm23.2-33.5h6v23.3c0 2.1-.4 4-1.3 5.5a9.1 9.1 0 0 1-3.8 3.5c-1.6.8-3.5 1.3-5.7 1.3-2 0-3.7-.4-5.3-1s-2.8-1.8-3.7-3.2c-.9-1.3-1.4-3-1.4-5h6c.1.8.3 1.6.7 2.2s1 1.2 1.6 1.5c.7.4 1.5.5 2.4.5 1 0 1.8-.2 2.4-.6a4 4 0 0 0 1.6-1.8c.3-.8.5-1.8.5-3V45.5zm30.9 9.1a4.4 4.4 0 0 0-2-3.3 7.5 7.5 0 0 0-4.3-1.1c-1.3 0-2.4.2-3.3.5-.9.4-1.6 1-2 1.6a3.5 3.5 0 0 0-.3 4c.3.5.7.9 1.3 1.2l1.8 1 2 .5 3.2.8c1.3.3 2.5.7 3.7 1.2a13 13 0 0 1 3.2 1.8 8.1 8.1 0 0 1 3 6.5c0 2-.5 3.7-1.5 5.1a10 10 0 0 1-4.4 3.5c-1.8.8-4.1 1.2-6.8 1.2-2.6 0-4.9-.4-6.8-1.2-2-.8-3.4-2-4.5-3.5a10 10 0 0 1-1.7-5.6h6a5 5 0 0 0 3.5 4.6c1 .4 2.2.6 3.4.6 1.3 0 2.5-.2 3.5-.6 1-.4 1.8-1 2.4-1.7a4 4 0 0 0 .8-2.4c0-.9-.2-1.6-.7-2.2a11 11 0 0 0-2.1-1.4l-3.2-1-3.8-1c-2.8-.7-5-1.7-6.6-3.2a7.2 7.2 0 0 1-2.4-5.7 8 8 0 0 1 1.7-5 10 10 0 0 1 4.3-3.5c2-.8 4-1.2 6.4-1.2 2.3 0 4.4.4 6.2 1.2 1.8.8 3.2 2 4.3 3.4 1 1.4 1.5 3 1.5 5h-5.8z"/></svg>
 ````
 
 ## File: apps/web/public/turborepo.svg
+
 ````
 <svg width="104" height="104" viewBox="0 0 104 104" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g clip-path="url(#clip0_1_17)">
@@ -2209,11 +2409,13 @@ import { defineConfig, devices } from '@playwright/test';
 ````
 
 ## File: apps/web/public/vercel.svg
+
 ````
 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 283 64"><path fill="black" d="M141 16c-11 0-19 7-19 18s9 18 20 18c7 0 13-3 16-7l-7-5c-2 3-6 4-9 4-5 0-9-3-10-7h28v-3c0-11-8-18-19-18zm-9 15c1-4 4-7 9-7s8 3 9 7h-18zm117-15c-11 0-19 7-19 18s9 18 20 18c6 0 12-3 16-7l-8-5c-2 3-5 4-8 4-5 0-9-3-11-7h28l1-3c0-11-8-18-19-18zm-10 15c2-4 5-7 10-7s8 3 9 7h-19zm-39 3c0 6 4 10 10 10 4 0 7-2 9-5l8 5c-3 5-9 8-17 8-11 0-19-7-19-18s8-18 19-18c8 0 14 3 17 8l-8 5c-2-3-5-5-9-5-6 0-10 4-10 10zm83-29v46h-9V5h9zM37 0l37 64H0L37 0zm92 5-27 48L74 5h10l18 30 17-30h10zm59 12v10l-3-1c-6 0-10 4-10 10v15h-9V17h9v9c0-5 6-9 13-9z"/></svg>
 ````
 
 ## File: apps/web/src/mastra/hooks/useAgent.ts
+
 ````typescript
 /**
  * React hook for interacting with Mastra agents through the API.
@@ -2372,17 +2574,20 @@ export function useAgent(
 ````
 
 ## File: apps/web/test/e2e/page.e2e-spec.ts
+
 ````typescript
 import { test, expect } from '@playwright/test';
 ````
 
 ## File: apps/web/test/layout.spec.tsx
+
 ````typescript
 import { metadata } from '../app/layout';
 import { describe, it, expect } from '@jest/globals';
 ````
 
 ## File: apps/web/test/page.spec.tsx
+
 ````typescript
 import { render } from '@testing-library/react';
 import { describe, it, expect, jest, afterAll } from '@jest/globals';
@@ -2391,6 +2596,7 @@ import RootPage from '../app/page';
 ````
 
 ## File: apps/web/tsconfig.json
+
 ````json
 {
   "extends": "@repo/typescript-config/nextjs.json",
@@ -2413,6 +2619,7 @@ import RootPage from '../app/page';
 ````
 
 ## File: docs/codeviz-diagram-2025-03-28T13-30-33.drawio
+
 ````
 <?xml version="1.0" encoding="UTF-8"?>
       <mxfile host="codeviz.app" modified="2025-03-28T13:30:33.493Z" agent="CodeViz Exporter" version="14.6.5" type="device">
@@ -2723,6 +2930,7 @@ import RootPage from '../app/page';
 ````
 
 ## File: docs/codeviz-diagram-2025-03-30T11-19-38.drawio
+
 ````
 <?xml version="1.0" encoding="UTF-8"?>
       <mxfile host="codeviz.app" modified="2025-03-30T11:19:38.813Z" agent="CodeViz Exporter" version="14.6.5" type="device">
@@ -3000,6 +3208,7 @@ import RootPage from '../app/page';
 ````
 
 ## File: docs/codeviz-diagram-2025-03-31T12-00-54.drawio
+
 ````
 <?xml version="1.0" encoding="UTF-8"?>
       <mxfile host="codeviz.app" modified="2025-03-31T12:00:54.082Z" agent="CodeViz Exporter" version="14.6.5" type="device">
@@ -3396,6 +3605,7 @@ import RootPage from '../app/page';
 ````
 
 ## File: docs/codeviz-diagram-2025-03-31T15-43-08.drawio
+
 ````
 <?xml version="1.0" encoding="UTF-8"?>
       <mxfile host="codeviz.app" modified="2025-03-31T15:43:08.423Z" agent="CodeViz Exporter" version="14.6.5" type="device">
@@ -3689,6 +3899,7 @@ import RootPage from '../app/page';
 ````
 
 ## File: docs/codeviz-diagram-2025-04-01T08-01-45.drawio
+
 ````
 <?xml version="1.0" encoding="UTF-8"?>
       <mxfile host="codeviz.app" modified="2025-04-01T08:01:45.991Z" agent="CodeViz Exporter" version="14.6.5" type="device">
@@ -3979,6 +4190,7 @@ import RootPage from '../app/page';
 ````
 
 ## File: docs/codeviz-diagram-2025-04-01T18-21-52.drawio
+
 ````
 <?xml version="1.0" encoding="UTF-8"?>
       <mxfile host="codeviz.app" modified="2025-04-01T18:21:52.913Z" agent="CodeViz Exporter" version="14.6.5" type="device">
@@ -4300,6 +4512,7 @@ import RootPage from '../app/page';
 ````
 
 ## File: docs/codeviz-diagram-2025-04-02T16-38-22.drawio
+
 ````
 <?xml version="1.0" encoding="UTF-8"?>
       <mxfile host="codeviz.app" modified="2025-04-02T16:38:22.070Z" agent="CodeViz Exporter" version="14.6.5" type="device">
@@ -4632,6 +4845,7 @@ import RootPage from '../app/page';
 ````
 
 ## File: docs/codeviz-diagram-2025-04-02T19-54-41.drawio
+
 ````
 <?xml version="1.0" encoding="UTF-8"?>
       <mxfile host="codeviz.app" modified="2025-04-02T19:54:41.992Z" agent="CodeViz Exporter" version="14.6.5" type="device">
@@ -4997,17 +5211,389 @@ import RootPage from '../app/page';
       </mxfile>
 ````
 
+## File: docs/codeviz-diagram-2025-04-03T09-29-46.drawio
+
+````
+<?xml version="1.0" encoding="UTF-8"?>
+      <mxfile host="codeviz.app" modified="2025-04-03T09:29:46.569Z" agent="CodeViz Exporter" version="14.6.5" type="device">
+        <diagram id="codeviz-diagram" name="System Diagram">
+          <mxGraphModel dx="1000" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+            <root>
+              <mxCell id="0"/>
+              <mxCell id="1" parent="0"/>
+              <mxCell id="subGraph6" value="" style="html=1;whiteSpace=wrap;container=1;fillColor=#dae8fc;strokeColor=#6c8ebf;dashed=1;fillOpacity=20;strokeWidth=2;containerType=none;recursiveResize=0;movable=1;resizable=1;autosize=0;dropTarget=0" vertex="1" parent="subGraph7">
+                <mxGeometry x="50" y="205" width="660" height="220" as="geometry"/>
+              </mxCell>
+              <mxCell id="subGraph6_label" value="Mastra Components" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;labelBackgroundColor=white;spacing=5" vertex="1" parent="subGraph7">
+                <mxGeometry x="58" y="213" width="584" height="24" as="geometry"/>
+              </mxCell>
+<mxCell id="subGraph4" value="" style="html=1;whiteSpace=wrap;container=1;fillColor=#dae8fc;strokeColor=#6c8ebf;dashed=1;fillOpacity=20;strokeWidth=2;containerType=none;recursiveResize=0;movable=1;resizable=1;autosize=0;dropTarget=0" vertex="1" parent="subGraph5">
+                <mxGeometry x="50" y="205" width="800" height="220" as="geometry"/>
+              </mxCell>
+              <mxCell id="subGraph4_label" value="Database Components" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;labelBackgroundColor=white;spacing=5" vertex="1" parent="subGraph5">
+                <mxGeometry x="58" y="213" width="724" height="24" as="geometry"/>
+              </mxCell>
+<mxCell id="subGraph2" value="" style="html=1;whiteSpace=wrap;container=1;fillColor=#dae8fc;strokeColor=#6c8ebf;dashed=1;fillOpacity=20;strokeWidth=2;containerType=none;recursiveResize=0;movable=1;resizable=1;autosize=0;dropTarget=0" vertex="1" parent="subGraph3">
+                <mxGeometry x="50" y="225" width="800" height="220" as="geometry"/>
+              </mxCell>
+              <mxCell id="subGraph2_label" value="API Components" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;labelBackgroundColor=white;spacing=5" vertex="1" parent="subGraph3">
+                <mxGeometry x="58" y="233" width="724" height="24" as="geometry"/>
+              </mxCell>
+<mxCell id="subGraph0" value="" style="html=1;whiteSpace=wrap;container=1;fillColor=#dae8fc;strokeColor=#6c8ebf;dashed=1;fillOpacity=20;strokeWidth=2;containerType=none;recursiveResize=0;movable=1;resizable=1;autosize=0;dropTarget=0" vertex="1" parent="subGraph1">
+                <mxGeometry x="50" y="215" width="940" height="220" as="geometry"/>
+              </mxCell>
+              <mxCell id="subGraph0_label" value="Frontend Components" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;labelBackgroundColor=white;spacing=5" vertex="1" parent="subGraph1">
+                <mxGeometry x="58" y="223" width="864" height="24" as="geometry"/>
+              </mxCell>
+<mxCell id="subGraph7" value="" style="html=1;whiteSpace=wrap;container=1;fillColor=#dae8fc;strokeColor=#6c8ebf;dashed=1;fillOpacity=20;strokeWidth=2;containerType=none;recursiveResize=0;movable=1;resizable=1;autosize=0;dropTarget=0" vertex="1" parent="1">
+                <mxGeometry x="32" y="192" width="720" height="445" as="geometry"/>
+              </mxCell>
+              <mxCell id="subGraph7_label" value="Mastra Container" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;labelBackgroundColor=white;spacing=5" vertex="1" parent="1">
+                <mxGeometry x="40" y="200" width="644" height="24" as="geometry"/>
+              </mxCell>
+<mxCell id="subGraph5" value="" style="html=1;whiteSpace=wrap;container=1;fillColor=#dae8fc;strokeColor=#6c8ebf;dashed=1;fillOpacity=20;strokeWidth=2;containerType=none;recursiveResize=0;movable=1;resizable=1;autosize=0;dropTarget=0" vertex="1" parent="1">
+                <mxGeometry x="666.1666666666666" y="1267" width="859.9999999999999" height="445" as="geometry"/>
+              </mxCell>
+              <mxCell id="subGraph5_label" value="Database Container" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;labelBackgroundColor=white;spacing=5" vertex="1" parent="1">
+                <mxGeometry x="674.1666666666666" y="1275" width="783.9999999999999" height="24" as="geometry"/>
+              </mxCell>
+<mxCell id="subGraph3" value="" style="html=1;whiteSpace=wrap;container=1;fillColor=#dae8fc;strokeColor=#6c8ebf;dashed=1;fillOpacity=20;strokeWidth=2;containerType=none;recursiveResize=0;movable=1;resizable=1;autosize=0;dropTarget=0" vertex="1" parent="1">
+                <mxGeometry x="841.1666666666666" y="722" width="859.9999999999999" height="465" as="geometry"/>
+              </mxCell>
+              <mxCell id="subGraph3_label" value="Backend Container" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;labelBackgroundColor=white;spacing=5" vertex="1" parent="1">
+                <mxGeometry x="849.1666666666666" y="730" width="783.9999999999999" height="24" as="geometry"/>
+              </mxCell>
+<mxCell id="subGraph1" value="" style="html=1;whiteSpace=wrap;container=1;fillColor=#dae8fc;strokeColor=#6c8ebf;dashed=1;fillOpacity=20;strokeWidth=2;containerType=none;recursiveResize=0;movable=1;resizable=1;autosize=0;dropTarget=0" vertex="1" parent="1">
+                <mxGeometry x="773" y="187" width="1000" height="455" as="geometry"/>
+              </mxCell>
+              <mxCell id="subGraph1_label" value="Frontend Container" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;labelBackgroundColor=white;spacing=5" vertex="1" parent="1">
+                <mxGeometry x="781" y="195" width="924" height="24" as="geometry"/>
+              </mxCell>
+              <mxCell id="User" value="External User" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" vertex="1" parent="1">
+                    <mxGeometry x="1128" y="12" width="120" height="60" as="geometry"/>
+                  </mxCell>
+<mxCell id="WebApp" value="Web Application&lt;br&gt;(Next.js)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" vertex="1" parent="subGraph1">
+                    <mxGeometry x="375" y="120" width="120" height="60" as="geometry"/>
+                  </mxCell>
+<mxCell id="AuthComponent" value="Authentication&lt;br&gt;(Next Auth)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" vertex="1" parent="subGraph0">
+                    <mxGeometry x="180" y="120" width="120" height="60" as="geometry"/>
+                  </mxCell>
+<mxCell id="ChatInterface" value="Chat Interface&lt;br&gt;(React)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" vertex="1" parent="subGraph0">
+                    <mxGeometry x="460" y="120" width="120" height="60" as="geometry"/>
+                  </mxCell>
+<mxCell id="Dashboard" value="Dashboard&lt;br&gt;(React)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" vertex="1" parent="subGraph0">
+                    <mxGeometry x="40" y="120" width="120" height="60" as="geometry"/>
+                  </mxCell>
+<mxCell id="ThemeProvider" value="Theme Provider&lt;br&gt;(MUI)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" vertex="1" parent="subGraph0">
+                    <mxGeometry x="600" y="120" width="120" height="60" as="geometry"/>
+                  </mxCell>
+<mxCell id="AppBar" value="App Bar&lt;br&gt;(MUI)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" vertex="1" parent="subGraph0">
+                    <mxGeometry x="740" y="120" width="120" height="60" as="geometry"/>
+                  </mxCell>
+<mxCell id="SupabaseClient" value="Supabase Client&lt;br&gt;(Supabase SDK)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" vertex="1" parent="subGraph0">
+                    <mxGeometry x="320" y="120" width="120" height="60" as="geometry"/>
+                  </mxCell>
+<mxCell id="NestAPI" value="API Server&lt;br&gt;(NestJS)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" vertex="1" parent="subGraph3">
+                    <mxGeometry x="378.6666666666667" y="120" width="120" height="60" as="geometry"/>
+                  </mxCell>
+<mxCell id="AppController" value="App Controller&lt;br&gt;(NestJS)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" vertex="1" parent="subGraph2">
+                    <mxGeometry x="180" y="120" width="120" height="60" as="geometry"/>
+                  </mxCell>
+<mxCell id="ChatModule" value="Chat Module&lt;br&gt;(NestJS)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" vertex="1" parent="subGraph2">
+                    <mxGeometry x="320" y="120" width="120" height="60" as="geometry"/>
+                  </mxCell>
+<mxCell id="LinksModule" value="Links Module&lt;br&gt;(NestJS)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" vertex="1" parent="subGraph2">
+                    <mxGeometry x="40" y="120" width="120" height="60" as="geometry"/>
+                  </mxCell>
+<mxCell id="MastraCoreModule" value="Mastra Core Module&lt;br&gt;(NestJS)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" vertex="1" parent="subGraph2">
+                    <mxGeometry x="460" y="120" width="120" height="60" as="geometry"/>
+                  </mxCell>
+<mxCell id="HttpExceptionFilter" value="Exception Filter&lt;br&gt;(NestJS)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" vertex="1" parent="subGraph2">
+                    <mxGeometry x="600" y="120" width="120" height="60" as="geometry"/>
+                  </mxCell>
+<mxCell id="SupabaseDB" value="Primary Database&lt;br&gt;(Supabase/PostgreSQL)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" vertex="1" parent="subGraph5">
+                    <mxGeometry x="330" y="120" width="120" height="60" as="geometry"/>
+                  </mxCell>
+<mxCell id="VectorStore" value="Vector Store&lt;br&gt;(Upstash)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" vertex="1" parent="subGraph5">
+                    <mxGeometry x="500" y="120" width="120" height="60" as="geometry"/>
+                  </mxCell>
+<mxCell id="RedisCache" value="Cache&lt;br&gt;(Redis)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" vertex="1" parent="subGraph5">
+                    <mxGeometry x="640" y="120" width="120" height="60" as="geometry"/>
+                  </mxCell>
+<mxCell id="UserPrefs" value="User Preferences&lt;br&gt;(SQL Table)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" vertex="1" parent="subGraph4">
+                    <mxGeometry x="180" y="120" width="120" height="60" as="geometry"/>
+                  </mxCell>
+<mxCell id="Conversations" value="Conversations&lt;br&gt;(SQL Table)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" vertex="1" parent="subGraph4">
+                    <mxGeometry x="320" y="120" width="120" height="60" as="geometry"/>
+                  </mxCell>
+<mxCell id="Messages" value="Messages&lt;br&gt;(SQL Table)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" vertex="1" parent="subGraph4">
+                    <mxGeometry x="40" y="120" width="120" height="60" as="geometry"/>
+                  </mxCell>
+<mxCell id="VectorOps" value="Vector Operations&lt;br&gt;(Upstash SDK)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" vertex="1" parent="subGraph4">
+                    <mxGeometry x="460" y="120" width="120" height="60" as="geometry"/>
+                  </mxCell>
+<mxCell id="RedisOps" value="Redis Operations&lt;br&gt;(Redis SDK)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" vertex="1" parent="subGraph4">
+                    <mxGeometry x="600" y="120" width="120" height="60" as="geometry"/>
+                  </mxCell>
+<mxCell id="MastraCore" value="Mastra Core&lt;br&gt;(TypeScript)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" vertex="1" parent="subGraph7">
+                    <mxGeometry x="240" y="120" width="120" height="60" as="geometry"/>
+                  </mxCell>
+<mxCell id="AgentController" value="Agent Controller&lt;br&gt;(NestJS)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" vertex="1" parent="subGraph6">
+                    <mxGeometry x="180" y="120" width="120" height="60" as="geometry"/>
+                  </mxCell>
+<mxCell id="AgentService" value="Agent Service&lt;br&gt;(TypeScript)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" vertex="1" parent="subGraph6">
+                    <mxGeometry x="40" y="120" width="120" height="60" as="geometry"/>
+                  </mxCell>
+<mxCell id="EmbeddingService" value="Embedding Service&lt;br&gt;(TypeScript)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" vertex="1" parent="subGraph6">
+                    <mxGeometry x="460" y="120" width="120" height="60" as="geometry"/>
+                  </mxCell>
+<mxCell id="DatabaseService" value="Database Service&lt;br&gt;(TypeScript)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" vertex="1" parent="subGraph6">
+                    <mxGeometry x="320" y="120" width="120" height="60" as="geometry"/>
+                  </mxCell>
+              <mxCell id="edge-L_User_WebApp_0" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" edge="1" parent="1" source="User" target="WebApp">
+                  <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_User_WebApp_0_label" value="Interacts with" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="edge-L_User_WebApp_0">
+                  <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                    <mxPoint as="offset"/>
+                  </mxGeometry>
+                </mxCell>
+<mxCell id="edge-L_WebApp_NestAPI_1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" edge="1" parent="1" source="WebApp" target="NestAPI">
+                  <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_WebApp_NestAPI_1_label" value="API Calls" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="edge-L_WebApp_NestAPI_1">
+                  <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                    <mxPoint as="offset"/>
+                  </mxGeometry>
+                </mxCell>
+<mxCell id="edge-L_WebApp_SupabaseClient_2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" edge="1" parent="1" source="WebApp" target="SupabaseClient">
+                  <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_WebApp_SupabaseClient_2_label" value="Auth/Data" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="edge-L_WebApp_SupabaseClient_2">
+                  <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                    <mxPoint as="offset"/>
+                  </mxGeometry>
+                </mxCell>
+<mxCell id="edge-L_WebApp_AuthComponent_3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" edge="1" parent="1" source="WebApp" target="AuthComponent">
+                  <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_WebApp_AuthComponent_3_label" value="Uses" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="edge-L_WebApp_AuthComponent_3">
+                  <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                    <mxPoint as="offset"/>
+                  </mxGeometry>
+                </mxCell>
+<mxCell id="edge-L_WebApp_ChatInterface_4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" edge="1" parent="1" source="WebApp" target="ChatInterface">
+                  <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_WebApp_ChatInterface_4_label" value="Uses" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="edge-L_WebApp_ChatInterface_4">
+                  <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                    <mxPoint as="offset"/>
+                  </mxGeometry>
+                </mxCell>
+<mxCell id="edge-L_WebApp_Dashboard_5" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" edge="1" parent="1" source="WebApp" target="Dashboard">
+                  <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_WebApp_Dashboard_5_label" value="Uses" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="edge-L_WebApp_Dashboard_5">
+                  <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                    <mxPoint as="offset"/>
+                  </mxGeometry>
+                </mxCell>
+<mxCell id="edge-L_WebApp_ThemeProvider_6" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" edge="1" parent="1" source="WebApp" target="ThemeProvider">
+                  <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_WebApp_ThemeProvider_6_label" value="Uses" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="edge-L_WebApp_ThemeProvider_6">
+                  <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                    <mxPoint as="offset"/>
+                  </mxGeometry>
+                </mxCell>
+<mxCell id="edge-L_WebApp_AppBar_7" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" edge="1" parent="1" source="WebApp" target="AppBar">
+                  <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_WebApp_AppBar_7_label" value="Uses" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="edge-L_WebApp_AppBar_7">
+                  <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                    <mxPoint as="offset"/>
+                  </mxGeometry>
+                </mxCell>
+<mxCell id="edge-L_NestAPI_AppController_8" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" edge="1" parent="1" source="NestAPI" target="AppController">
+                  <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_NestAPI_AppController_8_label" value="Routes to" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="edge-L_NestAPI_AppController_8">
+                  <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                    <mxPoint as="offset"/>
+                  </mxGeometry>
+                </mxCell>
+<mxCell id="edge-L_NestAPI_ChatModule_9" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" edge="1" parent="1" source="NestAPI" target="ChatModule">
+                  <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_NestAPI_ChatModule_9_label" value="Uses" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="edge-L_NestAPI_ChatModule_9">
+                  <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                    <mxPoint as="offset"/>
+                  </mxGeometry>
+                </mxCell>
+<mxCell id="edge-L_NestAPI_LinksModule_10" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" edge="1" parent="1" source="NestAPI" target="LinksModule">
+                  <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_NestAPI_LinksModule_10_label" value="Uses" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="edge-L_NestAPI_LinksModule_10">
+                  <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                    <mxPoint as="offset"/>
+                  </mxGeometry>
+                </mxCell>
+<mxCell id="edge-L_NestAPI_MastraCoreModule_11" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" edge="1" parent="1" source="NestAPI" target="MastraCoreModule">
+                  <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_NestAPI_MastraCoreModule_11_label" value="Uses" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="edge-L_NestAPI_MastraCoreModule_11">
+                  <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                    <mxPoint as="offset"/>
+                  </mxGeometry>
+                </mxCell>
+<mxCell id="edge-L_NestAPI_HttpExceptionFilter_12" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" edge="1" parent="1" source="NestAPI" target="HttpExceptionFilter">
+                  <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_NestAPI_HttpExceptionFilter_12_label" value="Error Handling" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="edge-L_NestAPI_HttpExceptionFilter_12">
+                  <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                    <mxPoint as="offset"/>
+                  </mxGeometry>
+                </mxCell>
+<mxCell id="edge-L_SupabaseDB_UserPrefs_13" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" edge="1" parent="1" source="SupabaseDB" target="UserPrefs">
+                  <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_SupabaseDB_UserPrefs_13_label" value="Stores" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="edge-L_SupabaseDB_UserPrefs_13">
+                  <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                    <mxPoint as="offset"/>
+                  </mxGeometry>
+                </mxCell>
+<mxCell id="edge-L_SupabaseDB_Conversations_14" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" edge="1" parent="1" source="SupabaseDB" target="Conversations">
+                  <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_SupabaseDB_Conversations_14_label" value="Stores" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="edge-L_SupabaseDB_Conversations_14">
+                  <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                    <mxPoint as="offset"/>
+                  </mxGeometry>
+                </mxCell>
+<mxCell id="edge-L_SupabaseDB_Messages_15" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" edge="1" parent="1" source="SupabaseDB" target="Messages">
+                  <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_SupabaseDB_Messages_15_label" value="Stores" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="edge-L_SupabaseDB_Messages_15">
+                  <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                    <mxPoint as="offset"/>
+                  </mxGeometry>
+                </mxCell>
+<mxCell id="edge-L_VectorStore_VectorOps_16" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" edge="1" parent="1" source="VectorStore" target="VectorOps">
+                  <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_VectorStore_VectorOps_16_label" value="Uses" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="edge-L_VectorStore_VectorOps_16">
+                  <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                    <mxPoint as="offset"/>
+                  </mxGeometry>
+                </mxCell>
+<mxCell id="edge-L_RedisCache_RedisOps_17" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" edge="1" parent="1" source="RedisCache" target="RedisOps">
+                  <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_RedisCache_RedisOps_17_label" value="Uses" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="edge-L_RedisCache_RedisOps_17">
+                  <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                    <mxPoint as="offset"/>
+                  </mxGeometry>
+                </mxCell>
+<mxCell id="edge-L_MastraCore_AgentController_18" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" edge="1" parent="1" source="MastraCore" target="AgentController">
+                  <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_MastraCore_AgentController_18_label" value="Controls" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="edge-L_MastraCore_AgentController_18">
+                  <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                    <mxPoint as="offset"/>
+                  </mxGeometry>
+                </mxCell>
+<mxCell id="edge-L_MastraCore_AgentService_19" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" edge="1" parent="1" source="MastraCore" target="AgentService">
+                  <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_MastraCore_AgentService_19_label" value="Uses" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="edge-L_MastraCore_AgentService_19">
+                  <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                    <mxPoint as="offset"/>
+                  </mxGeometry>
+                </mxCell>
+<mxCell id="edge-L_MastraCore_EmbeddingService_20" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" edge="1" parent="1" source="MastraCore" target="EmbeddingService">
+                  <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_MastraCore_EmbeddingService_20_label" value="Uses" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="edge-L_MastraCore_EmbeddingService_20">
+                  <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                    <mxPoint as="offset"/>
+                  </mxGeometry>
+                </mxCell>
+<mxCell id="edge-L_MastraCore_DatabaseService_21" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" edge="1" parent="1" source="MastraCore" target="DatabaseService">
+                  <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_MastraCore_DatabaseService_21_label" value="Uses" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="edge-L_MastraCore_DatabaseService_21">
+                  <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                    <mxPoint as="offset"/>
+                  </mxGeometry>
+                </mxCell>
+<mxCell id="edge-L_NestAPI_SupabaseDB_22" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" edge="1" parent="1" source="NestAPI" target="SupabaseDB">
+                  <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_NestAPI_SupabaseDB_22_label" value="Queries" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="edge-L_NestAPI_SupabaseDB_22">
+                  <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                    <mxPoint as="offset"/>
+                  </mxGeometry>
+                </mxCell>
+<mxCell id="edge-L_NestAPI_VectorStore_23" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" edge="1" parent="1" source="NestAPI" target="VectorStore">
+                  <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_NestAPI_VectorStore_23_label" value="Vectors" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="edge-L_NestAPI_VectorStore_23">
+                  <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                    <mxPoint as="offset"/>
+                  </mxGeometry>
+                </mxCell>
+<mxCell id="edge-L_NestAPI_RedisCache_24" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" edge="1" parent="1" source="NestAPI" target="RedisCache">
+                  <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_NestAPI_RedisCache_24_label" value="Caches" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="edge-L_NestAPI_RedisCache_24">
+                  <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                    <mxPoint as="offset"/>
+                  </mxGeometry>
+                </mxCell>
+<mxCell id="edge-L_MastraCore_NestAPI_25" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" edge="1" parent="1" source="MastraCore" target="NestAPI">
+                  <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_MastraCore_NestAPI_25_label" value="Integrates" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="edge-L_MastraCore_NestAPI_25">
+                  <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                    <mxPoint as="offset"/>
+                  </mxGeometry>
+                </mxCell>
+<mxCell id="edge-L_DatabaseService_SupabaseDB_26" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" edge="1" parent="1" source="DatabaseService" target="SupabaseDB">
+                  <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_DatabaseService_SupabaseDB_26_label" value="Manages" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="edge-L_DatabaseService_SupabaseDB_26">
+                  <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                    <mxPoint as="offset"/>
+                  </mxGeometry>
+                </mxCell>
+<mxCell id="edge-L_EmbeddingService_VectorStore_27" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" edge="1" parent="1" source="EmbeddingService" target="VectorStore">
+                  <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_EmbeddingService_VectorStore_27_label" value="Stores" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="edge-L_EmbeddingService_VectorStore_27">
+                  <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                    <mxPoint as="offset"/>
+                  </mxGeometry>
+                </mxCell>
+            </root>
+          </mxGraphModel>
+        </diagram>
+      </mxfile>
+````
+
 ## File: packages/api/.eslintrc.js
+
 ````javascript
 /** @type {import("eslint").Linter.Config} */
 ````
 
 ## File: packages/api/.prettierrc.js
+
 ````javascript
 /** @type {import("prettier").Config} */
 ````
 
 ## File: packages/api/src/controllers/agents/agent.service.ts
+
 ````typescript
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Mastra } from '@mastra/core'; // Assuming Mastra is configured and injectable
@@ -5111,6 +5697,7 @@ const agentConfig = this.findOne(agentId); // Find the config first
 ````
 
 ## File: packages/api/src/database/client.ts
+
 ````typescript
 /**
  * Type-safe database client that combines Supabase and Upstash operations
@@ -5186,6 +5773,7 @@ async deleteCache(key: string)
 ````
 
 ## File: packages/api/src/database/index.ts
+
 ````typescript
 /**
  * Database exports for the API package.
@@ -5226,6 +5814,7 @@ export const checkDatabaseConnections = async () =>
 ````
 
 ## File: packages/api/src/database/migrations/001_initial_schema.sql
+
 ````sql
 -- Create tables for user preferences, conversations, and messages
 CREATE TABLE IF NOT EXISTS user_preferences (
@@ -5311,6 +5900,7 @@ CREATE POLICY "Users can insert messages in their conversations"
 ````
 
 ## File: packages/api/src/database/supabase.ts
+
 ````typescript
 /**
  * Supabase client configuration for the API package.
@@ -5395,6 +5985,7 @@ export type Database = {
 ````
 
 ## File: packages/api/src/database/upstash.ts
+
 ````typescript
 /**
  * Upstash configuration for Redis and Vector storage.
@@ -5482,6 +6073,7 @@ async hmget<T extends Record<string, unknown>>(
 ````
 
 ## File: packages/api/src/links/dto/create-agent.dto.ts
+
 ````typescript
 import { IsString, IsOptional, IsNotEmpty } from 'class-validator';
 ⋮----
@@ -5521,11 +6113,13 @@ model: string; // Consider adding specific validation if model IDs follow a patt
 ````
 
 ## File: packages/api/src/links/dto/create-link.dto.ts
+
 ````typescript
 export class CreateLinkDto
 ````
 
 ## File: packages/api/src/links/dto/update-agent.dto.ts
+
 ````typescript
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateAgentDto } from './create-agent.dto';
@@ -5539,6 +6133,7 @@ export class UpdateAgentDto extends PartialType(CreateAgentDto)
 ````
 
 ## File: packages/api/src/links/dto/update-link.dto.ts
+
 ````typescript
 import { PartialType } from '@nestjs/mapped-types';
 ⋮----
@@ -5548,6 +6143,7 @@ export class UpdateLinkDto extends PartialType(CreateLinkDto)
 ````
 
 ## File: packages/api/src/links/entities/agent.entity.ts
+
 ````typescript
 import {
   Column,
@@ -5603,11 +6199,13 @@ export class Agent {
 ````
 
 ## File: packages/api/src/links/entities/link.entity.ts
+
 ````typescript
 export class Link {
 ````
 
 ## File: packages/api/src/mastra/tools/document.ts
+
 ````typescript
 import { embedMany } from 'ai';
 import { google } from '@ai-sdk/google';
@@ -5635,6 +6233,7 @@ vector: openAIEmbeddings[0], // Example: Use the embedding of the first chunk fo
 ````
 
 ## File: packages/api/src/mastra/tools/weatherInfo.ts
+
 ````typescript
 import { createTool } from '@mastra/core';
 import { z } from 'zod';
@@ -5645,6 +6244,7 @@ const getWeatherInfo = async (city: string) =>
 ````
 
 ## File: packages/api/src/supabase/guard.ts
+
 ````typescript
 /**
  * Supabase auth guard for NestJS
@@ -5671,6 +6271,7 @@ private extractTokenFromHeader(request: any): string | undefined
 ````
 
 ## File: packages/api/src/supabase/supabase-auth.guard.ts
+
 ````typescript
 /**
  * Supabase auth guard for NestJS
@@ -5696,6 +6297,7 @@ private extractTokenFromHeader(request: any): string | undefined
 ````
 
 ## File: packages/api/src/utils/env.ts
+
 ````typescript
 /**
  * Environment variable utilities
@@ -5722,11 +6324,13 @@ export const getNumberEnvVar = (key: string, defaultValue: number): number =>
 ````
 
 ## File: packages/eslint-config/base.js
+
 ````javascript
 /** @type {import("eslint").Linter.Config} */
 ````
 
 ## File: packages/eslint-config/library.js
+
 ````javascript
 const project = resolve(process.cwd(), 'tsconfig.json');
 ⋮----
@@ -5734,11 +6338,13 @@ const project = resolve(process.cwd(), 'tsconfig.json');
 ````
 
 ## File: packages/eslint-config/nest.js
+
 ````javascript
 /** @type {import("eslint").Linter.Config} */
 ````
 
 ## File: packages/eslint-config/next.js
+
 ````javascript
 const project = resolve(process.cwd(), 'tsconfig.json');
 ⋮----
@@ -5748,6 +6354,7 @@ extends: ['./base.js', require.resolve('@vercel/style-guide/eslint/next')],
 ````
 
 ## File: packages/eslint-config/react-internal.js
+
 ````javascript
 const project = resolve(process.cwd(), 'tsconfig.json');
 ⋮----
@@ -5764,6 +6371,7 @@ const project = resolve(process.cwd(), 'tsconfig.json');
 ````
 
 ## File: packages/eslint-config/README.md
+
 ````markdown
 # `@turbo/eslint-config`
 
@@ -5771,17 +6379,20 @@ Collection of internal eslint configurations.
 ````
 
 ## File: packages/jest-config/base.ts
+
 ````typescript
 import type { Config } from 'jest';
 ````
 
 ## File: packages/jest-config/nest.ts
+
 ````typescript
 import type { Config } from 'jest';
 import { config as baseConfig } from './base';
 ````
 
 ## File: packages/jest-config/next.ts
+
 ````typescript
 import type { Config } from 'jest';
 // unfortunately, need to disambiguate the `Config` namespace @jest/types uses (via next/jest) and the `Config` type we want for typing our config here
@@ -5791,6 +6402,7 @@ import { config as baseConfig } from './base';
 ````
 
 ## File: packages/typescript-config/nestjs.json
+
 ````json
 {
   "$schema": "https://json.schemastore.org/tsconfig",
@@ -5815,6 +6427,7 @@ import { config as baseConfig } from './base';
 ````
 
 ## File: packages/typescript-config/nextjs.json
+
 ````json
 {
   "$schema": "https://json.schemastore.org/tsconfig",
@@ -5831,6 +6444,7 @@ import { config as baseConfig } from './base';
 ````
 
 ## File: packages/typescript-config/react-library.json
+
 ````json
 {
   "$schema": "https://json.schemastore.org/tsconfig",
@@ -5842,16 +6456,19 @@ import { config as baseConfig } from './base';
 ````
 
 ## File: packages/ui/.eslintrc.js
+
 ````javascript
 /** @type {import("eslint").Linter.Config} */
 ````
 
 ## File: packages/ui/.prettierrc.js
+
 ````javascript
 /** @type {import("prettier").Config} */
 ````
 
 ## File: packages/ui/src/chat/chat.tsx
+
 ````typescript
 import {
   Box,
@@ -5959,6 +6576,7 @@ onChange=
 ````
 
 ## File: packages/ui/src/chat/ChatAccordion.tsx
+
 ````typescript
 import {
   Accordion,
@@ -6373,6 +6991,7 @@ const handleApiKeyChange = (event: React.ChangeEvent<HTMLInputElement>) =>
 ````
 
 ## File: packages/ui/src/chat/ChatAgentPanel.tsx
+
 ````typescript
 import {
   Box,
@@ -6731,6 +7350,7 @@ boxShadow: `0 0 0 2px ${theme.palette.background.paper}`, // Keep shadow if need
 ````
 
 ## File: packages/ui/src/chat/ChatCommandInput.tsx
+
 ````typescript
 import {
   Box,
@@ -7079,6 +7699,7 @@ onChange=
 ````
 
 ## File: packages/ui/src/chat/ChatContainer.tsx
+
 ````typescript
 import { Box, Paper, styled, alpha, useTheme } from '@mui/material';
 import type { ChatSettings, Message } from './types';
@@ -7266,6 +7887,7 @@ const handleFileRemove = (index: number) =>
 ````
 
 ## File: packages/ui/src/chat/ChatHeader.tsx
+
 ````typescript
 import {
   Box,
@@ -7421,6 +8043,7 @@ open=
 ````
 
 ## File: packages/ui/src/chat/ChatInput.tsx
+
 ````typescript
 import {
   Box,
@@ -7635,6 +8258,7 @@ accept=
 ````
 
 ## File: packages/ui/src/chat/ChatInterface.tsx
+
 ````typescript
 import { useTheme } from '@mui/material/styles';
 import {
@@ -8002,6 +8626,7 @@ const toggleToolsPanel = (): void =>
 ````
 
 ## File: packages/ui/src/chat/ChatSlashCommands.tsx
+
 ````typescript
 import { useTheme } from '@mui/material';
 import {
@@ -8154,6 +8779,7 @@ icon: <SettingsSuggestIcon />, // Consider using tool-specific icons if availabl
 ````
 
 ## File: packages/ui/src/chat/ChatToolsPanel.tsx
+
 ````typescript
 import {
   Box,
@@ -8415,6 +9041,7 @@ handleToolConfigure(tool);
 ````
 
 ## File: packages/ui/src/chat/ChatTypingIndicator.tsx
+
 ````typescript
 import { Box, Avatar, keyframes, styled, alpha } from '@mui/material';
 import { SmartToy } from '@mui/icons-material';
@@ -8436,6 +9063,7 @@ export interface ChatTypingIndicatorProps {
 ````
 
 ## File: packages/ui/src/chat/ChatWorkflowPanel.tsx
+
 ````typescript
 import {
   Box,
@@ -8735,6 +9363,7 @@ const formatExecutionTime = (ms?: number): string =>
 ````
 
 ## File: packages/ui/src/chat/EmojiPicker.tsx
+
 ````typescript
 import {
   Box,
@@ -8884,6 +9513,7 @@ const emojis = getEmojisForCategory();
 ````
 
 ## File: packages/ui/src/collapsible.tsx
+
 ````typescript
 import {
   Box,
@@ -9083,6 +9713,7 @@ const handleOpenChange = (newOpen: boolean): void =>
 ````
 
 ## File: packages/ui/src/dropdrown.tsx
+
 ````typescript
 import {
   styled,
@@ -9349,6 +9980,7 @@ const handleCheckboxChange = (item: DropdownItem, checked: boolean) =>
 ````
 
 ## File: packages/ui/src/form.tsx
+
 ````typescript
 import {
   Box,
@@ -9868,6 +10500,7 @@ onSubmit=
 ````
 
 ## File: packages/ui/src/label.tsx
+
 ````typescript
 import { styled, alpha } from '@mui/material/styles';
 import { Typography, TypographyProps, Box } from '@mui/material';
@@ -9976,6 +10609,7 @@ export interface LabelProps extends Omit<LabelPrimitive.LabelProps, 'asChild'> {
 ````
 
 ## File: packages/ui/src/popover.tsx
+
 ````typescript
 import {
   Popover as MuiPopover,
@@ -10155,6 +10789,7 @@ const getArrowPlacement = () =>
 ````
 
 ## File: packages/ui/src/responsive.tsx
+
 ````typescript
 import { useMediaQuery, useTheme as useMuiTheme } from '@mui/material';
 import { JSX, useEffect, useState } from 'react';
@@ -10386,6 +11021,7 @@ export function Responsive(
 ````
 
 ## File: packages/ui/src/ScrollArea.tsx
+
 ````typescript
 import { styled, alpha, useTheme } from '@mui/material';
 import { Box, BoxProps } from '@mui/material';
@@ -10541,6 +11177,7 @@ const getRadixScrollType = (): 'auto' | 'always' | 'scroll' | 'hover' =>
 ````
 
 ## File: packages/ui/src/select.tsx
+
 ````typescript
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -10551,6 +11188,7 @@ const handleChange = (event: SelectChangeEvent) =>
 ````
 
 ## File: packages/ui/tsconfig.lint.json
+
 ````json
 {
   "extends": "@repo/typescript-config/react-library.json",
@@ -10563,6 +11201,7 @@ const handleChange = (event: SelectChangeEvent) =>
 ````
 
 ## File: packages/ui/turbo/generators/config.ts
+
 ````typescript
 import type { PlopTypes } from '@turbo/gen';
 ⋮----
@@ -10574,6 +11213,7 @@ export default function generator(plop: PlopTypes.NodePlopAPI): void
 ````
 
 ## File: packages/ui/turbo/generators/templates/component.hbs
+
 ````
 export const {{ pascalCase name }} = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -10586,6 +11226,7 @@ export const {{ pascalCase name }} = ({ children }: { children: React.ReactNode 
 ````
 
 ## File: pnpm-workspace.yaml
+
 ````yaml
 packages:
   - "apps/*"
@@ -10593,6 +11234,7 @@ packages:
 ````
 
 ## File: .cursor/mcp.json
+
 ````json
 {
   "mcpServers": {
@@ -10619,437 +11261,156 @@ packages:
 }
 ````
 
-## File: .github/.copilot-instructions.md
+## File: apps/api/README.md
+
 ````markdown
-# GitHub Copilot Instructions: Mastra (Gemini 2.0 Flash) + LangSmith + Prisma + Lucia + tRPC + Server Actions + MUI v7 in Next.js (`apps/web`) turborepo - v1.7
+# Mastra API - NestJS Backend
 
-## ⭐ Copilot Guidance: Your Role & Core Directives (v17 - Max Detail) ⭐
+## Overview
 
-* **Your Role:** Senior TypeScript Engineer building AI apps with Next.js 15, Mastra, Gemini 2.0 Flash, LangSmith, Prisma, Lucia, tRPC + Manual Server Actions, MUI Core v7 in a Turborepo. Focus on precision, best practices, security, observability, code reuse (services), and generating production-ready patterns guided by detailed inline directives (`// COPILOT:...`).
-* **Primary Goal:** Integrate Mastra AI agents (using `gemini-2.0-flash`) into `apps/web`. Define core logic in reusable services. Expose via secure/validated tRPC procedures AND Manual Server Actions. Ensure LangSmith tracing. Implement type-safe MUI Core v7 frontend components (including streaming). Leverage existing Prisma DB.
-* **Framework Choice:** **Mastra AI** exclusively. No LangChain.
-* **Backend Strategy:** **Hybrid (tRPC + Server Actions)** calling shared **service functions** with explicit **Dependency Injection**. Use Server Actions for forms/simple mutations; use tRPC for queries/complex client state integration.
-* **Database Integration:** **Mandatory:** Use **Prisma Client** from `@your-org/database`. Model AI data in `schema.prisma`. No separate DB.
-* **Authentication:** **Mandatory:** Use **Lucia Auth** (`@your-org/auth`) via `validateRequest` (Server Actions) or tRPC context/middleware.
-* **UI Library:** **Mandatory:** Use **MUI Core v7** components.
-* **Core Directives:** (Strict Adherence Required - Type Safety, Gemini Target, LangSmith, Mastra Idioms, Backend Implementation, Error Handling, Security, Streaming, State, Caching, etc. - See detailed sections).
+This NestJS application serves as the backend API layer for the Mastra project, exposing AI functionality from the shared `packages/api` library. It provides both regular response endpoints and streaming endpoints using Server-Sent Events (SSE).
 
-## Project Context & Key Technologies (Verified Stack)
+## Features
 
-* **Monorepo:** Turborepo
-* **Package Manager:** pnpm
-* **Target App:** `apps/web` (Next.js 15, pages Router, React 19.1, TS 5.8.3+)
-* **Database:** `@your-org/database` (**Prisma**) - **VERIFY SCOPE/NAME**
-* **Authentication:** `@your-org/auth` (**Lucia Auth** w/ Prisma adapter) - **VERIFY SCOPE/NAME**
-* **API Layer:** **Hybrid:** tRPC (`@your-org/api` - **VERIFY SCOPE/NAME**) + Manual Server Actions (`apps/web/app/_actions/`).
-* **Client State:** TanStack Query (`@tanstack/react-query`).
-* **Validation:** `@your-org/validators` (Zod) - **VERIFY SCOPE/NAME**
-* **UI Library:** **MUI Core v7** (`@mui/material`, etc.)
-* **AI Framework:** Mastra (`@mastra/core`, `mastra-cli`) - **To be added**
-* **LLM Provider:** Google Gemini API (via Mastra/Vercel AI SDK) - Target `gemini-2.0-flash`.
-* **Observability:** LangSmith - **To be added** (via Env Vars).
-* **Key Files/Dirs:** (See previous versions, includes `instrumentation.ts`, `services/`, `_actions/`, `api/router/`, `mastra/`, etc.)
+- **AI Chat Integration**: Connect with pre-defined Mastra agents through REST endpoints
+- **Real-time Streaming**: Support for SSE streaming responses from AI agents
+- **Authentication**: Security using Supabase authentication
+- **Error Handling**: Global exception filter for consistent error responses
+- **Type Safety**: Strong typing and request validation
 
-## Initial Mastra Setup (`apps/web`)
+## Getting Started
 
-* **Goal:** Install and initialize Mastra in `apps/web`.
-* **Directory:** Run commands in `apps/web`.
-* **Installation:**
+First, run the development server:
 
-    ```bash
-    # COPILOT: Install Mastra core runtime
-    pnpm add @mastra/core
-    # COPILOT: Install Mastra CLI for development
-    pnpm add -D mastra-cli
-    ```
-
-* **Initialization:**
-
-    ```bash
-    # COPILOT: Run mastra init using npx
-    npx mastra@latest init
-    ```
-
-  * **Action:** Review generated files (`mastra.config.ts`?, `src/lib/mastra/`?). Adapt structure. **COPILOT: Ensure config uses env vars for secrets.**
-* **Turborepo Integration:**
-  * **Scripts:** **COPILOT: Add `mastra:dev` script to `apps/web/package.json`.**
-  * **`turbo.json`:** Configure `dev` pipeline if needed.
-
-## Turborepo Environment Variable Management & Dependencies
-
-* **(Env Vars):** Declare build-affecting vars in `turbo.json` `build.env`. Runtime vars must be present in deployment. **COPILOT: Remind user about declaring vars like `DEFAULT_GEMINI_MODEL`.**
-* **Task Dependencies:** Ensure `turbo.json` reflects accurate dependencies (`apps/web` -> `@your-org/api`, `@your-org/database`, etc.). `apps/web#build` MUST depend on `packages/database#build` (for `prisma generate`). **COPILOT: Ensure `packages/database#build` runs `prisma generate`.**
-
-## Detailed Implementation Guidance & Examples (v17 - Enhanced Details)
-
-1. **Mastra Configuration (`apps/web/instrumentation.ts`):** (Example structure similar to v15 - **COPILOT: Verify Mastra API for provider/telemetry config.** Prioritize env vars.)
-
-2. **Define Core Types & Schemas (`@your-org/validators`, `apps/web/src/lib/mastra/types.ts`):**
-    * **Goal:** Define Zod schemas, types, standardized responses, `ActionErrorCode` enum, `ServiceError` class.
-    * **Copilot Task:** Generate Zod schemas in `@your-org/validators`. Generate types, enum, and class in `mastra/types.ts`. Import Prisma types. Define `AppServerActionResponse`.
-    * **Example Snippets:** (Structure similar to v13, ensure `ServiceError` class is well-defined).
-
-```typescript
-        // apps/web/src/lib/mastra/types.ts
-        // ... imports ...
-        // COPILOT: Expand ActionErrorCode with more specific cases
-        export enum ActionErrorCode {
-          // General
-          UnknownError = "UNKNOWN_ERROR", ServiceUnavailable = "SERVICE_UNAVAILABLE",
-          // Auth
-          Unauthorized = "AUTH_UNAUTHORIZED", Forbidden = "AUTH_FORBIDDEN",
-          // Validation
-          ValidationError = "VALIDATION_ERROR", // Input validation failed
-          // Database
-          DatabaseError = "DB_ERROR", NotFound = "DB_NOT_FOUND", Conflict = "DB_CONFLICT", PrismaUnknown = "DB_PRISMA_UNKNOWN", PrismaUniqueConstraint = "DB_PRISMA_UNIQUE", // Example Prisma code mapping
-          // Agent/LLM
-          AgentExecutionFailed = "AGENT_EXECUTION_FAILED", AgentToolFailed = "AGENT_TOOL_FAILED", RateLimitExceeded = "LLM_RATE_LIMIT", LlmError = "LLM_ERROR", // Generic LLM failure
-          // Tools
-          ToolNetworkError = "TOOL_NETWORK_ERROR", ToolInputError = "TOOL_INPUT_ERROR",
-        }
-
-        // COPILOT: Define ServiceError class for consistent error handling from services
-        export class ServiceError extends Error {
-          readonly code: ActionErrorCode;
-          readonly cause?: unknown; // Optional underlying cause
-          constructor(message: string, code: ActionErrorCode = ActionErrorCode.UnknownError, cause?: unknown) {
-            super(message);
-            this.code = code;
-            this.cause = cause;
-            this.name = 'ServiceError';
-            Object.setPrototypeOf(this, ServiceError.prototype);
-          }
-        }
-        // ... AppServerActionResponse type definition ...
+```bash
+pnpm run dev
 ```
 
-3. **Define Mastra Agent (`apps/web/src/lib/mastra/agents/`):**
+By default, your server will run at [http://localhost:3000](http://localhost:3000). You can use your favorite API platform like [Insomnia](https://insomnia.rest/) or [Postman](https://www.postman.com/) to test your APIs.
 
-(Structure similar to previous versions - **COPILOT: Add detailed comments guiding prompt engineering for tool reliability.** Verify Mastra API.)
+### ⚠️ Note about build
 
-4. **Define Mastra Tool using Database (`apps/web/src/lib/mastra/tools/`):**
+If you plan to only build this app, please make sure you've built the packages first.
 
-* **Goal:** Create tool using Prisma, potentially accepting `db` dependency *via the service layer*.
-* **Copilot Task:** Generate Tool definition using `createTool`. Import `PrismaClient` type if needed for internal logic. The tool's `execute` function receives standard context (`threadId`, `resourceId`, input `context`). If direct DB access is needed, design the tool's implementation to accept `db` from the calling service function. Handle Prisma errors within the tool's logic, throw `ServiceError` with specific codes.
-* **Example Snippet:** (Structure similar to v14 - **COPILOT: Ensure standard `execute` context is used. If `db` is required, the service function should pass it to the tool's implementation logic, not via `agent.generate/stream` context.** Verify Mastra `createTool` API.)
+## API Endpoints
 
-## @mastra/pinecone Integration RAG/Vector DB:
+### Chat Endpoints
 
-* [https://mastra.ai/docs/reference/rag/pinecone]
-* `@mastra/pinecone`
-* [https://mastra.ai/docs/reference/storage/upstash]
-* `@mastra/upstash`
-* Upstash Redis + vector storage, RAGChat,
+All chat endpoints require authentication (Supabase JWT token in `Authorization: Bearer <token>` header).
 
-  * Redis serverless DB + vector storage & RAGChat for agent memory (Upstash)
+#### Single Response
 
-5. **Implement Shared AI Service Function (`apps/web/src/lib/services/aiService.ts`):**
-
-    * **Goal:** Encapsulate Mastra + Prisma logic. Accept dependencies. Throw `ServiceError`.
-    * **Copilot Task:** Create service functions. Accept `db: PrismaClient`, `agent` instance. Implement DB logic (with **explicit ownership checks**). Call `agent.run()` (passing `db` to tools). Handle errors by throwing `ServiceError` with specific codes (map Prisma codes).
-    * **Example Snippet (Conceptual Chat Service with DI):**
-
-```typescript
-        // apps/web/src/lib/services/aiService.ts
-        // ... imports including ServiceError, ActionErrorCode, PrismaClient, chatAgent instance, db instance (for type only)...
-        // COPILOT: Import Prisma namespace for error types from '@your-org/database'
-        import { Prisma } from '@your-org/database';
-        // COPILOT: Import agent execution types if needed
-        import { type GenerateTextResult, type StreamTextResult } from '@mastra/core'; // Or '@ai-sdk/core' depending on source
-
-        // ... ServiceContext, ChatServiceResult interfaces ...
-
-        // COPILOT: Service function accepts db and agent instance as arguments (Dependency Injection)
-        export async function handleChatMessage(
-             /* ... input, ctx, db, agent ... */
-             // COPILOT: Add parameters like threadId, resourceId if needed for agent memory
-             threadId: string | undefined,
-             resourceId: string | undefined,
-          ): Promise<ChatServiceResult> {
-            // ... userId extraction from ctx ...
-            const userMessage = input.message; // Example input structure
-
-            try {
-                // 1. DB Reads + Ownership Check
-                // COPILOT: MANDATORY - Use 'userId' (as resourceId) for ownership check with Prisma 'where' clause if applicable
-                // const conversation = await db.conversation.findFirst({ where: { id: threadId, userId: resourceId } });
-                // if (!conversation && threadId) throw new ServiceError("...", ActionErrorCode.Forbidden);
-                // ... handle conversation/history logic using injected 'db' ...
-                // COPILOT: Note - Mastra's Memory system handles history injection if configured and threadId/resourceId are passed.
-
-                // 2. Call Agent (Use generate for single response, stream for streaming)
-                // COPILOT: Use agent.generate() or agent.stream(). Pass threadId/resourceId for memory.
-                // COPILOT: Passing arbitrary dependencies like 'db' to tools via agent context is NOT confirmed in docs.
-                // COPILOT: If a tool needs 'db', the service should invoke the tool's logic function directly and pass 'db'.
-                const agentResponse: GenerateTextResult = await agent.generate(
-                   userMessage,
-                   { threadId, resourceId } // Pass IDs for memory context
-                   // COPILOT: Add other options like `tools`, `toolChoice` if needed, but NOT { dependencies: { db } }
-                );
-                // OR: const agentStream: StreamTextResult = await agent.stream(userMessage, { threadId, resourceId });
-
-                // 3. Process Agent Response/Stream
-                // ... handle agentResponse.text or process agentStream ...
-                // COPILOT: Defensive check for tool usage/output if applicable from agentResponse.toolCalls / agentResponse.toolResults
-
-                // 4. DB Writes using injected 'db'
-                // ... e.g., save user message and agent response to your application's tables ...
-                // COPILOT: Note - Mastra's Memory system handles saving to *its* store automatically. Save application data separately.
-
-                // 5. Return Success Data
-                return { text: agentResponse.text /* ... other data ... */ };
-
-            } catch (error: any) {
-                // COPILOT: Catch specific errors, map to ServiceError with specific ActionErrorCode
-                console.error("Error in handleChatMessage service:", error);
-                if (error instanceof ServiceError) throw error; // Re-throw if already handled
-                if (error instanceof Prisma.PrismaClientKnownRequestError) {
-                    // COPILOT: Map relevant Prisma error codes to ActionErrorCodes
-                    let code = ActionErrorCode.DatabaseError;
-                    if (error.code === 'P2002') code = ActionErrorCode.Conflict; // Unique constraint
-                    if (error.code === 'P2025') code = ActionErrorCode.NotFound; // Record not found for update/delete
-                    throw new ServiceError(`Database error: ${error.message}`, code, error);
-                }
-                // COPILOT: Add checks for specific Mastra/Gemini API errors if possible (e.g., from response metadata/error types), map to codes like RateLimitExceeded, LlmError
-                // Fallback
-                throw new ServiceError(error.message || "Unknown service error", ActionErrorCode.UnknownError, error);
-            }
-        }
+```bash
+POST /chat/:agentName
 ```
 
-6. **tRPC Procedure Implementation (`packages/api/src/router/ai.ts`):**
+**Parameters:**
 
-* **Goal:** Expose AI service via tRPC, injecting `db` from context.
-* **Copilot Task:** Define procedure. Use Zod schema. Use protected procedure (Lucia via context). Inject `db`. Call service (pass `db`, agent instance, `threadId`/`resourceId` from input/context). Catch `ServiceError` and map code to `TRPCError` code.
-* **Example Snippet:** (Structure similar to v14 - **COPILOT: Ensure `db` is correctly accessed from `ctx`. Ensure service call uses `agent.generate/stream` pattern. Implement detailed `ServiceError` code mapping to `TRPCError` codes.**)
+- `agentName`: Name of the Mastra agent to use (path parameter)
 
-7. **Server Action Implementation (`apps/web/app/_actions/`):**
+**Request Body:**
 
-* **Goal:** Expose AI service via Manual Server Action, injecting `db`.
-* **Copilot Task:** Generate Manual Server Action. Include Lucia `validateRequest`. Use Zod schema. Import `db`, agent instance. Call service (pass `db`, agent instance, `threadId`/`resourceId` from input/context). Catch `ServiceError`, map code to standard error object. Invalidate cache.
-* **Example Snippet:** (Structure similar to v14 - **COPILOT: Ensure `db` and `agent` are imported and passed. Ensure service call uses `agent.generate/stream` pattern. Implement detailed `ServiceError` code mapping to `ActionErrorCode` in the returned error object.**)
-
-8. **Frontend Component (`app/components/` using MUI v7 + EITHER tRPC Hook OR Manual Action):**
-
-    * **Goal:** Call backend, handle states robustly, use MUI v7. Invalidate caches.
-    * **Copilot Task:** Provide **two distinct component examples**: one using tRPC `useMutation`, one calling the Manual Server Action. Both should:
-        * Use MUI v7 components (`TextField`, `Button`, `Alert`, `CircularProgress`, etc.).
-        * Handle pending state correctly.
-        * Handle validation errors (displaying field-specific errors from Zod via tRPC/Action response).
-        * Handle server errors, mapping `ActionErrorCode` (from Server Action response or mapped TRPCError) to user-friendly messages in MUI `Alert`.
-        * Implement optimistic error clearing on input change.
-        * Call `queryClient.invalidateQueries` on success if data affects tRPC queries.
-        * Include detailed `// COPILOT:` comments for each part.
-    * **Example Snippet (Manual Action Focus - Enhanced):**
-
-```typescript
-
-        // apps/web/app/components/ChatInterfaceManualAction.tsx
-        'use client';
-        // ... imports: React hooks, action, types (incl ActionErrorCode), MUI components, queryClient ...
-
-        // COPILOT: Define a helper function or map for user-friendly error messages based on ActionErrorCode
-        const mapErrorCodeToUserMessage = (code?: ActionErrorCode): string => {
-          switch (code) {
-            case ActionErrorCode.Unauthorized: return "Please log in again.";
-            case ActionErrorCode.Forbidden: return "You don't have permission for this action.";
-            case ActionErrorCode.ValidationError: return "Please check the highlighted fields.";
-            case ActionErrorCode.RateLimitExceeded: return "Too many requests, please try again later.";
-            case ActionErrorCode.NotFound: return "Resource not found.";
-            // Add more mappings
-            default: return "An unexpected error occurred. Please try again.";
-          }
-        };
-
-        export function ChatInterfaceManualAction({ /* ... props ... */ }: ChatInterfaceProps) {
-          // ... state: isPending, error (string | null), fieldErrors (Record<string, string[]> | null), messages, conversationId ...
-          // const queryClient = useQueryClient();
-
-          const handleSubmit = async (formData: FormData) => {
-             // ... set pending true, clear errors ...
-             const response = await processUserChatMessageAction(formData); // Manual action call
-             // ... set pending false ...
-
-             if (response.status === 'success') {
-                // ... handle success: reset form, update messages state ...
-                // COPILOT: Invalidate relevant TanStack Query cache after successful mutation
-                // queryClient.invalidateQueries({ queryKey: ['conversations', response.data.conversationId, 'messages'] });
-             } else if (response.status === 'validationError') {
-                // COPILOT: Set both general validation message and specific field errors
-                setFieldErrors(response.error.fieldErrors);
-                setError(mapErrorCodeToUserMessage(ActionErrorCode.ValidationError));
-             } else { // status === 'error'
-                // COPILOT: Map the specific error code from the response to a user-friendly message
-                setError(mapErrorCodeToUserMessage(response.error.code));
-             }
-          };
-          // ... handleInputChange to clear errors ...
-
-          return (
-            <Box /* ... MUI layout ... */ >
-              {/* ... MUI List for messages ... */}
-              <form ref={formRef} action={handleSubmit}>
-                <Box /* ... MUI layout for input + button ... */ >
-                  {/* COPILOT: Use MUI TextField. Bind error state using 'error' prop. Display helperText from 'fieldErrors'. */}
-                  <TextField name="message" error={!!fieldErrors?.message} helperText={fieldErrors?.message?.join(', ')} /* ... other props ... */ />
-                  {/* COPILOT: Use MUI Button. Bind 'disabled' to isPending. Show CircularProgress when pending. */}
-                  <Button type="submit" disabled={isPending} /* ... */ >{isPending ? <CircularProgress size={24}/> : 'Send'}</Button>
-                </Box>
-              </form>
-              {/* COPILOT: Display general errors using MUI Alert based on 'error' state */}
-              {error && <Alert severity={fieldErrors ? "warning" : "error"} sx={{ mt: 2 }}>{error}</Alert>}
-              {/* ... Display success data ... */}
-            </Box>
-          );
-        }
-
+```json
+{
+  "prompt": "Your message to the agent",
+  "threadId": "optional-thread-id-for-conversation-context"
+}
 ```
 
-**(Include a similar detailed example for the tRPC `useMutation` pattern)**
+**Response:**
+Standard JSON response from the agent.
 
-9. **Streaming Pattern (API Route Recommended):
+#### Streaming Response
 
-  **Goal:** Implement streaming via API Route + Vercel AI SDK / Mastra `stream()`.
-  **Copilot Task:** Generate complete API Route handler (`app/api/ai/stream/route.ts`) with auth, context fetching (Prisma), call to agent's `stream()` method (passing `threadId`/`resourceId`), error handling. Generate frontend component using `useChat` hook connected to this route, rendering streamed MUI output. Use `maskStreamTags` on the frontend if using Mastra's Working Memory feature.
-  **Example Snippets:** (Provide more complete, runnable conceptual examples for both backend route calling `agent.stream()` and frontend `useChat` component, including necessary imports and setup like `maskStreamTags`).
-
-10. **Multimodal Input Handling:**
-
-    * **Goal:** Guide passing image/audio data.
-    * **Copilot Task:** Provide conceptual code snippet for structuring `CoreMessage[]` with text and image (base64) parts for Vercel AI SDK. Add `// COPILOT: Verify exact structure required by Mastra/AI SDK for multimodal input.`
-    * **Example Snippet:**
-
-        ```typescript
-        // Conceptual input for multimodal Gemini call via AI SDK
-        const messages: CoreMessage[] = [
-          {
-            role: 'user',
-            content: [
-              { type: 'text', text: 'Describe this image:' },
-              // COPILOT: Ensure image data is correctly formatted (e.g., base64 string) and MIME type is provided if needed by the SDK/model.
-              { type: 'image', image: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUg...' /* base64 string or URL */ }
-            ]
-          }
-        ];
-        // COPILOT: Pass this 'messages' array to the agent/streamText function. Verify Mastra/AI SDK API.
-        ```
-
-11. **Stateful Agents / Memory:** (Enhance service function example (`handleChatMessage`) with more explicit `// COPILOT:` comments detailing: configuring Mastra Memory (potentially using PostgreSQL adapter if Prisma uses PG), passing `threadId`/`resourceId` to `agent.generate/stream`, and separately saving application-specific data using the injected `db` client)..
-
-12. **Rate Limiting & Retries:** ***Goal:** Add resilience to backend service calls.* **Copilot Task:** Show conceptual use of `async-retry` wrapping `agent.generate()` or `agent.stream()` in the service function. Add comments about configuring retry strategy and checking Gemini rate limit headers or specific error types from the agent response/error. *(Note: This backend retry is separate from the Mastra Client SDK's built-in retries for client-server HTTP calls).*
-
-    * **Example Snippet (Inside Service Function `try` block):**
-
-```typescript
-    // ... (Mocking Prisma Client - unchanged) ... // ... (Mocking Lucia validateRequest - unchanged) ... // ** Mocking Mastra agent.generate/stream (in test file, assuming agent instance is imported) ** // COPILOT: Use vi.spyOn to mock a method on an imported instance //
-    import { vi } from 'vitest'; //
- import { chatAgent } from '@/lib/mastra/agents/chatAgent'; // Import the actual agent instance // // // Mock generate //
-    const mockAgentGenerate = vi.spyOn(chatAgent, 'generate').mockResolvedValue({ //
-    text: "Mocked AI response", //
-    Mock the expected success structure from generate // //
-    toolCalls: [], toolResults: [], finishReason: 'stop', usage: {...}, warnings: [], rawResponse: {}, ... // }); //
-     // Or mock a failure:
-     .mockRejectedValue(new Error("Mock agent failure")); // // //
-     Mock stream (if testing streaming logic) - more complex, might mock the async iterator //
-     const mockAgentStream = vi.spyOn(chatAgent, 'stream').mockImplementation(async () => { // // Return an object matching StreamTextResult, potentially with a mock stream/iterator //
-     return { //
-     stream: (async function* () { //
-     yield { type: 'text-delta', textDelta: 'Mocked ' }; //
-     yield { type: 'text-delta', textDelta: 'stream response' }; // //
-     yield { type: 'tool-call', toolCallId: '...', toolName: '...', args: '...' }; // //
-     yield { type: 'tool-result', toolCallId: '...', toolName: '...', result: '...' }; //
-     yield { type: 'finish', finishReason: 'stop', usage: { completionTokens: 3, promptTokens: 10, totalTokens: 13 } }; //
-      })(), //
-      // Include other parts of StreamTextResult like .text(), .toAIStream(), etc. if needed by the test //
-       text: async () => Promise.resolve('Mocked stream response'), // // ... mock other methods/properties as required by the code under test // }; // }); \
+```bash
+GET /chat/stream/:agentName?prompt=Your%20message&threadId=optional-thread-id
 ```
 
-13. **Debugging & Testing Strategy:**
+**Parameters:**
 
-    * **Goal:** Provide concrete mocking examples.
-    * **Copilot Task:** Add specific code comment examples using `vi.mock` (Vitest) for Prisma Client, Lucia `validateRequest`, and `agent.run`.
-    * **Example Snippets (Conceptual Mocks for Vitest):**
+- `agentName`: Name of the Mastra agent to use (path parameter)
+- `prompt`: Your message to the agent (query parameter)
+- `threadId`: Optional thread ID for conversation context (query parameter)
 
-```typescript
-        // ** Mocking Prisma Client (in test setup or test file) **
-        // COPILOT: Use vi.mock for mocking the entire database package
-        // import { vi } from 'vitest';
-        // vi.mock('@your-org/database', async (importOriginal) => {
-        //   const actual = await importOriginal<typeof import('@your-org/database')>();
-        //   return {
-        //     ...actual, // Keep other exports if needed
-        //     db: { // Mock the 'db' export
-        //       user: {
-        //         findUnique: vi.fn().mockResolvedValue({ id: 'mock-user-id', email: 'test@example.com', name: 'Test User' }),
-        //         // Add mocks for other models/methods used (findFirst, create, findMany, $transaction etc.)
-        //       },
-        //       conversation: { /* ... mock methods ... */ },
-        //       message: { /* ... mock methods ... */ },
-        //       // Mock $transaction if used
-        //       $transaction: vi.fn().mockImplementation(async (prismaPromises) => {
-        //          const results = [];
-        //          for (const p of prismaPromises) { results.push(await p); } // Simulate sequential execution
-        //          return results;
-        //       }),
-        //     }
-        //   };
-        // });
+**Response:**
+Server-Sent Events (SSE) stream with JSON-encoded message chunks.
 
-        // ** Mocking Lucia validateRequest (in test file) **
-        // COPILOT: Use vi.mock for mocking the auth package
-        // import { vi } from 'vitest';
-        // vi.mock('@your-org/auth', () => ({
-        //   validateRequest: vi.fn().mockResolvedValue({ user: { id: 'mock-user-id', role: 'USER' }, session: { id: 'mock-session-id', /* ... */} }), // Mock successful auth
-        //   // Or mock failed auth: vi.fn().mockResolvedValue({ user: null, session: null })
-        //   lucia: {} // Mock other exports if needed
-        // }));
+## Architecture
 
-        // ** Mocking Mastra agent.run (in test file, assuming agent instance is imported) **
-        // COPILOT: Use vi.spyOn to mock a method on an imported instance
-        // import { vi } from 'vitest';
-        // import { chatAgent } from '@/lib/mastra/agents/chatAgent'; // Import the actual agent instance
-        // const mockAgentRun = vi.spyOn(chatAgent, 'run').mockResolvedValue({
-        //    output: { responseText: "Mocked AI response" }, // Mock the expected success structure
-        //    metadata: { modelUsed: 'mock-model', /* ... */ }
-        // });
-        // Or mock a failure: .mockRejectedValue(new Error("Mock agent failure"));
+The API is built using NestJS with the following key modules:
 
-```
+1. **MastraCoreModule**: Centralizes Mastra agent initialization and provides injectable instances
+2. **ChatModule**: Contains services and controllers for chat functionality
+3. **Global Exception Filter**: Handles errors and provides consistent API responses
 
-## Final Verification Checklist for Copilot (v17 - Max Detail)
+## Learn More
 
-* [ ] **Project Scope:** Placeholders used? Focus on `apps/web`?
-* [ ] **Framework Choice:** Only **Mastra AI**?
-* [ ] **Backend Strategy:** Hybrid understood? Services w/ DI? Correct usage pattern?
-* [ ] **Database:** **Prisma Client** used correctly in services?
-* [ ] **Authentication:** **Lucia Auth** used correctly in tRPC & Server Actions?
-* [ ] **UI Library:** **MUI Core v7** components used correctly?
-* [ ] **Gemini Version:** **`gemini-2.0-flash`** targeted? API Key? Safety settings?
-* [ ] **Type Safety:** Explicit types? Zod validation? Prisma types? No `any`? `ServiceError`? Standardized responses w/ codes?
-* [ ] **Mastra Usage:** APIs verified (using `generate`/`stream`)? Clear tool prompts? Defensive checks? **Tool DI pattern clarified (likely via service)?** `// COPILOT: Verify...` comments updated?
-* [ ] **tRPC:** Procedures defined? Input validation? Auth? Calls service (w/ DI)? Maps `ServiceError` to `TRPCError`?
-* [ ] **Manual Server Actions:** Correct structure? Auth check? Zod validation? Calls service (w/ DI)? Manual `try/catch`? Maps `ServiceError`? Cache invalidation?
-* [ ] **Frontend:** MUI v7? Calls tRPC hook OR Server Action? Handles all states (incl. specific error codes)? Invalidate**s** TanStack Query cache? **Separate examples provided?**
-* [ ] **Observability:** LangSmith via env vars assumed? Errors logged? Sensitive data excluded?
-* [ ] **Turborepo Env Vars & Deps:** Build vars in `turbo.json` `env`? Runtime vars available? Task dependencies correct?
-* [ ] **Security:** Inputs validated? PII logging avoided? Auth/ownership checks (Prisma via service)?\
-* [ ] **Stateful Agents:** Memory via Mastra Memory system (using `threadId`/`resourceId`)? **Persistence options considered (e.g., PG adapter)?** Application data saved separately via `db`? Explicit comments in example?**
-* [ ] **Streaming:** **API Route pattern** recommended? **Complete examples (backend/frontend)?*
-* [ ] **Advanced Concepts:** Multimodality example structure? **Rate limit/retry pattern uses `generate`/`stream` and clarifies backend vs client SDK retries?**
-* [ ] **DX:** Debugging tips? **Specific testing/mocking examples updated for `generate`/`stream`?** Inline `// COPILOT:` comments detailed and actionable?
+To learn more about NestJs, take a look at the following resources:
+
+- [Official Documentation](https://docs.nestjs.com) - A progressive Node.js framework for building efficient, reliable and scalable server-side applications.
+- [Official NestJS Courses](https://courses.nestjs.com) - Learn everything you need to master NestJS and tackle modern backend applications at any scale.
+- [GitHub Repo](https://github.com/nestjs/nest)
+````
+
+## File: apps/api/src/app.module.ts
+
+````typescript
+import { Module } from '@nestjs/common';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { MastraCoreModule } from './mastra-core/mastra-core.module';
+import { ChatModule } from './chat/chat.module';
+⋮----
+export class AppModule
+````
+
+## File: apps/api/src/main.ts
+
+````typescript
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+import { ValidationPipe, Logger } from '@nestjs/common';
+import { HttpAdapterHost } from '@nestjs/core';
+import { GlobalHttpExceptionFilter } from './common/filters/http-exception.filter';
+⋮----
+async function bootstrap()
+⋮----
+// Register the global filter
+⋮----
+// Enable validation pipe globally
+⋮----
+// Enable CORS for frontend access
+````
+
+## File: apps/api/tsconfig.json
+
+````json
+{
+  "extends": "@repo/typescript-config/nestjs.json",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "outDir": "./dist",
+    "module": "ES2022",
+    "target": "ES2022",
+    "moduleResolution": "node"
+  }
+}
 ````
 
 ## File: apps/web/.eslintrc.js
+
 ````javascript
 /** @type {import("eslint").Linter.Config} */
 ````
 
 ## File: apps/web/.prettierrc.js
+
 ````javascript
 /** @type {import("prettier").Config} */
 ````
 
 ## File: apps/web/app/page.module.ts
+
 ````typescript
 // apps/api/src/prisma.service.ts
 import {
@@ -11087,6 +11448,7 @@ async createUser(data:
 ````
 
 ## File: apps/web/app/utils/supabase/middleware.ts
+
 ````typescript
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
@@ -11119,6 +11481,7 @@ setAll(cookiesToSet)
 ````
 
 ## File: apps/web/README.md
+
 ````markdown
 # DeanMachines Web Frontend
 
@@ -11344,6 +11707,7 @@ NEXT_PUBLIC_WEBSOCKET_URL=ws://localhost:3000
 ````
 
 ## File: packages/api/mastra.config.ts
+
 ````typescript
 import { Mastra } from '@mastra/core';
 import { createLogger } from '@mastra/core';
@@ -11352,6 +11716,7 @@ import { createLogger } from '@mastra/core';
 ````
 
 ## File: packages/api/src/mastra/services/vector-store.ts
+
 ````typescript
 /**
  * Vector store service for Mastra using Pinecone.
@@ -11512,6 +11877,7 @@ async deleteVectors(
 ````
 
 ## File: packages/api/src/mastra/tools/graphrag.ts
+
 ````typescript
 import { google } from '@ai-sdk/google';
 import { createGraphRAGTool } from '@mastra/rag';
@@ -11522,6 +11888,7 @@ export const getGraphData = async (query) =>
 ````
 
 ## File: packages/api/src/mastra/tools/vectorquery.ts
+
 ````typescript
 import { google } from '@ai-sdk/google';
 import { createVectorQueryTool } from '@mastra/rag';
@@ -11532,6 +11899,7 @@ export const executeQueryWithParams = async (query, params) =>
 ````
 
 ## File: packages/api/src/mastra/workflows.ts/index.ts
+
 ````typescript
 import { Workflow } from '@mastra/core';
 import { Step } from '@mastra/core';
@@ -11559,11 +11927,13 @@ interface Step1Output {
 ````
 
 ## File: packages/eslint-config/prettier-base.js
+
 ````javascript
 /** @type {import("prettier").Config} */
 ````
 
 ## File: packages/typescript-config/base.json
+
 ````json
 {
   "$schema": "https://json.schemastore.org/tsconfig",
@@ -11587,6 +11957,7 @@ interface Step1Output {
 ````
 
 ## File: packages/typescript-config/package.json
+
 ````json
 {
   "name": "@repo/typescript-config",
@@ -11602,6 +11973,7 @@ interface Step1Output {
 ````
 
 ## File: packages/ui/mastra.config.ts
+
 ````typescript
 import { Mastra } from '@mastra/core';
 import { createLogger } from '@mastra/core';
@@ -11610,6 +11982,7 @@ import { createLogger } from '@mastra/core';
 ````
 
 ## File: packages/ui/notes.md
+
 ````markdown
 # Notes for the UI package
 
@@ -11617,6 +11990,7 @@ import { createLogger } from '@mastra/core';
 ````
 
 ## File: packages/ui/src/appbar.tsx
+
 ````typescript
 import {
   AppBar as MuiAppBar,
@@ -11698,6 +12072,7 @@ keepMounted: true, // Better mobile performance
 ````
 
 ## File: packages/ui/src/chat/ChatAttachments.tsx
+
 ````typescript
 import {
   Box,
@@ -11860,6 +12235,7 @@ getFileIcon(attachment.type)
 ````
 
 ## File: packages/ui/src/chat/hook.ts
+
 ````typescript
 import { v4 as uuidv4 } from 'uuid';
 import { Message } from './types';
@@ -12013,11 +12389,13 @@ const deleteMessage = (id: string) =>
 ````
 
 ## File: packages/ui/src/chat/index.ts
+
 ````typescript
 
 ````
 
 ## File: packages/ui/src/chat/types.ts
+
 ````typescript
 /**
  * Represents a chat message
@@ -12310,6 +12688,7 @@ export interface Attachment {
 ````
 
 ## File: packages/ui/src/drawer.tsx
+
 ````typescript
 import { styled, useTheme, Theme, CSSObject } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -12347,6 +12726,7 @@ const handleDrawerClose = () =>
 ````
 
 ## File: packages/ui/src/grid.tsx
+
 ````typescript
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -12356,6 +12736,7 @@ import { Footer } from './footer';
 ````
 
 ## File: packages/ui/src/menu.tsx
+
 ````typescript
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
@@ -12375,6 +12756,7 @@ const handleClose = () =>
 ````
 
 ## File: packages/ui/src/model_selector.tsx
+
 ````typescript
 import {
   Select,
@@ -12441,6 +12823,7 @@ const handleChange = (event: SelectChangeEvent<unknown>) =>
 ````
 
 ## File: packages/ui/src/tabs.tsx
+
 ````typescript
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -12541,6 +12924,7 @@ scrollButtons="auto" // Example: Show scroll buttons automatically
 ````
 
 ## File: packages/ui/src/tooltip.tsx
+
 ````typescript
 // Version 2: Modifying 'content' prop to 'string'
 ⋮----
@@ -12617,6 +13001,7 @@ title={content} // <-- Assignment is valid if TS expects string | undefined
 ````
 
 ## File: packages/ui/tsconfig.json
+
 ````json
 {
   "extends": "@repo/typescript-config/react-library.json",
@@ -12629,6 +13014,7 @@ title={content} // <-- Assignment is valid if TS expects string | undefined
 ````
 
 ## File: tsconfig.json
+
 ````json
 {
   "$schema": "https://json.schemastore.org/tsconfig",
@@ -12652,6 +13038,7 @@ title={content} // <-- Assignment is valid if TS expects string | undefined
 ````
 
 ## File: .gitignore
+
 ````
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
@@ -12722,6 +13109,7 @@ gcp-vertexai-credentials.json
 ````
 
 ## File: apps/web/next-env.d.ts
+
 ````typescript
 /// <reference types="next" />
 /// <reference types="next/image-types/global" />
@@ -12731,6 +13119,7 @@ gcp-vertexai-credentials.json
 ````
 
 ## File: apps/web/src/mastra/index.ts
+
 ````typescript
 /**
  * Main Mastra configuration for the web frontend.
@@ -12755,6 +13144,7 @@ import { google } from '@ai-sdk/google';
 ````
 
 ## File: packages/ui/README.md
+
 ````markdown
 # @repo/ui
 
@@ -12880,6 +13270,7 @@ import { dropdown as Dropdown } from '@repo/ui/dropdrown';
 ````
 
 ## File: packages/ui/src/autocomplete.tsx
+
 ````typescript
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
@@ -12910,6 +13301,7 @@ const top100Films: readonly FilmOption[] = [ // Add type annotation for the sour
 ````
 
 ## File: packages/ui/src/button.tsx
+
 ````typescript
 import { Button as MuiButton, ButtonProps as MuiButtonProps, styled, CircularProgress } from '@mui/material';
 ⋮----
@@ -13022,6 +13414,7 @@ variant=
 ````
 
 ## File: packages/ui/src/card.tsx
+
 ````typescript
 import {
   Card as MuiCard,
@@ -13135,6 +13528,7 @@ return (
 ````
 
 ## File: packages/ui/src/chat/ChatMessageList.tsx
+
 ````typescript
 import { Box, Typography, styled } from '@mui/material';
 import { ChatMessage } from './ChatMessage';
@@ -13233,6 +13627,7 @@ role={message.role as 'user' | 'assistant'} // Assert type after filtering
 ````
 
 ## File: packages/ui/src/code.tsx
+
 ````typescript
 import { styled } from '@mui/material/styles';
 ⋮----
@@ -13280,6 +13675,7 @@ export interface CodeProps {
 ````
 
 ## File: packages/ui/src/d3.tsx
+
 ````typescript
 import React, { useRef, useEffect, useMemo } from 'react';
 ⋮----
@@ -13357,6 +13753,7 @@ function dragended(event: d3.D3DragEvent<SVGCircleElement, NodeData, NodeData>)
 ````
 
 ## File: packages/ui/src/hero.tsx
+
 ````typescript
 import {
   Box,
@@ -13455,6 +13852,7 @@ export interface HeroProps {
 ````
 
 ## File: packages/ui/src/list.tsx
+
 ````typescript
 import {
   List as MuiList,
@@ -13567,6 +13965,7 @@ const handleClick = () =>
 ````
 
 ## File: packages/ui/src/paper.tsx
+
 ````typescript
 import {
   Paper as MuiPaper,
@@ -13647,6 +14046,7 @@ export interface PaperProps extends Omit<MuiPaperProps, 'variant'> {
 ````
 
 ## File: packages/ui/src/progress.tsx
+
 ````typescript
 import {
   Box,
@@ -13744,6 +14144,7 @@ const renderProgress = () =>
 ````
 
 ## File: packages/ui/src/slider.tsx
+
 ````typescript
 import { Box, Slider as MuiSlider, SliderProps as MuiSliderProps } from '@mui/material';
 ⋮----
@@ -13806,6 +14207,7 @@ export interface SliderProps extends Omit<MuiSliderProps, 'defaultValue'> {
 ````
 
 ## File: packages/ui/src/switch.tsx
+
 ````typescript
 import {
   Switch as MuiSwitch,
@@ -13861,6 +14263,7 @@ export interface SwitchProps extends Omit<MuiSwitchProps, 'defaultChecked'> {
 ````
 
 ## File: packages/ui/src/table.tsx
+
 ````typescript
 import {
   Table as MuiTable,
@@ -14108,6 +14511,7 @@ key=
 ````
 
 ## File: packages/ui/src/theme/index.ts
+
 ````typescript
 import {
   createTheme,
@@ -14196,6 +14600,7 @@ export type ThemeType = 'light' | 'dark';
 ````
 
 ## File: apps/web/app/layout.tsx
+
 ````typescript
 import { PropsWithChildren } from 'react';
 import type { Metadata } from 'next';
@@ -14207,6 +14612,7 @@ export default function RootLayout(
 ````
 
 ## File: packages/api/README.md
+
 ````markdown
 # API Backend for DeanMachines
 
@@ -14465,6 +14871,7 @@ MODEL_MAX_TOKENS=8192
 ````
 
 ## File: packages/api/src/index.ts
+
 ````typescript
 /**
  * Main entry point for the API package.
@@ -14490,6 +14897,7 @@ import { UpdateLinkDto } from './links/dto/update-link.dto';
 ````
 
 ## File: packages/api/src/mastra/services/store-embeddings.ts
+
 ````typescript
 // src/services/store-embeddings.ts
 ⋮----
@@ -14719,6 +15127,7 @@ export async function initializeGlobalEmbeddingStore(): Promise<EmbeddingStoreSe
 ````
 
 ## File: packages/jest-config/package.json
+
 ````json
 {
   "name": "@repo/jest-config",
@@ -14739,6 +15148,7 @@ export async function initializeGlobalEmbeddingStore(): Promise<EmbeddingStoreSe
 ````
 
 ## File: packages/ui/src/charts.tsx
+
 ````typescript
 import {
   ResponsiveContainer,
@@ -14857,6 +15267,7 @@ fill=
 ````
 
 ## File: packages/ui/src/dashboard.tsx
+
 ````typescript
 import {
   Box,
@@ -14913,6 +15324,7 @@ const formatNumber = (num: number)
 ````
 
 ## File: packages/ui/src/input.tsx
+
 ````typescript
 import {
   TextField,
@@ -14994,6 +15406,7 @@ const handleTogglePassword = () =>
 ````
 
 ## File: packages/ui/src/theme/ThemeProvider.tsx
+
 ````typescript
 import React, {
   createContext,
@@ -15066,57 +15479,8 @@ export function ThemeProvider({
 export function useTheme(): Theme &
 ````
 
-## File: apps/api/package.json
-````json
-{
-  "name": "api",
-  "version": "0.0.2",
-  "private": true,
-  "scripts": {
-    "dev": "nest start --watch",
-    "build": "nest build",
-    "start": "nest start",
-    "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/main",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json",
-    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\""
-  },
-  "dependencies": {
-    "@mastra/core": "^0.7.0",
-    "@nestjs/common": "^11.0.12",
-    "@nestjs/core": "^11.0.12",
-    "@nestjs/platform-express": "^11.0.12",
-    "@repo/api": "workspace:*",
-    "reflect-metadata": "^0.2.2",
-    "rxjs": "^7.8.2"
-  },
-  "devDependencies": {
-    "@jest/globals": "^29.7.0",
-    "@nestjs/cli": "^11.0.5",
-    "@nestjs/schematics": "^11.0.2",
-    "@nestjs/testing": "^11.0.12",
-    "@repo/eslint-config": "workspace:*",
-    "@repo/jest-config": "workspace:*",
-    "@repo/typescript-config": "workspace:*",
-    "@types/express": "^5.0.1",
-    "@types/node": "^22.13.15",
-    "@types/supertest": "^6.0.3",
-    "jest": "^29.7.0",
-    "source-map-support": "^0.5.21",
-    "supertest": "^7.1.0",
-    "ts-jest": "^29.3.1",
-    "ts-loader": "^9.5.2",
-    "ts-node": "^10.9.2",
-    "tsconfig-paths": "^4.2.0",
-    "typescript": "5.8.2"
-  }
-}
-````
-
 ## File: packages/api/src/controllers/agents/agent.controller.ts
+
 ````typescript
 import {
 
@@ -15214,6 +15578,7 @@ remove(@Param('id', ParseIntPipe) id: number)
 ````
 
 ## File: packages/api/src/mastra/evaluation/langsmith.ts
+
 ````typescript
 /**
  * LangSmith integration for Mastra agent evaluation and tracing.
@@ -15406,6 +15771,7 @@ return null; // Indicate failure
 ````
 
 ## File: packages/api/src/mastra/services/database.ts
+
 ````typescript
 /**
  * Database service for Mastra
@@ -15615,6 +15981,7 @@ async getUserConversations(userId: string, limit = 10)
 ````
 
 ## File: packages/api/tsconfig.json
+
 ````json
 {
   "extends": "../typescript-config/nestjs.json", // Adjusted path assuming typescript-config is a sibling package
@@ -15634,34 +16001,8 @@ async getUserConversations(userId: string, limit = 10)
 }
 ````
 
-## File: packages/eslint-config/package.json
-````json
-{
-  "name": "@repo/eslint-config",
-  "version": "0.0.2",
-  "private": true,
-  "files": [
-    "base.js",
-    "library.js",
-    "nest.js",
-    "next.js",
-    "prettier-base.js",
-    "react-internal.js"
-  ],
-  "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^8.29.0",
-    "@typescript-eslint/parser": "^8.29.0",
-    "@vercel/style-guide": "^6.0.0",
-    "eslint-config-prettier": "^10.1.1",
-    "eslint-config-turbo": "^2.4.4",
-    "eslint-plugin-only-warn": "^1.1.0",
-    "eslint-plugin-prettier": "^5.2.5",
-    "typescript": "5.8.2"
-  }
-}
-````
-
 ## File: packages/ui/src/footer.tsx
+
 ````typescript
 import { Box, Container, Typography, styled } from '@mui/material';
 ⋮----
@@ -15687,6 +16028,7 @@ export interface FooterProps {
 ````
 
 ## File: packages/ui/src/graphs.tsx
+
 ````typescript
 import { Box, Paper } from '@mui/material';
 import { useTheme } from './theme/ThemeProvider';
@@ -15711,6 +16053,7 @@ static getDerivedStateFromError()
 ````
 
 ## File: packages/ui/src/sidebar.tsx
+
 ````typescript
 import {
   Box,
@@ -15858,6 +16201,7 @@ handleExpandClick(item.title);
 ````
 
 ## File: .env.example
+
 ````
 DATABASE_URL="postgresql://postgres.<ID>:<password>@aws-0-us-east-2.pooler.supabase.com:6543/postgres?pgbouncer=true"
 DIRECT_URL="postgresql://postgres:<password>@db.<ID>.supabase.co:5432/postgres"
@@ -15905,7 +16249,90 @@ UPSTASH_INDEX="<upstash_index>"
 FIRECRAWL_KEY="<firecrawl_key>"
 ````
 
+## File: apps/api/package.json
+
+````json
+{
+  "name": "api",
+  "version": "0.0.2",
+  "private": true,
+  "scripts": {
+    "dev": "nest start --watch",
+    "build": "nest build",
+    "start": "nest start",
+    "start:debug": "nest start --debug --watch",
+    "start:prod": "node dist/main",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\""
+  },
+  "dependencies": {
+    "@mastra/core": "^0.7.0",
+    "@nestjs/common": "^11.0.12",
+    "@nestjs/core": "^11.0.12",
+    "@nestjs/platform-express": "^11.0.12",
+    "@repo/api": "workspace:*",
+    "ai": "^4.2.10",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.1",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2"
+  },
+  "devDependencies": {
+    "@jest/globals": "^29.7.0",
+    "@nestjs/cli": "^11.0.5",
+    "@nestjs/schematics": "^11.0.2",
+    "@nestjs/testing": "^11.0.12",
+    "@repo/eslint-config": "workspace:*",
+    "@repo/jest-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@types/express": "^5.0.1",
+    "@types/node": "^22.14.0",
+    "@types/supertest": "^6.0.3",
+    "jest": "^29.7.0",
+    "source-map-support": "^0.5.21",
+    "supertest": "^7.1.0",
+    "ts-jest": "^29.3.1",
+    "ts-loader": "^9.5.2",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "5.8.2"
+  }
+}
+````
+
+## File: packages/eslint-config/package.json
+
+````json
+{
+  "name": "@repo/eslint-config",
+  "version": "0.0.2",
+  "private": true,
+  "files": [
+    "base.js",
+    "library.js",
+    "nest.js",
+    "next.js",
+    "prettier-base.js",
+    "react-internal.js"
+  ],
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.29.0",
+    "@typescript-eslint/parser": "^8.29.0",
+    "@vercel/style-guide": "^6.0.0",
+    "eslint-config-prettier": "^10.1.1",
+    "eslint-config-turbo": "^2.4.4",
+    "eslint-plugin-only-warn": "^1.1.0",
+    "eslint-plugin-prettier": "^5.2.6",
+    "typescript": "5.8.2"
+  }
+}
+````
+
 ## File: apps/web/app/page.tsx
+
 ````typescript
 import { Suspense } from 'react';
 import Image from 'next/image';
@@ -15935,6 +16362,7 @@ xmlns="http://www.w3.org/2000/svg"
 ````
 
 ## File: package.json
+
 ````json
 {
   "name": "deanmachines",
@@ -15978,6 +16406,7 @@ xmlns="http://www.w3.org/2000/svg"
 ````
 
 ## File: packages/api/src/mastra/agents/index.ts
+
 ````typescript
 /**
  * Mastra agents implementation.
@@ -16017,6 +16446,7 @@ export const initializeAgents = (model, memory, tools) =>
 ````
 
 ## File: packages/api/src/mastra/tools/index.ts
+
 ````typescript
 import { createDocumentChunkerTool, MDocument } from '@mastra/rag';
 ⋮----
@@ -16026,6 +16456,7 @@ type: 'text', // Add the required 'type' property
 ````
 
 ## File: packages/api/src/mastra/index.ts
+
 ````typescript
 import { Mastra, Tool } from '@mastra/core';
 import { agents } from './agents';
@@ -16036,6 +16467,7 @@ import { getEnvVar } from '../utils/env';
 ````
 
 ## File: turbo.json
+
 ````json
 {
   "$schema": "https://turbo.build/schema.json",
@@ -16135,6 +16567,7 @@ import { getEnvVar } from '../utils/env';
 ````
 
 ## File: README.md
+
 ````markdown
 <div align="center">
 
@@ -16410,99 +16843,102 @@ Learn more about the power of Turborepo:
 
 ```mermaid
 graph TB
-    User((User))
+    User((External User))
 
     subgraph "Frontend Container"
         WebApp["Web Application<br>(Next.js)"]
 
         subgraph "Frontend Components"
-            AppLayout["Layout Component<br>(React)"]
-            ThemeProvider["Theme Provider<br>(MUI)"]
-            AppBar["App Bar<br>(React/MUI)"]
+            AuthComponent["Authentication<br>(Next Auth)"]
             ChatInterface["Chat Interface<br>(React)"]
-
-            subgraph "Chat Components"
-                ChatContainer["Chat Container<br>(React)"]
-                ChatHeader["Chat Header<br>(React)"]
-                ChatMessageList["Message List<br>(React)"]
-                ChatInput["Chat Input<br>(React)"]
-                ChatToolsPanel["Tools Panel<br>(React)"]
-                ChatWorkflowPanel["Workflow Panel<br>(React)"]
-            end
-
-            subgraph "Auth Components"
-                AuthGuard["Auth Guard<br>(Next.js)"]
-                LoginPage["Login Page<br>(React)"]
-            end
+            Dashboard["Dashboard<br>(React)"]
+            ThemeProvider["Theme Provider<br>(MUI)"]
+            AppBar["App Bar<br>(MUI)"]
+            SupabaseClient["Supabase Client<br>(Supabase SDK)"]
         end
     end
 
     subgraph "Backend Container"
-        APIServer["API Server<br>(NestJS)"]
+        NestAPI["API Server<br>(NestJS)"]
 
         subgraph "API Components"
             AppController["App Controller<br>(NestJS)"]
+            ChatModule["Chat Module<br>(NestJS)"]
             LinksModule["Links Module<br>(NestJS)"]
-            AgentController["Agent Controller<br>(NestJS)"]
-
-            subgraph "Mastra Services"
-                MastraService["Mastra Service<br>(Node.js)"]
-                DatabaseService["Database Service<br>(Node.js)"]
-                VectorStoreService["Vector Store Service<br>(Node.js)"]
-                EmbeddingService["Embedding Service<br>(Node.js)"]
-            end
+            MastraCoreModule["Mastra Core Module<br>(NestJS)"]
+            HttpExceptionFilter["Exception Filter<br>(NestJS)"]
         end
     end
 
-    subgraph "Data Storage Container"
-        SupabaseDB[("Supabase Database<br>(PostgreSQL)")]
-        VectorStore[("Vector Store<br>(Pinecone)")]
-        RedisCache[("Cache<br>(Redis/Upstash)")]
+    subgraph "Database Container"
+        SupabaseDB[("Primary Database<br>(Supabase/PostgreSQL)")]
+        VectorStore[("Vector Store<br>(Upstash)")]
+        RedisCache[("Cache<br>(Redis)")]
+
+        subgraph "Database Components"
+            UserPrefs["User Preferences<br>(SQL Table)"]
+            Conversations["Conversations<br>(SQL Table)"]
+            Messages["Messages<br>(SQL Table)"]
+            VectorOps["Vector Operations<br>(Upstash SDK)"]
+            RedisOps["Redis Operations<br>(Redis SDK)"]
+        end
     end
 
-    subgraph "External Services"
-        LangSmith["LangSmith<br>(API)"]
-        Supabase["Supabase Auth<br>(Auth Service)"]
+    subgraph "Mastra Container"
+        MastraCore["Mastra Core<br>(TypeScript)"]
+
+        subgraph "Mastra Components"
+            AgentController["Agent Controller<br>(NestJS)"]
+            AgentService["Agent Service<br>(TypeScript)"]
+            EmbeddingService["Embedding Service<br>(TypeScript)"]
+            DatabaseService["Database Service<br>(TypeScript)"]
+        end
     end
 
-    %% Frontend Relationships
-    User -->|"Accesses"| WebApp
-    WebApp -->|"Uses"| AppLayout
-    AppLayout -->|"Contains"| ThemeProvider
-    AppLayout -->|"Contains"| AppBar
+    %% Relationships
+    User -->|"Interacts with"| WebApp
+    WebApp -->|"API Calls"| NestAPI
+    WebApp -->|"Auth/Data"| SupabaseClient
+
+    %% Frontend Component Relationships
+    WebApp -->|"Uses"| AuthComponent
     WebApp -->|"Uses"| ChatInterface
-    ChatInterface -->|"Contains"| ChatContainer
-    ChatContainer -->|"Uses"| ChatHeader
-    ChatContainer -->|"Uses"| ChatMessageList
-    ChatContainer -->|"Uses"| ChatInput
-    ChatContainer -->|"Uses"| ChatToolsPanel
-    ChatContainer -->|"Uses"| ChatWorkflowPanel
-    WebApp -->|"Protected by"| AuthGuard
-    AuthGuard -->|"Redirects to"| LoginPage
+    WebApp -->|"Uses"| Dashboard
+    WebApp -->|"Uses"| ThemeProvider
+    WebApp -->|"Uses"| AppBar
 
-    %% Backend Relationships
-    WebApp -->|"API Calls"| APIServer
-    APIServer -->|"Routes to"| AppController
-    APIServer -->|"Routes to"| LinksModule
-    APIServer -->|"Routes to"| AgentController
-    AgentController -->|"Uses"| MastraService
-    MastraService -->|"Uses"| DatabaseService
-    MastraService -->|"Uses"| VectorStoreService
-    MastraService -->|"Uses"| EmbeddingService
+    %% Backend Component Relationships
+    NestAPI -->|"Routes to"| AppController
+    NestAPI -->|"Uses"| ChatModule
+    NestAPI -->|"Uses"| LinksModule
+    NestAPI -->|"Uses"| MastraCoreModule
+    NestAPI -->|"Error Handling"| HttpExceptionFilter
 
-    %% Data Storage Relationships
-    DatabaseService -->|"Stores/Retrieves"| SupabaseDB
-    VectorStoreService -->|"Stores/Queries"| VectorStore
-    DatabaseService -->|"Caches"| RedisCache
+    %% Database Component Relationships
+    SupabaseDB -->|"Stores"| UserPrefs
+    SupabaseDB -->|"Stores"| Conversations
+    SupabaseDB -->|"Stores"| Messages
+    VectorStore -->|"Uses"| VectorOps
+    RedisCache -->|"Uses"| RedisOps
 
-    %% External Service Relationships
-    MastraService -->|"Evaluates"| LangSmith
-    AuthGuard -->|"Authenticates"| Supabase
-    WebApp -->|"Auth API"| Supabase
+    %% Mastra Component Relationships
+    MastraCore -->|"Controls"| AgentController
+    MastraCore -->|"Uses"| AgentService
+    MastraCore -->|"Uses"| EmbeddingService
+    MastraCore -->|"Uses"| DatabaseService
+
+    %% Cross-Container Relationships
+    NestAPI -->|"Queries"| SupabaseDB
+    NestAPI -->|"Vectors"| VectorStore
+    NestAPI -->|"Caches"| RedisCache
+    MastraCore -->|"Integrates"| NestAPI
+    DatabaseService -->|"Manages"| SupabaseDB
+    EmbeddingService -->|"Stores"| VectorStore
 ```
 ````
 
 ## File: packages/ui/package.json
+
 ````json
 {
   "name": "@repo/ui",
@@ -16567,7 +17003,6 @@ graph TB
     "./ChatInterface": "./src/chat/chatinterface.tsx",
     "./ChatAgentPanel": "./src/chat/chatagentpanel.tsx",
     "./ChatWorkflowPanel": "./src/chat/chatworkflowpanel.tsx"
-
   },
   "scripts": {
     "lint": "eslint . --max-warnings 0",
@@ -16578,9 +17013,9 @@ graph TB
     "@repo/typescript-config": "workspace:*",
     "@turbo/gen": "^2.4.4",
     "@types/eslint": "^8.56.12",
-    "@types/node": "^22.13.15",
-    "@types/react": "^19.0.12",
-    "@types/react-dom": "^19.0.4",
+    "@types/node": "^22.14.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.1",
     "@types/react-syntax-highlighter": "^15.5.13",
     "@types/uuid": "^10.0.0",
     "eslint": "^9.23.0",
@@ -16594,7 +17029,7 @@ graph TB
     "@dnd-kit/sortable": "^10.0.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
-    "@floating-ui/react": "^0.27.5",
+    "@floating-ui/react": "^0.27.6",
     "@hookform/resolvers": "^4.1.3",
     "@livekit/components-react": "^2.9.0",
     "@mastra/client-js": "^0.1.13",
@@ -16652,7 +17087,7 @@ graph TB
     "react-merge-refs": "^2.1.1",
     "react-responsive": "^10.0.1",
     "react-syntax-highlighter": "^15.6.1",
-    "recharts": "^2.15.1",
+    "recharts": "^2.15.2",
     "recordrtc": "^5.6.2",
     "rehype-raw": "^7.0.0",
     "remark-gfm": "^4.0.1",
@@ -16666,6 +17101,7 @@ graph TB
 ````
 
 ## File: apps/web/package.json
+
 ````json
 {
   "name": "web",
@@ -16681,8 +17117,8 @@ graph TB
     "test:e2e": "playwright test"
   },
   "dependencies": {
-    "@ai-sdk/google": "^1.2.4",
-    "@ai-sdk/google-vertex": "^2.2.6",
+    "@ai-sdk/google": "^1.2.5",
+    "@ai-sdk/google-vertex": "^2.2.8",
     "@ai-sdk/provider": "^1.1.0",
     "@ai-sdk/provider-utils": "^2.2.3",
     "@aws-sdk/client-s3": "^3.779.0",
@@ -16720,7 +17156,7 @@ graph TB
     "@mastra/voice-google": "^0.1.9",
     "@mui/icons-material": "^7.0.1",
     "@mui/material": "^7.0.1",
-    "@nestjs/common": "^11.0.12",
+    "@nestjs/common": "^11.0.13",
     "@next/env": "^15.2.4",
     "@opentelemetry/api": "^1.9.0",
     "@opentelemetry/api-logs": "^0.200.0",
@@ -16736,7 +17172,7 @@ graph TB
     "@supabase/realtime-js": "^2.11.5",
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.49.4",
-    "@tanstack/react-query": "^5.71.1",
+    "@tanstack/react-query": "^5.71.5",
     "@trpc/client": "^11.0.1",
     "@trpc/react-query": "^11.0.1",
     "@types/ws": "^8.18.1",
@@ -16746,11 +17182,11 @@ graph TB
     "@upstash/redis": "^1.34.6",
     "@upstash/vector": "^1.2.1",
     "@vercel/otel": "^1.10.4",
-    "ai": "4.2.8",
+    "ai": "4.2.10",
     "codemirror-lang-mermaid": "^0.5.0",
     "date-fns": "^4.1.0",
     "diff": "^7.0.0",
-    "fast-xml-parser": "^5.0.9",
+    "fast-xml-parser": "^5.1.0",
     "google-auth-library": "^9.15.1",
     "json": "^11.0.0",
     "langsmith": "^0.3.15",
@@ -16760,7 +17196,7 @@ graph TB
     "react-hook-form": "^7.55.0",
     "react-hot-toast": "^2.5.2",
     "react-syntax-highlighter": "^15.6.1",
-    "recharts": "^2.15.1",
+    "recharts": "^2.15.2",
     "socket.io-client": "^4.8.1",
     "ws": "^8.18.1",
     "zod": "^3.24.2",
@@ -16775,10 +17211,10 @@ graph TB
     "@repo/jest-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/react": "^16.2.0",
-    "@types/node": "^22.13.15",
-    "@types/react": "^19.0.12",
-    "@types/react-dom": "^19.0.4",
+    "@testing-library/react": "^16.3.0",
+    "@types/node": "^22.14.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.1",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
     "mastra": "^0.4.4",
@@ -16789,6 +17225,7 @@ graph TB
 ````
 
 ## File: packages/api/package.json
+
 ````json
 {
   "name": "@repo/api",
@@ -16826,10 +17263,10 @@ graph TB
     }
   },
   "dependencies": {
-    "@ai-sdk/google": "^1.2.4",
-    "@ai-sdk/google-vertex": "^2.2.6",
-    "@ai-sdk/groq": "^1.2.2",
-    "@ai-sdk/openai": "^1.3.5",
+    "@ai-sdk/google": "^1.2.5",
+    "@ai-sdk/google-vertex": "^2.2.8",
+    "@ai-sdk/groq": "^1.2.3",
+    "@ai-sdk/openai": "^1.3.6",
     "@ai-sdk/provider": "^1.1.0",
     "@ai-sdk/provider-utils": "^2.2.3",
     "@aws-sdk/client-s3": "^3.779.0",
@@ -16849,12 +17286,12 @@ graph TB
     "@mastra/vectorize": "^0.2.1",
     "@mastra/voice-elevenlabs": "^0.1.9",
     "@mastra/voice-google": "^0.1.9",
-    "@nestjs/common": "^11.0.12",
-    "@nestjs/core": "^11.0.12",
+    "@nestjs/common": "^11.0.13",
+    "@nestjs/core": "^11.0.13",
     "@nestjs/graphql": "^13.0.4",
     "@nestjs/mapped-types": "2.1.0",
-    "@nestjs/microservices": "^11.0.12",
-    "@nestjs/platform-express": "^11.0.12",
+    "@nestjs/microservices": "^11.0.13",
+    "@nestjs/platform-express": "^11.0.13",
     "@opentelemetry/api": "^1.9.0",
     "@opentelemetry/api-logs": "^0.200.0",
     "@opentelemetry/core": "^2.0.0",
@@ -16876,7 +17313,7 @@ graph TB
     "@upstash/redis": "^1.34.6",
     "@upstash/vector": "^1.2.1",
     "@vercel/otel": "^1.10.4",
-    "ai": "4.2.9",
+    "ai": "4.2.10",
     "class-validator": "^0.14.1",
     "express": "^5.1.0",
     "google-auth-library": "^9.15.1",
@@ -16895,12 +17332,12 @@ graph TB
   "devDependencies": {
     "@nestjs/cli": "^11.0.5",
     "@nestjs/schematics": "^11.0.2",
-    "@nestjs/testing": "^11.0.12",
+    "@nestjs/testing": "^11.0.13",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/express": "^5.0.1",
-    "@types/node": "^22.13.15",
-    "@types/react": "^19.0.12",
+    "@types/node": "^22.14.0",
+    "@types/react": "^19.1.0",
     "ts-loader": "^9.5.2",
     "ts-node": "^10.9.2",
     "typescript": "5.8.2"

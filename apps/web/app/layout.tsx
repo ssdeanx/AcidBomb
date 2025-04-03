@@ -1,12 +1,24 @@
 import { PropsWithChildren } from 'react';
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Inter, Roboto_Mono } from 'next/font/google';
 import { ThemeProvider } from '@repo/ui/ThemeProvider';
 import { AppBar } from '@repo/ui/Appbar';
 
 import './globals.css';
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+  weight: ['400', '500', '700'],
+  display: 'swap'
+});
+
+const robotoMono = Roboto_Mono({
+  subsets: ['latin'],
+  variable: '--font-roboto-mono',
+  weight: ['400', '700'],
+  display: 'swap'
+});
 
 export const metadata: Metadata = {
   title: 'DeanMachines',
@@ -22,7 +34,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<PropsWithChildren>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={`${inter.variable} ${robotoMono.variable}`}>
         <ThemeProvider>
           <AppBar />
           {children}

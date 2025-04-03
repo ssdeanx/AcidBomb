@@ -54,7 +54,7 @@ declare module '@mui/material/styles' {
  */
 const baseThemeOptions: ThemeOptions = {
   typography: {
-    fontFamily: 'Inter, Roboto, "Helvetica Neue", Arial, sans-serif',
+    fontFamily: 'var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
     h1: { fontSize: '2.5rem', fontWeight: 700, lineHeight: 1.2 },
     h2: { fontSize: '2rem', fontWeight: 600, lineHeight: 1.3 },
     h3: { fontSize: '1.75rem', fontWeight: 600, lineHeight: 1.4 },
@@ -63,9 +63,21 @@ const baseThemeOptions: ThemeOptions = {
     h6: { fontSize: '1rem', fontWeight: 600, lineHeight: 1.5 },
     body1: { fontSize: '1rem', lineHeight: 1.5 },
     body2: { fontSize: '0.875rem', lineHeight: 1.5 },
-    button: { textTransform: 'none', fontWeight: 500 },
+    button: {
+      textTransform: 'none',
+      fontWeight: 500,
+      fontFamily: 'var(--font-inter), sans-serif'
+    },
   },
   components: {
+    MuiCssBaseline: {
+      styleOverrides: `
+        code, pre, kbd, samp {
+          font-family: var(--font-roboto-mono), SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+          font-size: 0.9em;
+        }
+      `,
+    },
     MuiButton: {
       styleOverrides: {
         root: {
@@ -156,6 +168,9 @@ export const lightTheme = createTheme({
       secondary: 'rgba(0, 0, 0, 0.6)',
     },
   },
+  typography: {
+    ...baseThemeOptions.typography,
+  },
 });
 
 /**
@@ -202,6 +217,9 @@ export const darkTheme = createTheme({
       primary: '#ffffff',
       secondary: 'rgba(255, 255, 255, 0.7)',
     },
+  },
+  typography: {
+    ...baseThemeOptions.typography,
   },
 });
 

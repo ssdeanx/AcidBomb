@@ -1,13 +1,12 @@
 import { Box, Container, Typography, Paper, Link as MuiLink, Stack } from '@mui/material';
-import Grid from '@mui/material/Grid'; // Explicitly import Grid v2
 import { Psychology, Storage as StorageIcon, Code as CodeIcon } from '@mui/icons-material';
 import { Hero } from '@repo/ui/Hero';
-import { Card } from '@repo/ui/Card'; // No variant prop needed now
+import { Card } from '@repo/ui/Card';
 import { Code } from '@repo/ui/Code';
 import { Button } from '@repo/ui/Button';
 import Link from 'next/link';
 import { cookies } from 'next/headers';
-import type { Metadata } from 'next'; // Import Metadata type
+import type { Metadata } from 'next';
 import { createClient } from './utils/supabase/server';
 import styles from './page.module.css';
 
@@ -110,8 +109,16 @@ export default async function HomePage() {
           <Typography variant="h4" align="center" sx={{ mb: 6, fontWeight: 700 }}>
             Powerful AI Features
           </Typography>
-          <Grid container spacing={4} justifyContent="center">
-            <Grid sx={{ xs: 12, sm: 6, md: 4 }} key="card-1">
+          <Box sx={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: 4,
+            justifyContent: 'center'
+          }}>
+            <Box sx={{
+              width: { xs: '100%', sm: 'calc(50% - 16px)', md: 'calc(33.33% - 16px)' },
+              minWidth: { xs: '100%', sm: 'calc(50% - 16px)', md: 'calc(33.33% - 16px)' }
+            }}>
               <Card
                 title="Mastra AI Integration"
                 description="Build advanced conversational agents powered by Mastra with custom tool integration, memory chains, and intelligent reasoning."
@@ -128,14 +135,17 @@ export default async function HomePage() {
                   '&:hover': {
                     borderColor: 'primary.main',
                     transform: 'translateY(-5px)',
-                    boxShadow: (theme) => theme.shadows[8]
+                    boxShadow: theme => `${theme.shadows[8]}`
                   }
                 }}
               >
                 <Psychology sx={{ fontSize: 48, color: 'primary.main', mb: 2 }} />
               </Card>
-            </Grid>
-            <Grid sx={{ xs: 12, sm: 6, md: 4 }} key="card-2">
+            </Box>
+            <Box sx={{
+              width: { xs: '100%', sm: 'calc(50% - 16px)', md: 'calc(33.33% - 16px)' },
+              minWidth: { xs: '100%', sm: 'calc(50% - 16px)', md: 'calc(33.33% - 16px)' }
+            }}>
               <Card
                 title="Persistent Memory"
                 description="Store and retrieve conversation context with Pinecone vector embeddings and Redis for short-term memory, enabling truly contextual AI interactions."
@@ -152,14 +162,17 @@ export default async function HomePage() {
                   '&:hover': {
                     borderColor: 'primary.main',
                     transform: 'translateY(-5px)',
-                    boxShadow: (theme) => theme.shadows[8]
+                    boxShadow: theme => `${theme.shadows[8]}`
                   }
                 }}
               >
-                 <StorageIcon sx={{ fontSize: 48, color: 'primary.main', mb: 2 }} />
+                <StorageIcon sx={{ fontSize: 48, color: 'primary.main', mb: 2 }} />
               </Card>
-            </Grid>
-            <Grid sx={{ xs: 12, sm: 6, md: 4 }} key="card-3">
+            </Box>
+            <Box sx={{
+              width: { xs: '100%', sm: 'calc(50% - 16px)', md: 'calc(33.33% - 16px)' },
+              minWidth: { xs: '100%', sm: 'calc(50% - 16px)', md: 'calc(33.33% - 16px)' }
+            }}>
               <Card
                 title="Developer-First Stack"
                 description="Built on Next.js, NestJS, TypeScript, and Supabase, with comprehensive tools for development, deployment, and monitoring of production-ready AI solutions."
@@ -176,14 +189,14 @@ export default async function HomePage() {
                   '&:hover': {
                     borderColor: 'primary.main',
                     transform: 'translateY(-5px)',
-                    boxShadow: (theme) => theme.shadows[8]
+                    boxShadow: theme => `${theme.shadows[8]}`
                   }
                 }}
               >
                 <CodeIcon sx={{ fontSize: 48, color: 'primary.main', mb: 2 }} />
               </Card>
-            </Grid>
-          </Grid>
+            </Box>
+          </Box>
         </Container>
       </Box>
 
@@ -264,38 +277,51 @@ export const weatherTool = definePluginTool({
             <Typography variant="body1" component="p" align="center" color="text.secondary">
             </Typography>
           ) : (
-            <Grid container spacing={4}>
+            <Box sx={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: 4,
+              justifyContent: 'center'
+            }}>
               {links.map((link) => (
-                <Grid sx={{ xs: 12, sm: 6, md: 4 }} key={link.id}>
-                  <MuiLink
-                  component={Link}
-                  href={link.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <Box
+                  key={link.id}
                   sx={{
-                    height: '100%'
+                    width: { xs: '100%', sm: 'calc(50% - 16px)', md: 'calc(33.33% - 16px)' },
+                    minWidth: { xs: '100%', sm: 'calc(50% - 16px)', md: 'calc(33.33% - 16px)' }
                   }}
-                  >
-                  <Card
-                    title={link.title}
-                    description={link.description}
+                >
+                  <MuiLink
+                    component={Link}
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     sx={{
-                    height: '100%',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    bgcolor: 'background.paper',
-                    border: 1,
-                    borderColor: 'divider',
-                    '&:hover': {
-                      borderColor: 'primary.light',
-                      boxShadow: (theme) => theme.shadows[4]
-                    }
+                      display: 'block',
+                      height: '100%',
+                      textDecoration: 'none'
                     }}
-                  />
+                  >
+                    <Card
+                      title={link.title}
+                      description={link.description}
+                      sx={{
+                        height: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        bgcolor: 'background.paper',
+                        border: 1,
+                        borderColor: 'divider',
+                        '&:hover': {
+                          borderColor: 'primary.light',
+                          boxShadow: theme => `${theme.shadows[4]}`
+                        }
+                      }}
+                    />
                   </MuiLink>
-                </Grid>
+                </Box>
               ))}
-            </Grid>
+            </Box>
           )}
         </Container>
       </Box>

@@ -1,60 +1,12 @@
 'use client';
-import {
-  createTheme,
-  PaletteColorOptions,
-  ThemeOptions,
-} from '@mui/material/styles';
-
-/**
- * Extended palette with custom color definitions for the application
- */
-declare module '@mui/material/styles' {
-  interface Palette {
-    customPrimary: PaletteColorOptions;
-    customSecondary: {
-      main: string;
-      light: string;
-      dark: string;
-      contrastText: string;
-    };
-    customBackground: {
-      default: string;
-      paper: string;
-      light: string;
-    };
-  }
-
-  interface Theme {
-    displayName?: string;
-  }
-
-  interface PaletteOptions {
-    customPrimary?: {
-      main: string;
-      light: string;
-      dark: string;
-      contrastText: string;
-    };
-    customSecondary?: {
-      main: string;
-      light: string;
-      dark: string;
-      contrastText: string;
-    };
-    customBackground?: {
-      default: string;
-      paper: string;
-      light: string;
-    };
-  }
-}
+import { createTheme, ThemeOptions } from '@mui/material/styles';
 
 /**
  * Base theme options shared between light and dark themes
  */
 const baseThemeOptions: ThemeOptions = {
   typography: {
-    fontFamily: 'var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+    fontFamily: 'var(--font-sans)', // OK to use var here
     h1: { fontSize: '2.5rem', fontWeight: 700, lineHeight: 1.2 },
     h2: { fontSize: '2rem', fontWeight: 600, lineHeight: 1.3 },
     h3: { fontSize: '1.75rem', fontWeight: 600, lineHeight: 1.4 },
@@ -65,161 +17,190 @@ const baseThemeOptions: ThemeOptions = {
     body2: { fontSize: '0.875rem', lineHeight: 1.5 },
     button: {
       textTransform: 'none',
-      fontWeight: 500,
-      fontFamily: 'var(--font-inter), sans-serif'
+      fontWeight: 600,
+      fontFamily: 'var(--font-sans)', // OK to use var here
     },
   },
   components: {
     MuiCssBaseline: {
       styleOverrides: `
         code, pre, kbd, samp {
-          font-family: var(--font-roboto-mono), SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+          font-family: var(--font-mono); /* Use CSS variable */
           font-size: 0.9em;
+        }
+        body {
+          font-family: var(--font-sans); // OK to use var here
         }
       `,
     },
     MuiButton: {
       styleOverrides: {
-        root: {
-          borderRadius: 8,
-          padding: '8px 16px',
-        },
-      },
-      variants: [
-        {
-          props: { variant: 'contained' },
-          style: {
-            boxShadow: 'none',
-            '&:hover': { boxShadow: 'none' },
+        root: ({ theme }) => ({
+          borderRadius: 'var(--radius-pill)',
+          padding: '10px 20px',
+          boxShadow: theme.palette.mode === 'dark' ? 'none' : 'var(--shadow-sm-light)',
+        }),
+        containedPrimary: ({ theme }) => ({
+          '&:hover': {
+            backgroundColor: theme.palette.mode === 'dark' ? 'var(--primary-dark-hover)' : 'var(--primary-light-hover)',
+            boxShadow: theme.palette.mode === 'dark' ? 'var(--shadow-md-dark)' : 'var(--shadow-md-light)',
           },
-        },
-      ],
+        }),
+        containedSecondary: ({ theme }) => ({
+          '&:hover': {
+            backgroundColor: theme.palette.mode === 'dark' ? 'var(--secondary-dark-hover)' : 'var(--secondary-light-hover)',
+            boxShadow: theme.palette.mode === 'dark' ? 'var(--shadow-md-dark)' : 'var(--shadow-md-light)',
+          },
+        }),
+      },
     },
     MuiCard: {
       styleOverrides: {
-        root: {
-          borderRadius: 12,
-          boxShadow: '0 4px 12px 0 rgba(0, 0, 0, 0.1)',
-        },
+        root: ({ theme }) => ({
+          borderRadius: 'var(--radius-lg)',
+          boxShadow: theme.palette.mode === 'dark' ? 'var(--shadow-md-dark)' : 'var(--shadow-md-light)',
+          border: `1px solid ${theme.palette.divider}`,
+          backgroundColor: theme.palette.background.paper,
+        }),
       },
     },
     MuiPaper: {
-      styleOverrides: { root: { borderRadius: 12 } },
+      styleOverrides: {
+        root: ({ theme }) => ({
+          borderRadius: 'var(--radius-lg)',
+          backgroundColor: theme.palette.background.paper,
+        }),
+      },
     },
     MuiTextField: {
       styleOverrides: {
-        root: {
-          '& .MuiOutlinedInput-root': { borderRadius: 8 },
-        },
+        root: ({ theme }) => ({
+          '& .MuiOutlinedInput-root': {
+            borderRadius: 'var(--radius-md)',
+            '& fieldset': {
+              borderColor: theme.palette.mode === 'dark'
+                ? 'hsla(var(--color-neutral-hue), 15%, 50%, 0.3)'
+                : 'hsla(var(--color-neutral-hue), 15%, 50%, 0.3)',
+            },
+            '&:hover fieldset': {
+              borderColor: theme.palette.mode === 'dark'
+                ? 'hsla(var(--color-neutral-hue), 15%, 70%, 0.5)'
+                : 'hsla(var(--color-neutral-hue), 15%, 70%, 0.5)',
+            },
+            '&.Mui-focused fieldset': {
+              borderColor: theme.palette.primary.main,
+              borderWidth: '1px',
+            },
+          },
+        }),
       },
     },
     MuiAppBar: {
       styleOverrides: {
-        root: {
-          boxShadow: '0 2px 10px 0 rgba(0, 0, 0, 0.1)',
-        },
+        root: ({ theme }) => ({
+          boxShadow: 'none',
+          borderBottom: `1px solid ${theme.palette.divider}`,
+          backgroundColor: theme.palette.background.paper,
+          color: theme.palette.text.primary,
+        }),
+      },
+    },
+    MuiLink: {
+      styleOverrides: {
+        root: ({ theme }) => ({
+          color: theme.palette.primary.main,
+          '&:hover': {
+            color: theme.palette.mode === 'dark' ? 'var(--primary-dark-hover)' : 'var(--primary-light-hover)',
+          },
+        }),
+      },
+    },
+    MuiTypography: {
+      styleOverrides: {
+        root: ({ theme }) => ({
+          color: theme.palette.text.primary,
+          '&.MuiTypography-colorTextSecondary': {
+            color: theme.palette.text.secondary,
+          },
+        }),
       },
     },
   },
 };
 
 /**
- * Light theme configuration – modern, professional, and edgy.
+ * Light theme configuration - Using direct HSL values from globals.css
  */
 export const lightTheme = createTheme({
   ...baseThemeOptions,
   palette: {
     mode: 'light',
     primary: {
-      main: '#14213D', // Deep, professional navy-blue
-      light: '#3A506B', // Muted blue for lighter accents
-      dark: '#0F1B33', // Dark navy-blue
-      contrastText: '#ffffff',
+      main: 'hsl(190, 75%, 48%)',
     },
     secondary: {
-      main: '#FCA311', // Bold burnt orange accent
-      light: '#FDAE55',
-      dark: '#D97900',
-      contrastText: '#ffffff',
+      main: 'hsl(35, 90%, 55%)',
     },
-    customPrimary: {
-      main: '#1F2937', // Dark slate for an edgy look
-      light: '#4B5563',
-      dark: '#111827',
-      contrastText: '#ffffff',
-    },
-    customSecondary: {
-      main: '#E63946', // Striking assertive red
-      light: '#F1707A',
-      dark: '#B22233',
-      contrastText: '#ffffff',
-    },
-    customBackground: {
-      default: '#F0F2F5', // Clean light neutral gray
-      paper: '#ffffff',
-      light: '#F7F9FC',
+    error: {
+      main: 'hsl(0, 80%, 55%)',
     },
     background: {
-      default: '#F0F2F5',
+      default: 'hsl(215, 25%, 97%)',
       paper: '#ffffff',
     },
     text: {
-      primary: 'rgba(0, 0, 0, 0.87)',
-      secondary: 'rgba(0, 0, 0, 0.6)',
+      primary: 'hsl(215, 20%, 10%)',
+      secondary: 'hsl(215, 15%, 30%)',
     },
+    divider: 'hsla(215, 15%, 50%, 0.15)',
   },
-  typography: {
-    ...baseThemeOptions.typography,
+  components: {
+    ...baseThemeOptions.components,
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          boxShadow: 'var(--shadow-sm-light)',
+        },
+      },
+    },
   },
 });
 
 /**
- * Dark theme configuration – refined, modern, and assertive.
+ * Dark theme configuration - Using direct HSL values from globals.css
  */
 export const darkTheme = createTheme({
   ...baseThemeOptions,
   palette: {
     mode: 'dark',
     primary: {
-      main: '#1F2937', // Deep charcoal-blue
-      light: '#4B5563',
-      dark: '#111827',
-      contrastText: '#ffffff',
+      main: 'hsl(190, 70%, 55%)',
     },
     secondary: {
-      main: '#FB923C', // Bold, vivid burnt orange
-      light: '#FFB74D',
-      dark: '#BF360C',
-      contrastText: 'rgba(0, 0, 0, 0.87)',
+      main: 'hsl(35, 75%, 60%)',
     },
-    customPrimary: {
-      main: '#2D3748', // Dark, masculine slate
-      light: '#4A5568',
-      dark: '#1A202C',
-      contrastText: 'rgba(255, 255, 255, 0.87)',
-    },
-    customSecondary: {
-      main: '#E11D48', // Intense, assertive red
-      light: '#F56565',
-      dark: '#9B1C1C',
-      contrastText: 'rgba(0, 0, 0, 0.87)',
-    },
-    customBackground: {
-      default: '#0D0D0D', // Near-black for a modern dark feel
-      paper: '#1A1A1A',
-      light: '#2E2E2E',
+    error: {
+      main: 'hsl(0, 75%, 60%)',
     },
     background: {
-      default: '#0D0D0D',
-      paper: '#1A1A1A',
+      default: 'hsl(215, 15%, 10%)',
+      paper: 'hsl(215, 13%, 15%)',
     },
     text: {
-      primary: '#ffffff',
-      secondary: 'rgba(255, 255, 255, 0.7)',
+      primary: 'hsl(215, 20%, 96%)',
+      secondary: 'hsl(215, 15%, 75%)',
     },
+    divider: 'hsla(215, 15%, 50%, 0.15)',
   },
-  typography: {
-    ...baseThemeOptions.typography,
+  components: {
+    ...baseThemeOptions.components,
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          boxShadow: 'none',
+        },
+      },
+    },
   },
 });
 
@@ -228,11 +209,6 @@ export const theme = {
   light: lightTheme,
   dark: darkTheme,
 };
-
-lightTheme.displayName = 'lightTheme';
-darkTheme.displayName = 'darkTheme';
-theme.light.displayName = 'lightTheme';
-theme.dark.displayName = 'darkTheme';
 
 export const themeOptions = {
   light: lightTheme,
@@ -245,3 +221,5 @@ export const themeNames = {
 };
 
 export const themeList = Object.keys(themeNames);
+
+(themeList as any).displayName = 'theme';

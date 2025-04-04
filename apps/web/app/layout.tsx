@@ -21,13 +21,12 @@ const robotoMono = Roboto_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'DeanMachines',
-  description: 'A modern web application built with Next.js, React, TypeScript, MUI, and Supabase.  Build for AI Agents and LLMs with Mastra',
-  keywords: ['Next.js', 'React', 'TypeScript', 'MUI', 'Supabase', 'AI Agents', 'LLMs', 'Mastra', 'Web Development', 'TurboRepo', 'RL Agents', 'Reinforcement Learning', 'AI', 'Machine Learning', 'Deep Learning', 'Robotics', 'Automation'],
+  title: 'DeanMachines - AI Agent Platform',
+  description: 'A modern platform for building diverse AI applications and agents (Conversational, Autonomous, Reinforcement Learning) using Next.js, NestJS, Mastra, Supabase, and Pinecone.',
+  keywords: ['AI Agents', 'Reinforcement Learning', 'RL Agents', 'Autonomous Agents', 'Conversational AI', 'LLMs', 'Mastra', 'Next.js', 'NestJS', 'TypeScript', 'MUI', 'Supabase', 'Pinecone', 'Vector Database', 'Web Development', 'TurboRepo', 'Machine Learning', 'Deep Learning', 'Robotics', 'Automation'],
   authors: [{ name: 'DeanMachines' }],
   icons: {
     icon: '/favicon.ico',
-
   },
 };
 

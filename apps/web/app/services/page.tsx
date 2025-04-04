@@ -63,7 +63,7 @@ export default function ServicesPage() {
             borderColor: 'divider',
             '&:hover': {
               borderColor: 'primary.main',
-              boxShadow: (theme) => theme.shadows[4]
+              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)' // Static shadow value instead of theme function
             }
           }}
         >
@@ -95,7 +95,7 @@ export default function ServicesPage() {
             borderColor: 'divider',
             '&:hover': {
               borderColor: 'primary.main',
-              boxShadow: (theme) => theme.shadows[4]
+              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)' // Static shadow value
             }
           }}
         >
@@ -127,7 +127,7 @@ export default function ServicesPage() {
             borderColor: 'divider',
             '&:hover': {
               borderColor: 'primary.main',
-              boxShadow: (theme) => theme.shadows[4]
+              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)' // Static shadow value
             }
           }}
         >
@@ -159,7 +159,7 @@ export default function ServicesPage() {
             borderColor: 'divider',
             '&:hover': {
               borderColor: 'primary.main',
-              boxShadow: (theme) => theme.shadows[4]
+              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)' // Static shadow value
             }
           }}
         >
@@ -192,7 +192,7 @@ export default function ServicesPage() {
             borderColor: 'divider',
             '&:hover': {
               borderColor: 'primary.main',
-              boxShadow: (theme) => theme.shadows[4]
+              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)' // Static shadow value
             }
           }}
         >

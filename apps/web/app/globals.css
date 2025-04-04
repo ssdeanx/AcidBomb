@@ -1,50 +1,465 @@
+/**
+ * DeanMachines.ai Global Styles - 2025 Edition
+ * Modern, professional, edgy, masculine design system with dark mode focus
+ */
+
+/* CSS Reset & Base Styles */
 :root {
-  --max-width: 1100px;
-  --border-radius: 12px;
-  --font-mono: ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono",
-    "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro",
-    "Fira Mono", "Droid Sans Mono", "Courier New", monospace;
+  /* ======== Design Tokens ======== */
 
-  --foreground-rgb: 255, 255, 255;
-  --background-start-rgb: 0, 0, 0;
-  --background-end-rgb: 0, 0, 0;
+  /* Colors - Base Palette (Cooler, Deeper Tones) */
+  --color-primary-hue: 190;       /* Teal/Cyan primary */
+  --color-secondary-hue: 35;      /* Muted Orange/Amber secondary */
+  --color-accent-hue: 0;          /* Deep Red accent */
+  --color-neutral-hue: 215;       /* Slate/Cool Gray neutral base */
 
-  --callout-rgb: 20, 20, 20;
-  --callout-border-rgb: 108, 108, 108;
-  --card-rgb: 100, 100, 100;
-  --card-border-rgb: 200, 200, 200;
+  /* Light Mode (Refined, using new hues) */
+  --primary-light: hsl(var(--color-primary-hue), 75%, 48%); /* Brighter Teal */
+  --primary-light-hover: hsl(var(--color-primary-hue), 70%, 40%);
+  --primary-light-active: hsl(var(--color-primary-hue), 72%, 35%);
 
+  --secondary-light: hsl(var(--color-secondary-hue), 90%, 55%); /* Brighter Amber */
+  --secondary-light-hover: hsl(var(--color-secondary-hue), 85%, 48%);
+
+  --accent-light: hsl(var(--color-accent-hue), 80%, 55%); /* Brighter Red */
+
+  --surface-light-1: hsl(var(--color-neutral-hue), 25%, 97%); /* Very light cool gray */
+  --surface-light-2: hsl(var(--color-neutral-hue), 20%, 94%);
+  --surface-light-3: hsl(var(--color-neutral-hue), 18%, 88%);
+
+  --text-light-high: hsl(var(--color-neutral-hue), 20%, 10%); /* Dark Slate */
+  --text-light-medium: hsl(var(--color-neutral-hue), 15%, 30%);
+  --text-light-low: hsl(var(--color-neutral-hue), 10%, 50%);
+
+  /* Dark Mode (Primary Focus - Edgy, Masculine) */
+  --primary-dark: hsl(var(--color-primary-hue), 70%, 55%); /* Vibrant Teal */
+  --primary-dark-hover: hsl(var(--color-primary-hue), 75%, 65%);
+  --primary-dark-active: hsl(var(--color-primary-hue), 80%, 70%);
+
+  --secondary-dark: hsl(var(--color-secondary-hue), 75%, 60%); /* Muted Amber */
+  --secondary-dark-hover: hsl(var(--color-secondary-hue), 80%, 70%);
+
+  --accent-dark: hsl(var(--color-accent-hue), 75%, 60%); /* Strong Red */
+
+  --surface-dark-1: hsl(var(--color-neutral-hue), 15%, 10%);  /* Very Dark Slate/Charcoal */
+  --surface-dark-2: hsl(var(--color-neutral-hue), 13%, 15%);  /* Darker Paper/Card Background */
+  --surface-dark-3: hsl(var(--color-neutral-hue), 11%, 22%);  /* Subtle Contrast Surface */
+
+  --text-dark-high: hsl(var(--color-neutral-hue), 20%, 96%); /* Off-white */
+  --text-dark-medium: hsl(var(--color-neutral-hue), 15%, 75%); /* Lighter Gray */
+  --text-dark-low: hsl(var(--color-neutral-hue), 10%, 55%); /* Medium Gray */
+
+  /* Shadows (Adjusted for darker base) */
+  --shadow-sm-light: 0 1px 2px hsla(var(--color-neutral-hue), 15%, 10%, 0.05),
+                0 1px 1px hsla(var(--color-neutral-hue), 15%, 10%, 0.04);
+  --shadow-md-light: 0 4px 6px hsla(var(--color-neutral-hue), 15%, 10%, 0.07),
+                0 2px 4px hsla(var(--color-neutral-hue), 15%, 10%, 0.05);
+  --shadow-lg-light: 0 10px 15px hsla(var(--color-neutral-hue), 15%, 10%, 0.1),
+                0 4px 6px hsla(var(--color-neutral-hue), 15%, 10%, 0.08);
+  --shadow-xl-light: 0 15px 25px hsla(var(--color-neutral-hue), 15%, 10%, 0.12),
+                0 5px 10px hsla(var(--color-neutral-hue), 15%, 10%, 0.06);
+
+  --shadow-sm-dark: 0 1px 2px hsla(var(--color-neutral-hue), 20%, 4%, 0.4),
+                0 1px 1px hsla(var(--color-neutral-hue), 20%, 4%, 0.3);
+  --shadow-md-dark: 0 4px 6px hsla(var(--color-neutral-hue), 15%, 4%, 0.5),
+                0 2px 4px hsla(var(--color-neutral-hue), 15%, 4%, 0.4);
+  --shadow-lg-dark: 0 10px 15px hsla(var(--color-neutral-hue), 12%, 4%, 0.6),
+                0 5px 8px hsla(var(--color-neutral-hue), 12%, 4%, 0.5);
+  --shadow-xl-dark: 0 15px 25px hsla(var(--color-neutral-hue), 10%, 4%, 0.7),
+                0 5px 10px hsla(var(--color-neutral-hue), 10%, 4%, 0.6);
+
+  /* Glow Effects (Adjusted hues) */
+  --glow-primary-light: 0 0 15px hsla(var(--color-primary-hue), 75%, 50%, 0.4);
+  --glow-primary-dark: 0 0 18px hsla(var(--color-primary-hue), 70%, 55%, 0.6);
+
+  --glow-secondary-light: 0 0 15px hsla(var(--color-secondary-hue), 90%, 55%, 0.3);
+  --glow-secondary-dark: 0 0 18px hsla(var(--color-secondary-hue), 75%, 60%, 0.5);
+
+  /* Typography */
+  --font-sans: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-mono: ui-monospace, 'Cascadia Code', 'JetBrains Mono', 'Fira Code', monospace;
+  --font-display: 'InterDisplay', var(--font-sans);
+
+  /* Sizing & Spacing */
+  --space-3xs: clamp(0.25rem, 0.25vw, 0.3rem);
+  --space-2xs: clamp(0.5rem, 0.5vw, 0.6rem);
+  --space-xs: clamp(0.75rem, 0.75vw, 0.9rem);
+  --space-sm: clamp(1rem, 1vw, 1.2rem);
+  --space-md: clamp(1.5rem, 1.5vw, 1.8rem);
+  --space-lg: clamp(2rem, 2vw, 2.4rem);
+  --space-xl: clamp(3rem, 3vw, 3.6rem);
+  --space-2xl: clamp(4rem, 4vw, 4.8rem);
+  --space-3xl: clamp(6rem, 6vw, 7.2rem);
+
+  /* Border Radius */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-circle: 50%;
+  --radius-pill: 9999px;
+
+  /* Animation Timing */
+  --transition-fast: 150ms;
+  --transition-normal: 250ms;
+  --transition-slow: 400ms;
+  --transition-very-slow: 700ms;
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+
+  /* Z-indices */
+  --z-negative: -1;
+  --z-0: 0;
+  --z-1: 100;
+  --z-2: 200;
+  --z-3: 300;
+  --z-4: 400;
+  --z-5: 500;
+  --z-max: 999;
+
+  /* Special Effects */
   --glow-conic: conic-gradient(
     from 180deg at 50% 50%,
     #2a8af6 0deg,
     #a853ba 180deg,
     #e92a67 360deg
   );
+
+  /* Page Width */
+  --max-width: 1280px;
+
+  /* MUI Integration Defaults (Now defaults to dark variables) */
+  --mui-primary-main: var(--primary-dark);
+  --mui-secondary-main: var(--secondary-dark);
+  --mui-error-main: var(--accent-dark);
+  --mui-background-default: var(--surface-dark-1);
+  --mui-background-paper: var(--surface-dark-2);
+  --mui-text-primary: var(--text-dark-high);
+  --mui-text-secondary: var(--text-dark-medium);
 }
 
-* {
+/* Set default color scheme to dark */
+:root {
+  color-scheme: dark; /* Default to dark */
+}
+
+/* Light mode - activated when .light-theme class is added to html */
+.light-theme {
+  color-scheme: light;
+
+  /* Override MUI theme variables for light mode */
+  --mui-primary-main: var(--primary-light);
+  --mui-secondary-main: var(--secondary-light);
+  --mui-error-main: var(--accent-light);
+  --mui-background-default: var(--surface-light-1);
+  --mui-background-paper: #ffffff; /* Keep paper white in light mode */
+  --mui-text-primary: var(--text-light-high);
+  --mui-text-secondary: var(--text-light-medium);
+}
+
+/* Dark mode styles (redundant now as it's the default, but kept for clarity) */
+.dark-theme {
+  color-scheme: dark;
+  --mui-primary-main: var(--primary-dark);
+  --mui-secondary-main: var(--secondary-dark);
+  --mui-error-main: var(--accent-dark);
+  --mui-background-default: var(--surface-dark-1);
+  --mui-background-paper: var(--surface-dark-2);
+  --mui-text-primary: var(--text-dark-high);
+  --mui-text-secondary: var(--text-dark-medium);
+}
+
+/* CSS Reset */
+*, *::before, *::after {
   box-sizing: border-box;
-  padding: 0;
   margin: 0;
+  padding: 0;
 }
 
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* Improved focus styles */
+:focus-visible {
+  outline: 2px solid var(--primary-dark); /* Default focus to dark primary */
+  outline-offset: 2px;
+}
+
+.light-theme :focus-visible {
+  outline: 2px solid var(--primary-light); /* Light theme focus */
+  outline-offset: 2px;
+}
+
+/* Modern scrollbar styling */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--surface-dark-2);
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--color-neutral-hue), 10%, 40%);
+  border-radius: var(--radius-pill);
+  border: 3px solid var(--surface-dark-2);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--color-neutral-hue), 15%, 50%);
+}
+
+.light-theme::-webkit-scrollbar-track {
+  background: var(--surface-light-2);
+}
+
+.light-theme::-webkit-scrollbar-thumb {
+  background: hsl(var(--color-neutral-hue), 10%, 65%);
+  border: 3px solid var(--surface-light-2);
+}
+
+.light-theme::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--color-neutral-hue), 15%, 55%);
+}
+
+/* Base layout & typography */
 html,
 body {
   max-width: 100vw;
   overflow-x: hidden;
+  font-family: var(--font-sans);
+  line-height: 1.6;
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  color: var(--text-dark-high); /* Default text to dark theme */
+  background: var(--surface-dark-1); /* Default background to dark theme */
+  transition: background-color var(--transition-normal) var(--ease-standard),
+              color var(--transition-normal) var(--ease-standard);
 }
 
+.light-theme body {
+  color: var(--text-light-high);
+  background: var(--surface-light-1);
+}
+
+/* Typography - Modern fluid type scale */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1.2;
+  margin-bottom: 0.5em;
+}
+
+h1 {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  letter-spacing: -0.03em;
+}
+
+h2 {
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  letter-spacing: -0.02em;
+}
+
+h3 {
+  font-size: clamp(1.75rem, 3vw, 2.75rem);
+  letter-spacing: -0.015em;
+}
+
+h4 {
+  font-size: clamp(1.5rem, 2.5vw, 2.25rem);
+  letter-spacing: -0.01em;
+}
+
+h5 {
+  font-size: clamp(1.25rem, 2vw, 1.75rem);
+}
+
+h6 {
+  font-size: clamp(1.1rem, 1.5vw, 1.35rem);
+}
+
+p {
+  margin-bottom: 1rem;
+}
+
+/* Links */
 a {
-  color: inherit;
+  color: var(--primary-dark); /* Default link to dark primary */
   text-decoration: none;
+  transition: color var(--transition-fast) var(--ease-standard),
+              text-decoration var(--transition-fast) var(--ease-standard);
+}
+
+a:hover {
+  color: var(--primary-dark-hover);
+  text-decoration: underline;
+  text-decoration-thickness: 1px; /* Subtle underline */
+}
+
+.light-theme a {
+  color: var(--primary-light);
+}
+
+.light-theme a:hover {
+  color: var(--primary-light-hover);
+}
+
+/* Images and other replaced elements */
+img, video, canvas, svg, picture {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* Code blocks */
+code, pre {
+  font-family: var(--font-mono);
+  background-color: var(--surface-dark-3); /* Use slightly lighter dark surface */
+  border: 1px solid hsl(var(--color-neutral-hue), 10%, 25%); /* Subtle border */
+}
+
+.light-theme code, .light-theme pre {
+  background-color: var(--surface-light-2);
+  border: 1px solid hsl(var(--color-neutral-hue), 15%, 85%);
+}
+
+code {
+  padding: 0.2em 0.4em;
+  font-size: 0.9em;
+}
+
+pre {
+  padding: 1rem;
+  overflow-x: auto;
+}
+
+pre code {
+  background-color: transparent;
+  padding: 0;
+}
+
+/* Selection styling */
+::selection {
+  background-color: hsla(var(--color-primary-hue), 70%, 55%, 0.5);
+  color: currentColor;
+}
+
+.light-theme ::selection {
+  background-color: hsla(var(--color-primary-hue), 75%, 48%, 0.3);
+}
+
+/* Utility classes for glassmorphism */
+.glass-light {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md-light);
+}
+
+.glass-dark {
+  background: rgba(30, 30, 40, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md-dark);
+}
+
+/* Neomorphism effects */
+.neu-light {
+  background: var(--surface-light-1);
+  border-radius: var(--radius-md);
+  box-shadow:
+    8px 8px 16px rgba(190, 190, 200, 0.6),
+    -8px -8px 16px rgba(255, 255, 255, 0.8);
+}
+
+.neu-dark {
+  background: var(--surface-dark-1);
+  border-radius: var(--radius-md);
+  box-shadow:
+    8px 8px 16px rgba(10, 10, 15, 0.6),
+    -8px -8px 16px rgba(40, 40, 50, 0.2);
+}
+
+.neu-light-inset {
+  background: var(--surface-light-1);
+  border-radius: var(--radius-md);
+  box-shadow:
+    inset 2px 2px 5px rgba(190, 190, 200, 0.6),
+    inset -2px -2px 5px rgba(255, 255, 255, 0.8);
+}
+
+.neu-dark-inset {
+  background: var(--surface-dark-1);
+  border-radius: var(--radius-md);
+  box-shadow:
+    inset 2px 2px 5px rgba(10, 10, 15, 0.6),
+    inset -2px -2px 5px rgba(40, 40, 50, 0.2);
+}
+
+/* Animation utility classes */
+.transition-all {
+  transition: all var(--transition-normal) var(--ease-standard);
+}
+
+.hover-lift {
+  transition: transform var(--transition-fast) var(--ease-standard),
+              box-shadow var(--transition-fast) var(--ease-standard);
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg-dark); /* Default hover shadow to dark */
+}
+
+.light-theme .hover-lift:hover {
+  box-shadow: var(--shadow-lg-light);
+}
+
+/* Glow utility */
+.glow-primary-hover {
+  transition: box-shadow var(--transition-normal) var(--ease-standard);
+}
+
+.glow-primary-hover:hover {
+  box-shadow: var(--glow-primary-dark); /* Default glow to dark */
+}
+
+.light-theme .glow-primary-hover:hover {
+  box-shadow: var(--glow-primary-light);
+}
+
+.glow-secondary-hover {
+  transition: box-shadow var(--transition-normal) var(--ease-standard);
+}
+
+.glow-secondary-hover:hover {
+  box-shadow: var(--glow-secondary-dark); /* Default glow to dark */
+}
+
+.light-theme .glow-secondary-hover:hover {
+  box-shadow: var(--glow-secondary-light);
+}
+
+/* Visually hide elements, but keep them accessible for screen readers */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }

@@ -86,7 +86,7 @@ export default async function HomePage() {
         >
           <Button
             component={Link}
-            href={user ? '/chat' : '/signup'}
+            href={user ? '/private' : '/login'}
             variant="primary"
             size="lg"
           >
@@ -135,7 +135,7 @@ export default async function HomePage() {
                   '&:hover': {
                     borderColor: 'primary.main',
                     transform: 'translateY(-5px)',
-                    boxShadow: theme => `${theme.shadows[8]}`
+                    boxShadow: '0 8px 16px rgba(0, 0, 0, 0.1)'
                   }
                 }}
               >
@@ -162,7 +162,7 @@ export default async function HomePage() {
                   '&:hover': {
                     borderColor: 'primary.main',
                     transform: 'translateY(-5px)',
-                    boxShadow: theme => `${theme.shadows[8]}`
+                    boxShadow: '0 8px 16px rgba(0, 0, 0, 0.1)'
                   }
                 }}
               >
@@ -189,7 +189,7 @@ export default async function HomePage() {
                   '&:hover': {
                     borderColor: 'primary.main',
                     transform: 'translateY(-5px)',
-                    boxShadow: theme => `${theme.shadows[8]}`
+                    boxShadow: '0 8px 16px rgba(0, 0, 0, 0.1)'
                   }
                 }}
               >
@@ -314,7 +314,7 @@ export const weatherTool = definePluginTool({
                         borderColor: 'divider',
                         '&:hover': {
                           borderColor: 'primary.light',
-                          boxShadow: theme => `${theme.shadows[4]}`
+                          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)'
                         }
                       }}
                     />
@@ -334,7 +334,7 @@ export const weatherTool = definePluginTool({
           </Typography>
           <Button
             component={Link}
-            href={user ? '/chat' : '/signup'}
+            href={user ? '/private' : '/login'}
             variant="primary"
             size="lg"
           >

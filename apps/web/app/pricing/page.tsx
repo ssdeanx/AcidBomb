@@ -98,7 +98,6 @@ export default function PricingPage() {
         alignItems="stretch"
       >
         {/* Free Tier */}
-
           <Card
             sx={{
               height: '100%',
@@ -112,13 +111,15 @@ export default function PricingPage() {
               title="Free"
               subheader="For personal projects & exploration"
               sx={{ bgcolor: 'grey.800' }}
-              titleTypographyProps={{
-                align: 'center',
-                variant: 'h4',
-                fontWeight: 'medium'
-              }}
-              subheaderTypographyProps={{
-                align: 'center'
+              slotProps={{
+                title: {
+                  align: 'center',
+                  variant: 'h4',
+                  fontWeight: 'medium'
+                },
+                subheader: {
+                  align: 'center'
+                }
               }}
             />
             <CardContent sx={{ flexGrow: 1 }}>
@@ -158,7 +159,6 @@ export default function PricingPage() {
         </Grid>
 
         {/* Pro Tier */}
-
           <Card
             sx={{
               height: '100%',
@@ -166,8 +166,8 @@ export default function PricingPage() {
               flexDirection: 'column',
               borderColor: 'primary.main',
               borderWidth: 2,
-              bgcolor: (theme) => alpha(theme.palette.primary.main, 0.04),
-              boxShadow: (theme) => theme.shadows[3],
+              bgcolor: 'rgba(25, 118, 210, 0.04)', // Static value instead of theme function
+              boxShadow: '0 3px 5px 2px rgba(0, 0, 0, 0.1)', // Static shadow value
               borderRadius: 2,
               position: 'relative',
               zIndex: 1
@@ -176,7 +176,7 @@ export default function PricingPage() {
             <CardHeader
               title="Pro"
               subheader="For developers & small teams"
-              sx={{ bgcolor: (theme) => alpha(theme.palette.primary.main, 0.1) }}
+              sx={{ bgcolor: 'rgba(25, 118, 210, 0.1)' }} // Static value instead of theme function
               slotProps={{
                 title: {
                   align: 'center',

@@ -2,7 +2,7 @@
 
 # DeanMachines
 
-### A Modern AI-Powered Application Platform
+### A Modern Platform for Building Intelligent AI Applications and Agents
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
@@ -13,7 +13,7 @@
 [![Turborepo](https://img.shields.io/badge/Turborepo-EF4444?style=for-the-badge&logo=turborepo&logoColor=white)](https://turbo.build/repo)
 [![pnpm](https://img.shields.io/badge/pnpm-F69220?style=for-the-badge&logo=pnpm&logoColor=white)](https://pnpm.io/)
 
-AI-powered application platform with Next.js frontend and NestJS backend for building intelligent, conversational experiences.
+Platform for building diverse AI applications, including conversational experiences, autonomous agents, and Reinforcement Learning systems, using a Next.js frontend and NestJS backend.
 
 </div>
 
@@ -21,13 +21,13 @@ AI-powered application platform with Next.js frontend and NestJS backend for bui
 
 DeanMachines is a modern monorepo application built with Turborepo, featuring:
 
-- **Next.js Frontend** with AI-powered user interfaces
-- **NestJS Backend** with robust API architecture
-- **Mastra AI Integration** for intelligent agent capabilities
-- **Vector Database** for semantic search and embeddings
-- **Component Library** for consistent UI/UX
-- **Error Handling** for robust vector operations
-- **TypeScript Compliance** for improved code quality
+- **Next.js Frontend** for building user interfaces for AI applications and agent interaction/monitoring.
+- **NestJS Backend** with robust API architecture for managing agents, data, and AI workflows.
+- **Mastra AI Integration** for core agent capabilities, adaptable for various AI paradigms (including RL).
+- **Vector Database** for semantic search, memory, and state representation.
+- **Component Library** for consistent UI/UX across AI tools and dashboards.
+- **Error Handling** for robust AI operations.
+- **TypeScript Compliance** for improved code quality and maintainability.
 
 ## 📂 Repository Structure
 
@@ -44,17 +44,152 @@ DeanMachines is a modern monorepo application built with Turborepo, featuring:
         ├── @repo/jest-config         # `jest` configurations
         ├── @repo/typescript-config   # `tsconfig.json`s used throughout the monorepo
         ├── @repo/ui                  # Shareable stub React component library.
-        └── @repo/database              # Shareable stub React component library.
 ```
 
 ## ✨ Features
 
-- 🤖 **Mastra AI Framework** - Agent-based AI capabilities
-- 🔍 **Vector Search** - Semantic search using Pinecone
-- 🔐 **Authentication** - Secure auth with Supabase
-- 💾 **Database** - Type-safe database integration
-- 🎨 **UI Components** - Shared component library
-- 📱 **Responsive Design** - Works on all devices
+- 🤖 **Mastra AI Framework** - Core functionalities for building diverse AI agents (Conversational, RL, Autonomous).
+- 🔍 **Vector Search** - Semantic capabilities via Pinecone for memory, context, and state.
+- 🔐 **Authentication** - Secure auth with Supabase.
+- 💾 **Database** - Type-safe database integration for agent data, logs, and configurations.
+- 🎨 **UI Components** - Shared library for building agent interfaces and dashboards.
+- 📱 **Responsive Design** - Works on all devices for monitoring and interaction.
+
+## ⏱️ Project Status & Timeline
+
+This section outlines the current development status and planned work.
+
+**Legend:**
+- ✅: Completed / Implemented
+- 🚧: In Progress / Needs Work / Partially Implemented
+- ⏳: Planned / Not Started
+
+### Phase 1: Core Setup & Foundation (Complete ✅)
+
+- ✅ Monorepo Setup (Turborepo, pnpm)
+- ✅ Base TypeScript Configuration (`@repo/typescript-config`)
+- ✅ Linting Configuration (`@repo/eslint-config`)
+- ✅ Testing Configuration (`@repo/jest-config`)
+- ✅ Remote Caching Setup (Vercel)
+- ✅ Basic Next.js Frontend Structure (`apps/web`)
+- ✅ Basic NestJS Backend Structure (`apps/api`)
+- ✅ Global Styles & Theming (`globals.css`, `@repo/ui/ThemeProvider`)
+- ✅ Core UI Layout (`@repo/ui/Appbar`, `layout.tsx`)
+- ✅ Supabase Database Setup (PostgreSQL)
+- ✅ Supabase Auth Setup (Basic configuration)
+- ✅ Theme Persistence (`ThemeManager` with Supabase)
+- ✅ Configuration Management (`@nestjs/config` in API)
+
+### Phase 2: Feature Implementation (In Progress 🚧 / Planned ⏳)
+
+- **Backend (`apps/api`)**
+  - 🚧 Mastra Core Module Integration (`MastraCoreModule`)
+  - ⏳ Agent Service & Controller Implementation
+  - ⏳ Chat Module Implementation
+  - ⏳ Robust API Error Handling
+  - ⏳ API Testing (Unit/Integration)
+- **Frontend (`apps/web`)**
+  - 🚧 Client-side Authentication Integration (Supabase Auth UI/Logic)
+  - 🚧 Agent Interaction/Monitoring UI Development
+  - 🚧 Documentation Page Content Population
+  - 🚧 End-to-End Testing Setup (Playwright)
+- **Shared Packages (`@repo/ui`, `@repo/api`, `@repo/database`)**
+  - 🚧 UI Component Implementation (Chat, Data Display, Core Elements)
+  - 🚧 Shared API Resource Implementation (Mastra Services, Tools, Agents)
+  - 🚧 Database Client Logic (`@repo/database` or within services)
+  - 🚧 ORM/Client Usage Refinement (Supabase Client in services)
+- **Infrastructure Integration**
+  - 🚧 Pinecone Setup & Integration (Vector Store)
+  - 🚧 Embedding Generation Pipeline
+  - 🚧 Semantic Search Feature
+  - ⏳ Upstash Redis Cache Integration
+  - ⏳ Gemini & LangSmith AI Service Integration
+
+### Phase 3: Refinement & Deployment (Planned ⏳)
+
+- ⏳ Comprehensive Testing (Unit, Integration, E2E)
+- ⏳ Documentation Finalization
+- ⏳ Performance Optimization
+- ⏳ Security Audit & Hardening
+- ⏳ Deployment Pipeline Setup (Vercel, Docker, etc.)
+- ⏳ Monitoring & Logging Implementation
+
+---
+
+*Detailed Status Breakdown:*
+
+### Core Infrastructure & Setup
+
+- ✅ Monorepo Setup (Turborepo, pnpm)
+- ✅ Base TypeScript Configuration (`@repo/typescript-config`)
+- ✅ Linting Configuration (`@repo/eslint-config`)
+- ✅ Testing Configuration (`@repo/jest-config`)
+- ✅ CI/CD Foundation (GitHub Actions suggested)
+- ✅ Remote Caching Setup (Vercel)
+
+### Backend (`apps/api`)
+
+- ✅ NestJS Application Structure
+- ✅ Basic API Controllers/Services (`AppController`, `AppService`)
+- 🚧 Mastra Core Module (`MastraCoreModule`) - Integration started
+  - ⏳ Agent Service (`agent.service`)
+  - ⏳ Agent Controller (`agent.controller`)
+  - ⏳ DTOs (`create-agent.dto`, `update-agent.dto`)
+- 🚧 Chat Module (`ChatModule`) - Integration started
+- ✅ Configuration Management (`@nestjs/config`)
+- ⏳ Robust Error Handling (HttpExceptionFilter mentioned)
+- ⏳ API Testing (Unit/Integration tests for modules)
+
+### Frontend (`apps/web`)
+
+- ✅ Next.js Application Structure
+- ✅ Basic Pages (Dashboard, Docs, About inferred)
+- ✅ Global Styles (`globals.css`) - Dark mode focus implemented
+- ✅ Theme Provider (`@repo/ui/ThemeProvider`) - Integrated with Supabase persistence
+- ✅ AppBar Component (`@repo/ui/Appbar`) - Integrated with ThemeProvider
+- ✅ Layout Structure (`layout.tsx`)
+- 🚧 Authentication Integration (Client-side Supabase/NextAuth)
+- 🚧 Agent Interaction/Monitoring UI
+- 🚧 Documentation Pages Content
+- 🚧 End-to-End Testing (Playwright suggested)
+
+### Shared Packages
+
+- **`@repo/ui`**
+  - ✅ Core Layout Components (AppBar)
+  - ✅ Theme Implementation (ThemeProvider, light/dark themes)
+  - 🚧 Chat Components (ChatWindow, ChatMessage, etc.) - Structure exists, implementation status unclear
+  - 🚧 Data Display Components (Charts, Graphs, Table, List) - Structure exists, implementation status unclear
+  - 🚧 Core UI Elements (Button, Card, Input, etc.) - Structure exists, implementation status unclear
+  - ✅ Turborepo Export Configuration (`package.json`)
+- **`@repo/api` (Shared NestJS Resources)**
+  - 🚧 Mastra Services (Store Embeddings, Database)
+  - 🚧 Mastra Tools (Document, GraphRAG, VectorQuery, etc.)
+  - 🚧 Mastra Agents Definition
+  - 🚧 Shared DTOs/Entities/Types
+- **`@repo/database`** (Assumed based on diagram/description)
+  - ✅ Database Schema Design (User Prefs, Convos, Messages, Embeddings, Docs)
+  - 🚧 ORM Implementation (Supabase Client)
+  - 🚧 Migrations & Seeding Strategy
+  - 🚧 Database Client Setup
+
+### Infrastructure Integration
+
+- **Supabase**
+  - ✅ PostgreSQL Database Setup
+  - ✅ Auth Setup (Backend configuration likely needed)
+  - ✅ Storage Setup (If used for documents/files)
+  - ✅ RLS Policies Defined
+- **Pinecone**
+  - 🚧 Vector Store Setup & API Key Configuration
+  - 🚧 Embedding Generation Pipeline
+  - 🚧 Semantic Search Implementation
+- **Upstash Redis** (Cache)
+  - ⏳ Cache Implementation Strategy (Session state, memory)
+  - ⏳ Integration with Backend Services
+- **AI Services**
+  - ⏳ Gemini Integration
+  - ⏳ LangSmith Integration (Evaluation)
 
 ## 🧠 Mastra AI Backend Progress
 
@@ -67,9 +202,9 @@ DeanMachines is a modern monorepo application built with Turborepo, featuring:
   - Row Level Security (RLS) policies
 
 - ✅ **ORM Implementation**
-  - Type-safe table definitions with Drizzle
+  - Type-safe interactions via Supabase Client
   - PostgreSQL integration
-  - Proper relation definitions
+  - Proper relation definitions (Managed via Supabase schema/client)
   - Enum types for theme and roles
 
 ```mermaid

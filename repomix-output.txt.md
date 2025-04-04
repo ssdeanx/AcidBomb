@@ -138,6 +138,7 @@ packages/api/src/controllers/agents/agent.service.ts
 packages/api/src/database/client.ts
 packages/api/src/database/index.ts
 packages/api/src/database/migrations/001_initial_schema.sql
+packages/api/src/database/migrations/002_create_links_table.sql
 packages/api/src/database/supabase.ts
 packages/api/src/database/upstash.ts
 packages/api/src/index.ts
@@ -1413,20 +1414,6 @@ export function generateMetadata(): Metadata
 export default function ErrorPage()
 ````
 
-## File: apps/web/app/globals.css
-
-````css
-:root {
-⋮----
-* {
-⋮----
-html,
-⋮----
-body {
-⋮----
-a {
-````
-
 ## File: apps/web/app/login/actions.ts
 
 ````typescript
@@ -2287,6 +2274,83 @@ CREATE POLICY "Users can insert messages in their conversations"
     WHERE conversations.id = conversation_id
     AND conversations.user_id = auth.uid()
   ));
+````
+
+## File: packages/api/src/database/migrations/002_create_links_table.sql
+
+````sql
+-- Enable the UUID generation extension if it's not already enabled
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA extensions;
+
+-- Create the links table
+CREATE TABLE public.links (
+  id UUID PRIMARY KEY DEFAULT extensions.uuid_generate_v4(), -- Explicitly use the extensions schema
+  title TEXT NOT NULL,
+  url TEXT NOT NULL UNIQUE, -- Ensure URLs are unique
+  description TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(), -- Use standard NOW() for default timestamp
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(), -- Add an updated_at timestamp
+
+  -- **IMPORTANT**: Add user_id if links belong to specific users
+  user_id UUID, -- Define column type, constraint defined below
+  -- Add other columns as needed, e.g., tags, clicks, etc.
+
+  -- Define foreign key constraint separately
+  CONSTRAINT fk_links_user FOREIGN KEY(user_id) REFERENCES auth.users(id) ON DELETE CASCADE
+);
+
+-- Add indexes for common query patterns
+CREATE INDEX IF NOT EXISTS idx_links_url ON public.links(url);
+CREATE INDEX IF NOT EXISTS idx_links_user_id ON public.links(user_id); -- Index if you add user_id
+
+-- Optional: Function to automatically update the updated_at timestamp
+CREATE OR REPLACE FUNCTION public.update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+   NEW.updated_at = NOW();
+   RETURN NEW;
+END;
+$$ language 'plpgsql';
+
+-- Optional: Trigger to call the function before updates
+CREATE TRIGGER update_links_updated_at
+BEFORE UPDATE ON public.links
+FOR EACH ROW
+EXECUTE FUNCTION public.update_updated_at_column();
+
+
+-- == Row Level Security (RLS) - uncomment and adjust if needed ==
+
+-- 1. Enable RLS on the table
+-- ALTER TABLE public.links ENABLE ROW LEVEL SECURITY;
+
+-- 2. Create policies (EXAMPLES - Adjust to your needs)
+
+-- Example: Allow public read access to all links
+-- CREATE POLICY "Public links are viewable by everyone"
+--   ON public.links FOR SELECT
+--   USING (true);
+
+-- Example: Allow users to view their own links (Requires user_id column)
+-- CREATE POLICY "Users can view their own links"
+--   ON public.links FOR SELECT
+--   USING (auth.uid() = user_id);
+
+-- Example: Allow users to insert links for themselves (Requires user_id column)
+-- CREATE POLICY "Users can insert their own links"
+--   ON public.links FOR INSERT
+--   WITH CHECK (auth.uid() = user_id);
+
+-- Example: Allow users to update their own links (Requires user_id column)
+-- CREATE POLICY "Users can update their own links"
+--   ON public.links FOR UPDATE
+--   USING (auth.uid() = user_id)
+--   WITH CHECK (auth.uid() = user_id);
+
+-- Example: Allow users to delete their own links (Requires user_id column)
+-- CREATE POLICY "Users can delete their own links"
+--   ON public.links FOR DELETE
+--   USING (auth.uid() = user_id);
 ````
 
 ## File: packages/api/src/database/supabase.ts
@@ -7787,163 +7851,220 @@ async function bootstrap()
 }
 ````
 
-## File: apps/web/app/page.module.ts
+## File: apps/web/app/globals.css
 
-````typescript
-// apps/api/src/prisma.service.ts
-import {
-  Injectable,
-  OnModuleInit,
-  OnModuleDestroy,
-  Module,
-} from '@nestjs/common';
-import { prisma } from '@repo/database/PrismaClient'; // Adjust the import path as
-⋮----
-export class PrismaService implements OnModuleInit, OnModuleDestroy {
-⋮----
-async onModuleInit()
-⋮----
-async onModuleDestroy()
-⋮----
-// apps/api/src/app.module.ts
-⋮----
-exports: [PrismaService], // Export PrismaService if it needs to be used in other modules
-⋮----
-export class AppModule {}
-⋮----
-// Example usage in a service
-⋮----
-export class UserService {
-⋮----
-// Assuming PrismaService is injected via constructor
-constructor(private readonly prismaService: PrismaService)
-⋮----
-async createUser(data:
-⋮----
-// Use the injected prisma instance if available through the service,
-// otherwise use the direct import if that's the intended pattern.
-// This example assumes direct import usage based on original code.
-````
-
-## File: apps/web/app/pricing/page.tsx
-
-````typescript
-import type { Metadata } from 'next';
-import Link from 'next/link';
-import {
-  Container,
-  Box,
-  Grid,
-  Typography,
-  Stack,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Paper,
-  CardHeader,
-  CardContent,
-  CardActions,
-  Divider,
-  alpha,
-  useTheme,
-} from '@mui/material';
-import {
-  CheckCircleOutline,
-  HelpOutline,
-} from '@mui/icons-material';
-import { Card } from '@repo/ui/Card';
-import { Button } from '@repo/ui/Button';
-import { Collapsible } from '@repo/ui/Collapsible';
-⋮----
+````css
 /**
- * Generate SEO metadata for the pricing page
- * @returns Metadata object with title and description
- */
-export function generateMetadata(): Metadata
-⋮----
-/**
- * FAQ item interface for pricing questions
- */
-interface FAQItem {
-  question: string;
-  answer: string;
-}
-⋮----
-/**
- * Pricing page component with pricing tiers and FAQ section
+ * DeanMachines.ai Global Styles - 2025 Edition
+ * Modern, professional, edgy, masculine design system with dark mode focus
  */
 ⋮----
-// FAQ configuration
+/* CSS Reset & Base Styles */
+:root {
 ⋮----
-{/* Header Section */}
+/* ======== Design Tokens ======== */
 ⋮----
-{/* Pricing Tiers */}
+/* Colors - Base Palette (Cooler, Deeper Tones) */
+--color-primary-hue: 190;       /* Teal/Cyan primary */
+--color-secondary-hue: 35;      /* Muted Orange/Amber secondary */
+--color-accent-hue: 0;          /* Deep Red accent */
+--color-neutral-hue: 215;       /* Slate/Cool Gray neutral base */
 ⋮----
-{/* Free Tier */}
+/* Light Mode (Refined, using new hues) */
+--primary-light: hsl(var(--color-primary-hue), 75%, 48%); /* Brighter Teal */
 ⋮----
-{/* Price */}
+--secondary-light: hsl(var(--color-secondary-hue), 90%, 55%); /* Brighter Amber */
 ⋮----
-{/* Features */}
+--accent-light: hsl(var(--color-accent-hue), 80%, 55%); /* Brighter Red */
 ⋮----
-{/* Pro Tier */}
+--surface-light-1: hsl(var(--color-neutral-hue), 25%, 97%); /* Very light cool gray */
 ⋮----
-{/* Price */}
+--text-light-high: hsl(var(--color-neutral-hue), 20%, 10%); /* Dark Slate */
 ⋮----
-{/* Features */}
+/* Dark Mode (Primary Focus - Edgy, Masculine) */
+--primary-dark: hsl(var(--color-primary-hue), 70%, 55%); /* Vibrant Teal */
 ⋮----
-{/* FAQ Section */}
+--secondary-dark: hsl(var(--color-secondary-hue), 75%, 60%); /* Muted Amber */
 ⋮----
-{/* Enterprise CTA */}
-````
-
-## File: apps/web/app/services/page.tsx
-
-````typescript
-import type { Metadata } from 'next';
-import Link from 'next/link';
-import {
-  Container,
-  Box,
-  Typography,
-  Stack,
-  CardContent,
-  alpha,
-} from '@mui/material';
-import {
-  AccountTree,
-  Memory,
-  FindInPage,
-  Build,
-  Insights,
-} from '@mui/icons-material';
-import { Card } from '@repo/ui/Card';
-import { Button } from '@repo/ui/Button';
-/**
- * Generate SEO metadata for the services page
- * @returns Metadata object with title and description
- */
-export function generateMetadata(): Metadata
+--accent-dark: hsl(var(--color-accent-hue), 75%, 60%); /* Strong Red */
 ⋮----
-/**
- * Services page with detailed descriptions of platform capabilities
- */
+--surface-dark-1: hsl(var(--color-neutral-hue), 15%, 10%);  /* Very Dark Slate/Charcoal */
+--surface-dark-2: hsl(var(--color-neutral-hue), 13%, 15%);  /* Darker Paper/Card Background */
+--surface-dark-3: hsl(var(--color-neutral-hue), 11%, 22%);  /* Subtle Contrast Surface */
 ⋮----
-{/* Header Section */}
+--text-dark-high: hsl(var(--color-neutral-hue), 20%, 96%); /* Off-white */
+--text-dark-medium: hsl(var(--color-neutral-hue), 15%, 75%); /* Lighter Gray */
+--text-dark-low: hsl(var(--color-neutral-hue), 10%, 55%); /* Medium Gray */
 ⋮----
-{/* Services Section - Restructured without Grid */}
+/* Shadows (Adjusted for darker base) */
 ⋮----
-{/* Mastra Orchestration */}
+/* Glow Effects (Adjusted hues) */
 ⋮----
-{/* Memory Solutions */}
+/* Typography */
 ⋮----
-{/* RAG Implementation */}
+/* Sizing & Spacing */
 ⋮----
-{/* Custom Tools */}
+/* Border Radius */
 ⋮----
-{/* Evaluation */}
+/* Animation Timing */
 ⋮----
-{/* CTA Section */}
+/* Z-indices */
+⋮----
+/* Special Effects */
+⋮----
+/* Page Width */
+⋮----
+/* MUI Integration Defaults (Now defaults to dark variables) */
+⋮----
+/* Set default color scheme to dark */
+⋮----
+color-scheme: dark; /* Default to dark */
+⋮----
+/* Light mode - activated when .light-theme class is added to html */
+.light-theme {
+⋮----
+/* Override MUI theme variables for light mode */
+⋮----
+--mui-background-paper: #ffffff; /* Keep paper white in light mode */
+⋮----
+/* Dark mode styles (redundant now as it's the default, but kept for clarity) */
+.dark-theme {
+⋮----
+/* CSS Reset */
+*, *::before, *::after {
+⋮----
+html {
+⋮----
+/* Improved focus styles */
+:focus-visible {
+⋮----
+outline: 2px solid var(--primary-dark); /* Default focus to dark primary */
+⋮----
+.light-theme :focus-visible {
+⋮----
+outline: 2px solid var(--primary-light); /* Light theme focus */
+⋮----
+/* Modern scrollbar styling */
+::-webkit-scrollbar {
+⋮----
+::-webkit-scrollbar-track {
+⋮----
+::-webkit-scrollbar-thumb {
+⋮----
+::-webkit-scrollbar-thumb:hover {
+⋮----
+.light-theme::-webkit-scrollbar-track {
+⋮----
+.light-theme::-webkit-scrollbar-thumb {
+⋮----
+.light-theme::-webkit-scrollbar-thumb:hover {
+⋮----
+/* Base layout & typography */
+html,
+⋮----
+body {
+⋮----
+color: var(--text-dark-high); /* Default text to dark theme */
+background: var(--surface-dark-1); /* Default background to dark theme */
+⋮----
+.light-theme body {
+⋮----
+/* Typography - Modern fluid type scale */
+h1, h2, h3, h4, h5, h6 {
+⋮----
+h1 {
+⋮----
+h2 {
+⋮----
+h3 {
+⋮----
+h4 {
+⋮----
+h5 {
+⋮----
+h6 {
+⋮----
+p {
+⋮----
+/* Links */
+a {
+⋮----
+color: var(--primary-dark); /* Default link to dark primary */
+⋮----
+a:hover {
+⋮----
+text-decoration-thickness: 1px; /* Subtle underline */
+⋮----
+.light-theme a {
+⋮----
+.light-theme a:hover {
+⋮----
+/* Images and other replaced elements */
+img, video, canvas, svg, picture {
+⋮----
+/* Code blocks */
+code, pre {
+⋮----
+background-color: var(--surface-dark-3); /* Use slightly lighter dark surface */
+border: 1px solid hsl(var(--color-neutral-hue), 10%, 25%); /* Subtle border */
+⋮----
+.light-theme code, .light-theme pre {
+⋮----
+code {
+⋮----
+pre {
+⋮----
+pre code {
+⋮----
+/* Selection styling */
+::selection {
+⋮----
+.light-theme ::selection {
+⋮----
+/* Utility classes for glassmorphism */
+.glass-light {
+⋮----
+.glass-dark {
+⋮----
+/* Neomorphism effects */
+.neu-light {
+⋮----
+.neu-dark {
+⋮----
+.neu-light-inset {
+⋮----
+.neu-dark-inset {
+⋮----
+/* Animation utility classes */
+.transition-all {
+⋮----
+.hover-lift {
+⋮----
+.hover-lift:hover {
+⋮----
+box-shadow: var(--shadow-lg-dark); /* Default hover shadow to dark */
+⋮----
+.light-theme .hover-lift:hover {
+⋮----
+/* Glow utility */
+.glow-primary-hover {
+⋮----
+.glow-primary-hover:hover {
+⋮----
+box-shadow: var(--glow-primary-dark); /* Default glow to dark */
+⋮----
+.light-theme .glow-primary-hover:hover {
+⋮----
+.glow-secondary-hover {
+⋮----
+.glow-secondary-hover:hover {
+⋮----
+box-shadow: var(--glow-secondary-dark); /* Default glow to dark */
+⋮----
+.light-theme .glow-secondary-hover:hover {
+⋮----
+/* Visually hide elements, but keep them accessible for screen readers */
+.sr-only {
 ````
 
 ## File: apps/web/app/utils/supabase/middleware.ts
@@ -8486,88 +8607,6 @@ import { createLogger } from '@mastra/core';
 # Notes for the UI package
 
 ## Install dependencies
-````
-
-## File: packages/ui/src/appbar.tsx
-
-````typescript
-import {
-  AppBar as MuiAppBar,
-  Box,
-  Toolbar,
-  Typography,
-  IconButton,
-  Button,
-  Menu,
-  MenuItem,
-  useTheme,
-  useMediaQuery,
-  Drawer,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
-  Divider
-} from '@mui/material';
-import {
-  Menu as MenuIcon,
-  AccountCircle,
-  Home,
-  Dashboard,
-  Description,
-  Info,
-  ChevronRight,
-  Close
-} from '@mui/icons-material';
-⋮----
-interface NavigationItem {
-  label: string;
-  path: string;
-  icon: React.ReactElement;
-}
-⋮----
-/**
-   * The title to display in the AppBar
-   */
-⋮----
-/**
-   * Logo component or element to display
-   */
-⋮----
-/**
-   * Custom navigation items
-   */
-⋮----
-/**
-   * Function called when a navigation item is clicked
-   */
-⋮----
-/**
-   * Function called when profile menu items are clicked
-   */
-⋮----
-/**
-   * Whether to show the profile button
-   * @default true
-   */
-⋮----
-/**
-   * Additional profile menu items
-   */
-⋮----
-const handleMenuClose = () =>
-⋮----
-const handleDrawerToggle = () =>
-⋮----
-const handleNavigation = (path: string) =>
-⋮----
-// Default navigation handler
-⋮----
-const handleProfileMenuItem = (action: 'profile' | 'settings' | 'logout' | string) =>
-⋮----
-{/* Mobile Navigation Drawer */}
-⋮----
-keepMounted: true, // Better mobile performance
 ````
 
 ## File: packages/ui/src/chat/ChatAttachments.tsx
@@ -9536,80 +9575,6 @@ title={content} // <-- Assignment is valid if TS expects string | undefined
 }
 ````
 
-## File: .gitignore
-
-````
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# Dependencies
-node_modules
-.pnp
-.pnp.js
-
-# Local env files
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-.env*.development
-.env.development*
-
-docs/
-.github/
-# Testing
-.nyc_output
-blob-report/
-coverage
-test-results/
-playwright/.cache/
-playwright-report/
-docs/
-.drawio
-
-# Turbo
-.turbo
-
-# Vercel
-.vercel
-
-# Build Outputs
-.next/
-out/
-build
-dist
-
-# IDEs and editors
-/.idea
-.project
-.classpath
-.c9/
-*.launch
-.settings/
-*.sublime-workspace
-
-# IDE - VSCode
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-
-# Debug
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-
-# Misc
-.DS_Store
-*.pem
-./github/prompts
-gcp-vertexai-credentials.json
-````
-
 ## File: apps/web/.eslintrc.js
 
 ````javascript
@@ -9620,6 +9585,242 @@ gcp-vertexai-credentials.json
 
 ````javascript
 /** @type {import("prettier").Config} */
+````
+
+## File: apps/web/app/page.module.ts
+
+````typescript
+/**
+ * DeanMachines - Theme Module
+ * Handles theme management with Supabase integration
+ */
+⋮----
+import { createClient, SupabaseClient } from '@supabase/supabase-js'; // Import SupabaseClient type
+import { type ThemeMode } from '@repo/ui/Appbar'; // Corrected import path
+⋮----
+/**
+ * Interface for user theme preferences stored in Supabase
+ */
+interface ThemePreference {
+  user_id: string;
+  theme: ThemeMode;
+  created_at?: string; // Added created_at for consistency with insert
+  updated_at?: string;
+}
+⋮----
+created_at?: string; // Added created_at for consistency with insert
+⋮----
+/**
+ * Class for managing theme settings with Supabase
+ */
+export class ThemeManager {
+⋮----
+private supabase: SupabaseClient; // Use SupabaseClient type
+⋮----
+/**
+   * Initialize the theme manager with Supabase client
+   *
+   * @param supabaseUrl - Supabase project URL
+   * @param supabaseKey - Supabase anon key
+   */
+constructor(supabaseUrl: string, supabaseKey: string)
+⋮----
+// Add basic validation for URL and Key
+⋮----
+this.supabase = createClient(supabaseUrl, supabaseKey); // Initialize Supabase client
+⋮----
+/**
+   * Get the current user's theme preference from Supabase
+   *
+   * @param userId - The user ID to fetch preferences for
+   * @returns The user's theme preference or 'dark' as default
+   * @throws Error if database operation fails unexpectedly (Supabase errors are logged)
+   */
+async getUserTheme(userId: string): Promise<ThemeMode>
+⋮----
+return 'dark'; // Default theme if no user ID is provided
+⋮----
+.from('user_preferences') // Type argument removed
+⋮----
+.single<Pick<ThemePreference, 'theme'>>(); // Specify expected return type here if needed
+⋮----
+// Handle specific Supabase errors (e.g., row not found vs. actual DB error)
+if (error && status !== 406) { // 406 means no rows found, which is not an error here
+⋮----
+// Optionally re-throw a custom error or just return default
+// throw new Error(`Failed to fetch theme: ${error.message}`);
+return 'dark'; // Default to dark theme on error
+⋮----
+// Return fetched theme or default if no record exists
+return (data?.theme) || 'dark'; // No need for 'as ThemeMode' if types align
+} catch (error: unknown) { // Catch unknown type
+// Handle unexpected errors during the fetch process
+⋮----
+// Optionally re-throw or return default
+// throw error;
+return 'dark'; // Default to dark theme on unexpected error
+⋮----
+/**
+   * Updates or inserts the user's theme preference in Supabase.
+   * Uses upsert for simplicity and atomicity.
+   *
+   * @param userId - The user ID to update preferences for
+   * @param theme - The theme preference to save (light, dark, or system)
+   * @returns True if the operation was successful (or likely successful), false otherwise.
+   * @throws Error if database operation fails unexpectedly (Supabase errors are logged)
+   */
+async setUserTheme(userId: string, theme: ThemeMode): Promise<boolean>
+⋮----
+.from('user_preferences') // Type argument removed
+⋮----
+payload as ThemePreference, // Ensure payload matches expected type for upsert
+{ onConflict: 'user_id' } // Specify the conflict column for upsert
+⋮----
+// Optionally throw new Error(`Failed to save theme: ${error.message}`);
+⋮----
+return true; // Assume success if no error is thrown
+⋮----
+// Optionally re-throw
+// throw error;
+⋮----
+// Removed getSystemTheme() - Handled by ThemeProvider
+// Removed applyTheme() - Handled by ThemeProvider
+````
+
+## File: apps/web/app/pricing/page.tsx
+
+````typescript
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import {
+  Container,
+  Box,
+  Grid,
+  Typography,
+  Stack,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Paper,
+  CardHeader,
+  CardContent,
+  CardActions,
+  Divider,
+  alpha,
+  useTheme,
+} from '@mui/material';
+import {
+  CheckCircleOutline,
+  HelpOutline,
+} from '@mui/icons-material';
+import { Card } from '@repo/ui/Card';
+import { Button } from '@repo/ui/Button';
+import { Collapsible } from '@repo/ui/Collapsible';
+⋮----
+/**
+ * Generate SEO metadata for the pricing page
+ * @returns Metadata object with title and description
+ */
+export function generateMetadata(): Metadata
+⋮----
+/**
+ * FAQ item interface for pricing questions
+ */
+interface FAQItem {
+  question: string;
+  answer: string;
+}
+⋮----
+/**
+ * Pricing page component with pricing tiers and FAQ section
+ */
+⋮----
+// FAQ configuration
+⋮----
+{/* Header Section */}
+⋮----
+{/* Pricing Tiers */}
+⋮----
+{/* Free Tier */}
+⋮----
+{/* Price */}
+⋮----
+{/* Features */}
+⋮----
+{/* Pro Tier */}
+⋮----
+bgcolor: 'rgba(25, 118, 210, 0.04)', // Static value instead of theme function
+boxShadow: '0 3px 5px 2px rgba(0, 0, 0, 0.1)', // Static shadow value
+⋮----
+sx={{ bgcolor: 'rgba(25, 118, 210, 0.1)' }} // Static value instead of theme function
+⋮----
+{/* Price */}
+⋮----
+{/* Features */}
+⋮----
+{/* FAQ Section */}
+⋮----
+{/* Enterprise CTA */}
+````
+
+## File: apps/web/app/services/page.tsx
+
+````typescript
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import {
+  Container,
+  Box,
+  Typography,
+  Stack,
+  CardContent,
+  alpha,
+} from '@mui/material';
+import {
+  AccountTree,
+  Memory,
+  FindInPage,
+  Build,
+  Insights,
+} from '@mui/icons-material';
+import { Card } from '@repo/ui/Card';
+import { Button } from '@repo/ui/Button';
+/**
+ * Generate SEO metadata for the services page
+ * @returns Metadata object with title and description
+ */
+export function generateMetadata(): Metadata
+⋮----
+/**
+ * Services page with detailed descriptions of platform capabilities
+ */
+⋮----
+{/* Header Section */}
+⋮----
+{/* Services Section - Restructured without Grid */}
+⋮----
+{/* Mastra Orchestration */}
+⋮----
+boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)' // Static shadow value instead of theme function
+⋮----
+{/* Memory Solutions */}
+⋮----
+boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)' // Static shadow value
+⋮----
+{/* RAG Implementation */}
+⋮----
+boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)' // Static shadow value
+⋮----
+{/* Custom Tools */}
+⋮----
+boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)' // Static shadow value
+⋮----
+{/* Evaluation */}
+⋮----
+boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)' // Static shadow value
+⋮----
+{/* CTA Section */}
 ````
 
 ## File: apps/web/next-env.d.ts
@@ -9781,6 +9982,184 @@ import { dropdown as Dropdown } from '@repo/ui/dropdrown';
 - [ ] Optimize performance
 - [x] Add more themes and styles
 - [ ] Improve accessibility
+````
+
+## File: packages/ui/src/appbar.tsx
+
+````typescript
+import {
+  AppBar as MuiAppBar,
+  Box,
+  Toolbar,
+  Typography,
+  IconButton,
+  Button,
+  Menu,
+  MenuItem,
+  useMediaQuery,
+  Drawer,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemIcon,
+  Divider,
+  Popover,
+  Avatar,
+  Tooltip,
+  ListItemButton
+} from '@mui/material';
+import {
+  Menu as MenuIcon,
+  AccountCircle,
+  Home,
+  Dashboard,
+  Description,
+  Info,
+  ChevronRight,
+  Close,
+  Login,
+  Logout,
+  Settings,
+  Person,
+  PriceChange,
+  Handyman,
+  LightMode,
+  DarkMode,
+  BrightnessAuto
+} from '@mui/icons-material';
+import Link from 'next/link';
+import { useRouter, usePathname } from 'next/navigation';
+import { useTheme } from './theme/ThemeProvider'; // Adjust path if necessary
+⋮----
+/**
+ * Represents a navigation item in the application
+ */
+interface NavigationItem {
+  /** Display label for the navigation item */
+  label: string;
+  /** URL path for navigation */
+  path: string;
+  /** Icon component to display with the navigation item */
+  icon: React.ReactElement;
+  /** Whether this item should only be shown to authenticated users */
+  requiresAuth?: boolean;
+}
+⋮----
+/** Display label for the navigation item */
+⋮----
+/** URL path for navigation */
+⋮----
+/** Icon component to display with the navigation item */
+⋮----
+/** Whether this item should only be shown to authenticated users */
+⋮----
+/**
+ * Available theme modes for the application
+ */
+export type ThemeMode = 'light' | 'dark' | 'system';
+⋮----
+/**
+ * Props for the AppBar component
+ */
+⋮----
+/**
+   * The title to display in the AppBar
+   */
+⋮----
+/**
+   * Logo component or element to display
+   */
+⋮----
+/**
+   * Custom navigation items
+   */
+⋮----
+/**
+   * Function called when a navigation item is clicked
+   */
+⋮----
+/**
+   * Function called when profile menu items are clicked
+   */
+⋮----
+/**
+   * Whether to show the profile button
+   * @default true
+   */
+⋮----
+/**
+   * Additional profile menu items
+   */
+⋮----
+/**
+   * Whether the user is authenticated
+   * @default false
+   */
+⋮----
+/**
+   * User data if authenticated
+   */
+⋮----
+/**
+ * Application navigation bar component that adapts to different screen sizes
+ * and authentication states. Includes theme toggling functionality using ThemeContext.
+ *
+ * @param props - Component properties
+ * @returns React component
+ */
+⋮----
+const { mode: themeMode, setMode: setThemeMode, ...theme } = useTheme(); // Destructure mode and setMode from context
+⋮----
+const handleProfileMenu = (event: React.MouseEvent<HTMLElement>) =>
+⋮----
+const handleMenuClose = () =>
+⋮----
+const handleAuthButtonClick = (event: React.MouseEvent<HTMLElement>) =>
+⋮----
+const handleAuthMenuClose = () =>
+⋮----
+const handleThemeMenuOpen = (event: React.MouseEvent<HTMLElement>) =>
+⋮----
+const handleThemeMenuClose = () =>
+⋮----
+const handleThemeChange = (newMode: ThemeMode) =>
+⋮----
+setThemeMode(newMode); // Call the function from context
+⋮----
+/**
+   * Gets the appropriate theme icon based on the current theme mode from context
+   */
+const getThemeIcon = () =>
+⋮----
+const handleDrawerToggle = () =>
+⋮----
+const handleNavigation = (path: string) =>
+⋮----
+// Use Next.js router for navigation
+⋮----
+const handleProfileMenuItem = (action: 'profile' | 'settings' | 'logout' | 'login' | 'signup' | string) =>
+⋮----
+// Default actions
+⋮----
+// Handle logout - this would typically call a logout function
+⋮----
+const handleAuthMenuItem = (action: 'login' | 'signup') =>
+⋮----
+{/* Add Theme toggle in mobile drawer */}
+⋮----
+{/* Theme Toggle */}
+⋮----
+{/* Authentication / Profile section */}
+⋮----
+// Authenticated user view
+⋮----
+open=
+⋮----
+// Unauthenticated user view
+⋮----
+{/* Mobile Navigation Drawer */}
+⋮----
+keepMounted: true, // Better mobile performance
 ````
 
 ## File: packages/ui/src/autocomplete.tsx
@@ -11024,6 +11403,80 @@ key=
 // Add date comparison
 ````
 
+## File: .gitignore
+
+````
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Local env files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env*.development
+.env.development*
+
+docs/
+.github/
+# Testing
+.nyc_output
+blob-report/
+coverage
+test-results/
+playwright/.cache/
+playwright-report/
+docs/
+.drawio
+
+# Turbo
+.turbo
+
+# Vercel
+.vercel
+
+# Build Outputs
+.next/
+out/
+build
+dist
+
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Debug
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Misc
+.DS_Store
+*.pem
+./github/prompts
+gcp-vertexai-credentials.json
+````
+
 ## File: apps/web/app/about/page.tsx
 
 ````typescript
@@ -11886,181 +12339,6 @@ const handleClear = (event: React.MouseEvent<HTMLButtonElement>) =>
 const handleTogglePassword = () =>
 ````
 
-## File: packages/ui/src/theme/index.ts
-
-````typescript
-import {
-  createTheme,
-  PaletteColorOptions,
-  ThemeOptions,
-} from '@mui/material/styles';
-⋮----
-/**
- * Extended palette with custom color definitions for the application
- */
-⋮----
-interface Palette {
-    customPrimary: PaletteColorOptions;
-    customSecondary: {
-      main: string;
-      light: string;
-      dark: string;
-      contrastText: string;
-    };
-    customBackground: {
-      default: string;
-      paper: string;
-      light: string;
-    };
-  }
-⋮----
-interface Theme {
-    displayName?: string;
-  }
-⋮----
-interface PaletteOptions {
-    customPrimary?: {
-      main: string;
-      light: string;
-      dark: string;
-      contrastText: string;
-    };
-    customSecondary?: {
-      main: string;
-      light: string;
-      dark: string;
-      contrastText: string;
-    };
-    customBackground?: {
-      default: string;
-      paper: string;
-      light: string;
-    };
-  }
-⋮----
-/**
- * Base theme options shared between light and dark themes
- */
-⋮----
-/**
- * Light theme configuration – modern, professional, and edgy.
- */
-⋮----
-main: '#14213D', // Deep, professional navy-blue
-light: '#3A506B', // Muted blue for lighter accents
-dark: '#0F1B33', // Dark navy-blue
-⋮----
-main: '#FCA311', // Bold burnt orange accent
-⋮----
-main: '#1F2937', // Dark slate for an edgy look
-⋮----
-main: '#E63946', // Striking assertive red
-⋮----
-default: '#F0F2F5', // Clean light neutral gray
-⋮----
-/**
- * Dark theme configuration – refined, modern, and assertive.
- */
-⋮----
-main: '#1F2937', // Deep charcoal-blue
-⋮----
-main: '#FB923C', // Bold, vivid burnt orange
-⋮----
-main: '#2D3748', // Dark, masculine slate
-⋮----
-main: '#E11D48', // Intense, assertive red
-⋮----
-default: '#0D0D0D', // Near-black for a modern dark feel
-⋮----
-export type ThemeType = 'light' | 'dark';
-````
-
-## File: packages/ui/src/theme/ThemeProvider.tsx
-
-````typescript
-import React, {
-  createContext,
-  useContext,
-  useState,
-  ReactNode,
-  useMemo,
-  useCallback,
-  useEffect,
-  JSX,
-} from 'react';
-import {
-  ThemeProvider as MuiThemeProvider,
-  useTheme as useMuiTheme,
-  Theme,
-} from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import { lightTheme, darkTheme } from './index';
-⋮----
-type ThemeMode = 'light' | 'dark';
-⋮----
-interface ThemeContextType {
-  mode: ThemeMode;
-  toggleTheme: () => void;
-}
-⋮----
-interface ThemeProviderProps {
-  children: ReactNode;
-  defaultMode?: ThemeMode;
-}
-⋮----
-/**
- * Retrieves the initial theme mode from localStorage if available,
- * otherwise returns the provided default.
- */
-function getInitialMode(defaultMode: ThemeMode): ThemeMode
-⋮----
-/**
- * Custom ThemeProvider component that wraps MUI's ThemeProvider.
- * It provides theme toggle functionality and persists the selected mode.
- */
-export function ThemeProvider({
-  children,
-  defaultMode = 'light',
-}: ThemeProviderProps): JSX.Element
-⋮----
-// Memoize the toggle function to prevent unnecessary re-renders.
-⋮----
-// Optionally, you could add a system preference listener here.
-// For example:
-// useEffect(() => {
-//   const media = window.matchMedia('(prefers-color-scheme: dark)');
-//   const handleChange = () => {
-//     if (!storedTheme) setMode(media.matches ? 'dark' : 'light');
-//   };
-//   media.addEventListener('change', handleChange);
-//   return () => media.removeEventListener('change', handleChange);
-// }, []);
-⋮----
-// Memoize the MUI theme based on the current mode.
-⋮----
-// Memoize the context value.
-⋮----
-/**
- * Custom hook that returns the merged MUI theme along with custom properties:
- * `mode` and `toggleTheme`.
- *
- * @throws Error if used outside of a ThemeProvider.
- */
-export function useTheme(): Theme &
-````
-
-## File: apps/web/app/layout.tsx
-
-````typescript
-import { PropsWithChildren } from 'react';
-import type { Metadata } from 'next';
-import { Inter, Roboto_Mono } from 'next/font/google';
-import { ThemeProvider } from '@repo/ui/ThemeProvider';
-import { AppBar } from '@repo/ui/Appbar';
-⋮----
-export default function RootLayout(
-````
-
 ## File: packages/api/src/controllers/agents/agent.controller.ts
 
 ````typescript
@@ -12782,6 +13060,152 @@ const handleExpandClick = (title: string) =>
 handleExpandClick(item.title);
 ````
 
+## File: packages/ui/src/theme/index.ts
+
+````typescript
+import { createTheme, ThemeOptions } from '@mui/material/styles';
+⋮----
+/**
+ * Base theme options shared between light and dark themes
+ */
+⋮----
+fontFamily: 'var(--font-sans)', // OK to use var here
+⋮----
+fontFamily: 'var(--font-sans)', // OK to use var here
+⋮----
+/**
+ * Light theme configuration - Using direct HSL values from globals.css
+ */
+⋮----
+/**
+ * Dark theme configuration - Using direct HSL values from globals.css
+ */
+⋮----
+export type ThemeType = 'light' | 'dark';
+````
+
+## File: packages/ui/src/theme/ThemeProvider.tsx
+
+````typescript
+import React, {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useMemo,
+  useCallback,
+  useEffect,
+  JSX,
+} from 'react';
+import {
+  ThemeProvider as MuiThemeProvider,
+  useTheme as useMuiTheme,
+  Theme,
+} from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import { lightTheme, darkTheme } from './index';
+⋮----
+// Keep ThemeMode from appbar.tsx or define locally if preferred
+import type { ThemeMode } from '../appbar'; // Assuming ThemeMode is exported from appbar
+⋮----
+type AppliedThemeMode = 'light' | 'dark';
+⋮----
+interface ThemeContextType {
+  /** The currently selected theme mode ('light', 'dark', or 'system') */
+  mode: ThemeMode;
+  /** Function to set the desired theme mode */
+  setMode: (mode: ThemeMode) => void;
+}
+⋮----
+/** The currently selected theme mode ('light', 'dark', or 'system') */
+⋮----
+/** Function to set the desired theme mode */
+⋮----
+interface ThemeProviderProps {
+  children: ReactNode;
+  /** Optional user ID for Supabase persistence */
+  userId?: string;
+  /** Optional function to fetch user theme preference */
+  getUserTheme?: (userId: string) => Promise<ThemeMode>;
+  /** Optional function to save user theme preference */
+  setUserTheme?: (userId: string, theme: ThemeMode) => Promise<boolean>;
+  /** Default mode if nothing else is found */
+  defaultMode?: ThemeMode;
+}
+⋮----
+/** Optional user ID for Supabase persistence */
+⋮----
+/** Optional function to fetch user theme preference */
+⋮----
+/** Optional function to save user theme preference */
+⋮----
+/** Default mode if nothing else is found */
+⋮----
+/**
+ * Gets the system's preferred color scheme.
+ * @returns 'dark' or 'light'
+ */
+function getSystemPreference(): AppliedThemeMode
+⋮----
+return 'light'; // Default if window/matchMedia is not available (SSR)
+⋮----
+/**
+ * Custom ThemeProvider component that wraps MUI's ThemeProvider.
+ * It provides theme selection ('light', 'dark', 'system'),
+ * handles system preference, and optionally persists the selected mode via Supabase.
+ */
+export function ThemeProvider({
+  children,
+  userId,
+  getUserTheme,
+  setUserTheme,
+  defaultMode = 'dark', // Default to dark mode
+}: ThemeProviderProps): JSX.Element
+⋮----
+defaultMode = 'dark', // Default to dark mode
+⋮----
+// Effect to fetch initial theme from Supabase if available
+⋮----
+// Fallback to default if fetch fails
+⋮----
+// If no Supabase integration, consider initialization done
+⋮----
+// Effect to update the applied theme based on mode and system preference
+⋮----
+if (!isInitialized) return; // Don't run until initial mode is set
+⋮----
+const calculateAppliedMode = (): AppliedThemeMode =>
+⋮----
+// Listener for system preference changes only if mode is 'system'
+⋮----
+const handleChange = () =>
+⋮----
+// Callback to set the theme mode and persist it
+⋮----
+// Optional: Fallback to localStorage if Supabase is not configured
+// try { localStorage.setItem('themeMode', newMode); } catch (e) {}
+⋮----
+// Memoize the MUI theme based on the *applied* mode.
+⋮----
+// Memoize the context value.
+⋮----
+// Apply theme class to root element for potential non-MUI styling
+⋮----
+// Also set a data attribute for easier CSS targeting if needed
+⋮----
+<CssBaseline enableColorScheme /> {/* Ensure CssBaseline respects color-scheme */}
+⋮----
+/**
+ * Custom hook that returns the merged MUI theme along with custom properties:
+ * `mode` ('light', 'dark', 'system') and `setMode` function.
+ *
+ * @throws Error if used outside of a ThemeProvider.
+ */
+export function useTheme(): Theme & ThemeContextType
+⋮----
+// Ensure muiTheme is included, even if context is defined
+````
+
 ## File: .env.example
 
 ````
@@ -12883,6 +13307,18 @@ FIRECRAWL_KEY="<firecrawl_key>"
     "typescript": "5.8.2"
   }
 }
+````
+
+## File: apps/web/app/layout.tsx
+
+````typescript
+import { PropsWithChildren } from 'react';
+import type { Metadata } from 'next';
+import { Inter, Roboto_Mono } from 'next/font/google';
+import { ThemeProvider } from '@repo/ui/ThemeProvider';
+import { AppBar } from '@repo/ui/Appbar';
+⋮----
+export default function RootLayout(
 ````
 
 ## File: packages/eslint-config/package.json
@@ -13007,44 +13443,6 @@ docs: [{ // Wrap document content in the 'docs' array
 type: 'text', // Add the required 'type' property
 ````
 
-## File: apps/web/app/page.tsx
-
-````typescript
-import { Box, Container, Typography, Paper, Link as MuiLink, Stack } from '@mui/material';
-import Grid from '@mui/material/Grid'; // Explicitly import Grid v2
-import { Psychology, Storage as StorageIcon, Code as CodeIcon } from '@mui/icons-material';
-import { Hero } from '@repo/ui/Hero';
-import { Card } from '@repo/ui/Card'; // No variant prop needed now
-import { Code } from '@repo/ui/Code';
-import { Button } from '@repo/ui/Button';
-import Link from 'next/link';
-import { cookies } from 'next/headers';
-import type { Metadata } from 'next'; // Import Metadata type
-import { createClient } from './utils/supabase/server';
-import styles from './page.module.css';
-⋮----
-interface LinkData {
-  id: string;
-  title: string;
-  url: string;
-  description: string;
-}
-⋮----
-export async function generateMetadata(): Promise<Metadata>
-⋮----
-async function fetchLinks(): Promise<LinkData[]>
-⋮----
-{/* Hero Section */}
-⋮----
-{/* Features Section */}
-⋮----
-{/* Code Demo Section */}
-⋮----
-{/* Links Section */}
-⋮----
-{/* Final CTA */}
-````
-
 ## File: packages/api/src/mastra/index.ts
 
 ````typescript
@@ -13136,7 +13534,8 @@ import { getEnvVar } from '../utils/env';
         "PINECONE_DIMENSION",
         "PINECONE_HOST",
         "PINECONE_INDEX",
-        "PINECONE_NAMESPACE"
+        "PINECONE_NAMESPACE",
+        "DIRECT_URL"
 
       ]
 
@@ -13156,6 +13555,43 @@ import { getEnvVar } from '../utils/env';
 }
 ````
 
+## File: apps/web/app/page.tsx
+
+````typescript
+import { Box, Container, Typography, Paper, Link as MuiLink, Stack } from '@mui/material';
+import { Psychology, Storage as StorageIcon, Code as CodeIcon } from '@mui/icons-material';
+import { Hero } from '@repo/ui/Hero';
+import { Card } from '@repo/ui/Card';
+import { Code } from '@repo/ui/Code';
+import { Button } from '@repo/ui/Button';
+import Link from 'next/link';
+import { cookies } from 'next/headers';
+import type { Metadata } from 'next';
+import { createClient } from './utils/supabase/server';
+import styles from './page.module.css';
+⋮----
+interface LinkData {
+  id: string;
+  title: string;
+  url: string;
+  description: string;
+}
+⋮----
+export async function generateMetadata(): Promise<Metadata>
+⋮----
+async function fetchLinks(): Promise<LinkData[]>
+⋮----
+{/* Hero Section */}
+⋮----
+{/* Features Section */}
+⋮----
+{/* Code Demo Section */}
+⋮----
+{/* Links Section */}
+⋮----
+{/* Final CTA */}
+````
+
 ## File: README.md
 
 ````markdown
@@ -13163,7 +13599,7 @@ import { getEnvVar } from '../utils/env';
 
 # DeanMachines
 
-### A Modern AI-Powered Application Platform
+### A Modern Platform for Building Intelligent AI Applications and Agents
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
@@ -13174,7 +13610,7 @@ import { getEnvVar } from '../utils/env';
 [![Turborepo](https://img.shields.io/badge/Turborepo-EF4444?style=for-the-badge&logo=turborepo&logoColor=white)](https://turbo.build/repo)
 [![pnpm](https://img.shields.io/badge/pnpm-F69220?style=for-the-badge&logo=pnpm&logoColor=white)](https://pnpm.io/)
 
-AI-powered application platform with Next.js frontend and NestJS backend for building intelligent, conversational experiences.
+Platform for building diverse AI applications, including conversational experiences, autonomous agents, and Reinforcement Learning systems, using a Next.js frontend and NestJS backend.
 
 </div>
 
@@ -13182,13 +13618,13 @@ AI-powered application platform with Next.js frontend and NestJS backend for bui
 
 DeanMachines is a modern monorepo application built with Turborepo, featuring:
 
-- **Next.js Frontend** with AI-powered user interfaces
-- **NestJS Backend** with robust API architecture
-- **Mastra AI Integration** for intelligent agent capabilities
-- **Vector Database** for semantic search and embeddings
-- **Component Library** for consistent UI/UX
-- **Error Handling** for robust vector operations
-- **TypeScript Compliance** for improved code quality
+- **Next.js Frontend** for building user interfaces for AI applications and agent interaction/monitoring.
+- **NestJS Backend** with robust API architecture for managing agents, data, and AI workflows.
+- **Mastra AI Integration** for core agent capabilities, adaptable for various AI paradigms (including RL).
+- **Vector Database** for semantic search, memory, and state representation.
+- **Component Library** for consistent UI/UX across AI tools and dashboards.
+- **Error Handling** for robust AI operations.
+- **TypeScript Compliance** for improved code quality and maintainability.
 
 ## 📂 Repository Structure
 
@@ -13205,17 +13641,152 @@ DeanMachines is a modern monorepo application built with Turborepo, featuring:
         ├── @repo/jest-config         # `jest` configurations
         ├── @repo/typescript-config   # `tsconfig.json`s used throughout the monorepo
         ├── @repo/ui                  # Shareable stub React component library.
-        └── @repo/database              # Shareable stub React component library.
 ```
 
 ## ✨ Features
 
-- 🤖 **Mastra AI Framework** - Agent-based AI capabilities
-- 🔍 **Vector Search** - Semantic search using Pinecone
-- 🔐 **Authentication** - Secure auth with Supabase
-- 💾 **Database** - Type-safe database integration
-- 🎨 **UI Components** - Shared component library
-- 📱 **Responsive Design** - Works on all devices
+- 🤖 **Mastra AI Framework** - Core functionalities for building diverse AI agents (Conversational, RL, Autonomous).
+- 🔍 **Vector Search** - Semantic capabilities via Pinecone for memory, context, and state.
+- 🔐 **Authentication** - Secure auth with Supabase.
+- 💾 **Database** - Type-safe database integration for agent data, logs, and configurations.
+- 🎨 **UI Components** - Shared library for building agent interfaces and dashboards.
+- 📱 **Responsive Design** - Works on all devices for monitoring and interaction.
+
+## ⏱️ Project Status & Timeline
+
+This section outlines the current development status and planned work.
+
+**Legend:**
+- ✅: Completed / Implemented
+- 🚧: In Progress / Needs Work / Partially Implemented
+- ⏳: Planned / Not Started
+
+### Phase 1: Core Setup & Foundation (Complete ✅)
+
+- ✅ Monorepo Setup (Turborepo, pnpm)
+- ✅ Base TypeScript Configuration (`@repo/typescript-config`)
+- ✅ Linting Configuration (`@repo/eslint-config`)
+- ✅ Testing Configuration (`@repo/jest-config`)
+- ✅ Remote Caching Setup (Vercel)
+- ✅ Basic Next.js Frontend Structure (`apps/web`)
+- ✅ Basic NestJS Backend Structure (`apps/api`)
+- ✅ Global Styles & Theming (`globals.css`, `@repo/ui/ThemeProvider`)
+- ✅ Core UI Layout (`@repo/ui/Appbar`, `layout.tsx`)
+- ✅ Supabase Database Setup (PostgreSQL)
+- ✅ Supabase Auth Setup (Basic configuration)
+- ✅ Theme Persistence (`ThemeManager` with Supabase)
+- ✅ Configuration Management (`@nestjs/config` in API)
+
+### Phase 2: Feature Implementation (In Progress 🚧 / Planned ⏳)
+
+- **Backend (`apps/api`)**
+  - 🚧 Mastra Core Module Integration (`MastraCoreModule`)
+  - ⏳ Agent Service & Controller Implementation
+  - ⏳ Chat Module Implementation
+  - ⏳ Robust API Error Handling
+  - ⏳ API Testing (Unit/Integration)
+- **Frontend (`apps/web`)**
+  - 🚧 Client-side Authentication Integration (Supabase Auth UI/Logic)
+  - 🚧 Agent Interaction/Monitoring UI Development
+  - 🚧 Documentation Page Content Population
+  - 🚧 End-to-End Testing Setup (Playwright)
+- **Shared Packages (`@repo/ui`, `@repo/api`, `@repo/database`)**
+  - 🚧 UI Component Implementation (Chat, Data Display, Core Elements)
+  - 🚧 Shared API Resource Implementation (Mastra Services, Tools, Agents)
+  - 🚧 Database Client Logic (`@repo/database` or within services)
+  - 🚧 ORM/Client Usage Refinement (Supabase Client in services)
+- **Infrastructure Integration**
+  - 🚧 Pinecone Setup & Integration (Vector Store)
+  - 🚧 Embedding Generation Pipeline
+  - 🚧 Semantic Search Feature
+  - ⏳ Upstash Redis Cache Integration
+  - ⏳ Gemini & LangSmith AI Service Integration
+
+### Phase 3: Refinement & Deployment (Planned ⏳)
+
+- ⏳ Comprehensive Testing (Unit, Integration, E2E)
+- ⏳ Documentation Finalization
+- ⏳ Performance Optimization
+- ⏳ Security Audit & Hardening
+- ⏳ Deployment Pipeline Setup (Vercel, Docker, etc.)
+- ⏳ Monitoring & Logging Implementation
+
+---
+
+*Detailed Status Breakdown:*
+
+### Core Infrastructure & Setup
+
+- ✅ Monorepo Setup (Turborepo, pnpm)
+- ✅ Base TypeScript Configuration (`@repo/typescript-config`)
+- ✅ Linting Configuration (`@repo/eslint-config`)
+- ✅ Testing Configuration (`@repo/jest-config`)
+- ✅ CI/CD Foundation (GitHub Actions suggested)
+- ✅ Remote Caching Setup (Vercel)
+
+### Backend (`apps/api`)
+
+- ✅ NestJS Application Structure
+- ✅ Basic API Controllers/Services (`AppController`, `AppService`)
+- 🚧 Mastra Core Module (`MastraCoreModule`) - Integration started
+  - ⏳ Agent Service (`agent.service`)
+  - ⏳ Agent Controller (`agent.controller`)
+  - ⏳ DTOs (`create-agent.dto`, `update-agent.dto`)
+- 🚧 Chat Module (`ChatModule`) - Integration started
+- ✅ Configuration Management (`@nestjs/config`)
+- ⏳ Robust Error Handling (HttpExceptionFilter mentioned)
+- ⏳ API Testing (Unit/Integration tests for modules)
+
+### Frontend (`apps/web`)
+
+- ✅ Next.js Application Structure
+- ✅ Basic Pages (Dashboard, Docs, About inferred)
+- ✅ Global Styles (`globals.css`) - Dark mode focus implemented
+- ✅ Theme Provider (`@repo/ui/ThemeProvider`) - Integrated with Supabase persistence
+- ✅ AppBar Component (`@repo/ui/Appbar`) - Integrated with ThemeProvider
+- ✅ Layout Structure (`layout.tsx`)
+- 🚧 Authentication Integration (Client-side Supabase/NextAuth)
+- 🚧 Agent Interaction/Monitoring UI
+- 🚧 Documentation Pages Content
+- 🚧 End-to-End Testing (Playwright suggested)
+
+### Shared Packages
+
+- **`@repo/ui`**
+  - ✅ Core Layout Components (AppBar)
+  - ✅ Theme Implementation (ThemeProvider, light/dark themes)
+  - 🚧 Chat Components (ChatWindow, ChatMessage, etc.) - Structure exists, implementation status unclear
+  - 🚧 Data Display Components (Charts, Graphs, Table, List) - Structure exists, implementation status unclear
+  - 🚧 Core UI Elements (Button, Card, Input, etc.) - Structure exists, implementation status unclear
+  - ✅ Turborepo Export Configuration (`package.json`)
+- **`@repo/api` (Shared NestJS Resources)**
+  - 🚧 Mastra Services (Store Embeddings, Database)
+  - 🚧 Mastra Tools (Document, GraphRAG, VectorQuery, etc.)
+  - 🚧 Mastra Agents Definition
+  - 🚧 Shared DTOs/Entities/Types
+- **`@repo/database`** (Assumed based on diagram/description)
+  - ✅ Database Schema Design (User Prefs, Convos, Messages, Embeddings, Docs)
+  - 🚧 ORM Implementation (Supabase Client)
+  - 🚧 Migrations & Seeding Strategy
+  - 🚧 Database Client Setup
+
+### Infrastructure Integration
+
+- **Supabase**
+  - ✅ PostgreSQL Database Setup
+  - ✅ Auth Setup (Backend configuration likely needed)
+  - ✅ Storage Setup (If used for documents/files)
+  - ✅ RLS Policies Defined
+- **Pinecone**
+  - 🚧 Vector Store Setup & API Key Configuration
+  - 🚧 Embedding Generation Pipeline
+  - 🚧 Semantic Search Implementation
+- **Upstash Redis** (Cache)
+  - ⏳ Cache Implementation Strategy (Session state, memory)
+  - ⏳ Integration with Backend Services
+- **AI Services**
+  - ⏳ Gemini Integration
+  - ⏳ LangSmith Integration (Evaluation)
 
 ## 🧠 Mastra AI Backend Progress
 
@@ -13228,9 +13799,9 @@ DeanMachines is a modern monorepo application built with Turborepo, featuring:
   - Row Level Security (RLS) policies
 
 - ✅ **ORM Implementation**
-  - Type-safe table definitions with Drizzle
+  - Type-safe interactions via Supabase Client
   - PostgreSQL integration
-  - Proper relation definitions
+  - Proper relation definitions (Managed via Supabase schema/client)
   - Enum types for theme and roles
 
 ```mermaid
@@ -13433,249 +14004,90 @@ Learn more about the power of Turborepo:
 
 ```mermaid
 graph TB
-    User((External User))
+    User((User))
 
     subgraph "Frontend Container"
-        WebApp["Next.js Web App<br>(Next.js)"]
+        direction TB
+        NextApp["Next.js App<br>(Next.js 15)"]
 
         subgraph "Frontend Components"
-            AuthComponent["Authentication<br>(Next Auth)"]
-            ChatInterface["Chat Interface<br>(React)"]
+            AppLayout["App Layout<br>(React)"]
+            ThemeProvider["Theme Provider<br>(MUI)"]
+            ChatInterface["Chat Interface<br>(React + MUI)"]
+            AuthComponents["Auth Components<br>(React)"]
             DocumentationUI["Documentation UI<br>(React)"]
-            ThemeProvider["Theme Provider<br>(React)"]
-            SupabaseClient["Supabase Client<br>(Supabase JS)"]
+
+            subgraph "Chat Components"
+                ChatMessageList["Message List<br>(React)"]
+                ChatInput["Command Input<br>(React)"]
+                ChatAgentPanel["Agent Panel<br>(React)"]
+                ChatToolsPanel["Tools Panel<br>(React)"]
+            end
         end
     end
 
     subgraph "Backend Container"
-        NestAPI["API Server<br>(NestJS)"]
+        direction TB
+        NestApp["NestJS API<br>(NestJS)"]
 
-        subgraph "API Components"
+        subgraph "Core Modules"
+            MastraCoreModule["Mastra Core Module<br>(NestJS)"]
             ChatModule["Chat Module<br>(NestJS)"]
             LinksModule["Links Module<br>(NestJS)"]
-            AgentController["Agent Controller<br>(NestJS)"]
-            MastraCoreModule["Mastra Core Module<br>(NestJS)"]
-            HttpExceptionFilter["HTTP Exception Filter<br>(NestJS)"]
         end
-    end
 
-    subgraph "Database Container"
-        SupabaseDB[("Primary Database<br>(Supabase/PostgreSQL)")]
-        VectorStore[("Vector Store<br>(Pinecone)")]
-        RedisCache[("Cache Layer<br>(Redis/Upstash)")]
+        subgraph "Agent Components"
+            AgentController["Agent Controller<br>(NestJS)"]
+            AgentService["Agent Service<br>(NestJS)"]
+            MastraAgents["Mastra Agents<br>(Custom)"]
+        end
 
         subgraph "Database Components"
-            UserPreferences["User Preferences<br>(PostgreSQL)"]
-            Conversations["Conversations<br>(PostgreSQL)"]
-            Messages["Messages<br>(PostgreSQL)"]
-            VectorOperations["Vector Operations<br>(Pinecone)"]
+            DatabaseClient["Database Client<br>(TypeScript)"]
+            VectorStore["Vector Store<br>(Upstash)"]
+            EmbeddingService["Embedding Service<br>(Custom)"]
         end
     end
 
-    subgraph "Shared Services Container"
-        MastraService["Mastra Service<br>(TypeScript)"]
-
-        subgraph "Mastra Components"
-            AgentService["Agent Service<br>(TypeScript)"]
-            VectorStoreService["Vector Store Service<br>(TypeScript)"]
-            DatabaseService["Database Service<br>(TypeScript)"]
-            EvaluationService["Evaluation Service<br>(LangSmith)"]
-        end
+    subgraph "External Services"
+        Supabase["Supabase<br>(PostgreSQL + Auth)"]
+        UpstashRedis["Upstash Redis<br>(Redis)"]
     end
 
-    %% Relationships
-    User -->|"Interacts with"| WebApp
-    WebApp -->|"Authenticates via"| AuthComponent
-    WebApp -->|"Makes API calls"| NestAPI
-    AuthComponent -->|"Uses"| SupabaseClient
-    ChatInterface -->|"Communicates with"| ChatModule
+    %% Frontend Relationships
+    User -->|"Interacts with"| NextApp
+    NextApp -->|"Uses"| AppLayout
+    AppLayout -->|"Contains"| ThemeProvider
+    AppLayout -->|"Contains"| ChatInterface
+    AppLayout -->|"Contains"| AuthComponents
+    AppLayout -->|"Contains"| DocumentationUI
 
-    NestAPI -->|"Routes to"| ChatModule
-    NestAPI -->|"Routes to"| LinksModule
-    NestAPI -->|"Routes to"| AgentController
-    NestAPI -->|"Uses"| MastraCoreModule
-    NestAPI -->|"Handles errors with"| HttpExceptionFilter
+    ChatInterface -->|"Contains"| ChatMessageList
+    ChatInterface -->|"Contains"| ChatInput
+    ChatInterface -->|"Contains"| ChatAgentPanel
+    ChatInterface -->|"Contains"| ChatToolsPanel
 
-    ChatModule -->|"Uses"| MastraService
-    AgentController -->|"Uses"| MastraService
+    %% Backend Relationships
+    NextApp -->|"API Requests"| NestApp
+    NestApp -->|"Uses"| MastraCoreModule
+    NestApp -->|"Uses"| ChatModule
+    NestApp -->|"Uses"| LinksModule
 
-    MastraService -->|"Uses"| AgentService
-    MastraService -->|"Uses"| VectorStoreService
-    MastraService -->|"Uses"| DatabaseService
-    MastraService -->|"Uses"| EvaluationService
+    MastraCoreModule -->|"Manages"| AgentController
+    AgentController -->|"Uses"| AgentService
+    AgentService -->|"Uses"| MastraAgents
 
-    DatabaseService -->|"Manages"| SupabaseDB
-    VectorStoreService -->|"Manages"| VectorStore
-    DatabaseService -->|"Caches in"| RedisCache
+    %% Database Relationships
+    DatabaseClient -->|"Connects to"| Supabase
+    VectorStore -->|"Connects to"| UpstashRedis
+    MastraAgents -->|"Uses"| EmbeddingService
+    EmbeddingService -->|"Uses"| VectorStore
 
-    SupabaseDB -->|"Contains"| UserPreferences
-    SupabaseDB -->|"Contains"| Conversations
-    SupabaseDB -->|"Contains"| Messages
-    VectorStore -->|"Implements"| VectorOperations
+    %% External Service Relationships
+    AuthComponents -->|"Authenticates via"| Supabase
+    DatabaseClient -->|"Queries"| Supabase
+    VectorStore -->|"Caches in"| UpstashRedis
 ```
-````
-
-## File: packages/ui/package.json
-
-````json
-{
-  "name": "@repo/ui",
-  "version": "0.0.2",
-  "private": true,
-  "exports": {
-    "./Button": "./src/button.tsx",
-    "./Card": "./src/card.tsx",
-    "./Code": "./src/code.tsx",
-    "./Sidebar": "./src/sidebar.tsx",
-    "./Dashboard": "./src/dashboard.tsx",
-    "./Footer": "./src/footer.tsx",
-    "./Input": "./src/input.tsx",
-    "./Progress": "./src/progress.tsx",
-    "./Switch": "./src/switch.tsx",
-    "./Slider": "./src/slider.tsx",
-    "./Charts": "./src/charts.tsx",
-    "./Graphs": "./src/graphs.tsx",
-    "./Paper": "./src/paper.tsx",
-    "./Hero": "./src/hero.tsx",
-    "./Tooltip": "./src/tooltip.tsx",
-    "./Table": "./src/table.tsx",
-    "./List": "./src/list.tsx",
-    "./Appbar": "./src/appbar.tsx",
-    "./ChatWindow": "./src/chat/chatwindow.tsx",
-    "./ChatMessage": "./src/chat/chatmessage.tsx",
-    "./ModelSelector": "./src/model_selector.tsx",
-    "./ThemeProvider": "./src/theme/ThemeProvider.tsx",
-    "./index": "./src/theme/index.tsx",
-    "./Chat": "./src/chat/chat.tsx",
-    "./Chart": "./src/chart.tsx",
-    "./Responsive": "./src/responsive.tsx",
-    "./Autocomplete": "./src/autocomplete.tsx",
-    "./Select": "./src/select.tsx",
-    "./AccountMenu": "./src/menu.tsx",
-    "./Grid": "./src/grid.tsx",
-    "./Drawer": "./src/drawer.tsx",
-    "./D3NetworkGraph": "./src/d3.tsx",
-    "./AdvancedTabs": "./src/tabs.tsx",
-    "./darkTheme": "./src/theme/index.ts",
-    "./lightTheme": "./src/theme/index.ts",
-    "./Theme": "./src/theme/index.ts",
-    "./Accordion": "./src/accordion.tsx",
-    "./ChatContainer": "./src/chat/chatcontainer.tsx",
-    "./ChatInput": "./src/chat/chatinput.tsx",
-    "./ChatTypingIndicator": "./src/chat/chattypingindicator.tsx",
-    "./ChatMessageList": "./src/chat/chatmessagelist.tsx",
-    "./ChatOptions": "./src/chat/chatoptions.tsx",
-    "./EmojiPicker": "./src/chat/EmojiPicker.tsx",
-    "./ChatHeader": "./src/chat/chatheader.tsx",
-    "./ChatAccordion": "./src/chat/chataccordion.tsx",
-    "./Label": "./src/label.tsx",
-    "./Popover": "./src/popover.tsx",
-    "./ScrollArea": "./src/scrollarea.tsx",
-    "./Dropdown": "./src/dropdrown.tsx",
-    "./Form": "./src/form.tsx",
-    "./Collapsible": "./src/collapsible.tsx",
-    "./ChatAttachment": "./src/chat/chatattachment.tsx",
-    "./ChatCommandInput": "./src/chat/chatcommandinput.tsx",
-    "./ChatSlashCommands": "./src/chat/chatslashcommands.tsx",
-    "./ChatToolsPanel": "./src/chat/chattoolspanel.tsx",
-    "./ChatInterface": "./src/chat/chatinterface.tsx",
-    "./ChatAgentPanel": "./src/chat/chatagentpanel.tsx",
-    "./ChatWorkflowPanel": "./src/chat/chatworkflowpanel.tsx"
-  },
-  "scripts": {
-    "lint": "eslint . --max-warnings 0",
-    "generate:component": "turbo gen react-component"
-  },
-  "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
-    "@repo/typescript-config": "workspace:*",
-    "@turbo/gen": "^2.4.4",
-    "@types/eslint": "^8.56.12",
-    "@types/node": "^22.14.0",
-    "@types/react": "^19.1.0",
-    "@types/react-dom": "^19.1.1",
-    "@types/react-syntax-highlighter": "^15.5.13",
-    "@types/uuid": "^10.0.0",
-    "eslint": "^9.23.0",
-    "react": "^19.1.0",
-    "react-plotly.js": "^2.6.0",
-    "typescript": "5.8.2"
-  },
-  "dependencies": {
-    "@codemirror/view": "^6.36.5",
-    "@dnd-kit/core": "^6.3.1",
-    "@dnd-kit/sortable": "^10.0.0",
-    "@emotion/react": "^11.14.0",
-    "@emotion/styled": "^11.14.0",
-    "@floating-ui/react": "^0.27.6",
-    "@hookform/resolvers": "^4.1.3",
-    "@livekit/components-react": "^2.9.0",
-    "@mastra/client-js": "^0.1.13",
-    "@mastra/core": "^0.7.0",
-    "@mastra/mcp": "^0.3.6",
-    "@mastra/pinecone": "^0.2.4",
-    "@mastra/rag": "^0.1.14",
-    "@mastra/upstash": "^0.2.1",
-    "@mui/icons-material": "^7.0.1",
-    "@mui/material": "^7.0.1",
-    "@radix-ui/react-collapsible": "^1.1.3",
-    "@radix-ui/react-context": "^1.1.1",
-    "@radix-ui/react-dialog": "^1.1.6",
-    "@radix-ui/react-dropdown-menu": "^2.1.6",
-    "@radix-ui/react-form": "^0.1.2",
-    "@radix-ui/react-hover-card": "^1.1.6",
-    "@radix-ui/react-label": "^2.1.2",
-    "@radix-ui/react-popover": "^1.1.6",
-    "@radix-ui/react-scroll-area": "^1.2.3",
-    "@radix-ui/react-select": "^2.1.6",
-    "@radix-ui/react-separator": "^1.1.2",
-    "@radix-ui/react-slot": "^1.1.2",
-    "@radix-ui/react-toast": "^1.2.6",
-    "@radix-ui/react-toolbar": "^1.1.2",
-    "@types/color": "^4.2.0",
-    "@types/d3": "^7.4.3",
-    "@types/lodash-es": "^4.17.12",
-    "@types/plotly.js": "^2.35.4",
-    "@types/react-plotly.js": "^2.6.3",
-    "@types/react-transition-group": "^4.4.12",
-    "@types/tinycolor2": "^1.4.6",
-    "@use-gesture/react": "^10.3.1",
-    "browser-image-compression": "^2.0.2",
-    "class-variance-authority": "^0.7.1",
-    "clsx": "^2.1.1",
-    "codemirror": "^6.0.1",
-    "codemirror-spell-checker": "^1.1.2",
-    "color": "^5.0.0",
-    "commander": "^13.1.0",
-    "copy-to-clipboard": "^3.3.3",
-    "d3": "^7.9.0",
-    "date-fns": "^4.1.0",
-    "dayjs": "^1.11.13",
-    "emoji-mart": "^5.6.0",
-    "file-type-browser": "^1.0.0",
-    "framer-motion": "^12.6.3",
-    "immer": "^10.1.1",
-    "lodash-es": "^4.17.21",
-    "lucide-react": "^0.484.0",
-    "plotly.js": "^3.0.1",
-    "react-dropzone": "^14.3.8",
-    "react-error-boundary": "^5.0.0",
-    "react-hook-form": "^7.55.0",
-    "react-markdown": "^10.1.0",
-    "react-merge-refs": "^2.1.1",
-    "react-responsive": "^10.0.1",
-    "react-syntax-highlighter": "^15.6.1",
-    "recharts": "^2.15.2",
-    "recordrtc": "^5.6.2",
-    "rehype-raw": "^7.0.0",
-    "remark-gfm": "^4.0.1",
-    "socket.io-client": "^4.8.1",
-    "swr": "^2.3.3",
-    "uuid": "^11.1.0",
-    "victory": "^37.3.6",
-    "zod": "^3.24.2"
-  }
-}
 ````
 
 ## File: apps/web/package.json
@@ -13802,6 +14214,171 @@ graph TB
 }
 ````
 
+## File: packages/ui/package.json
+
+````json
+{
+  "name": "@repo/ui",
+  "version": "0.0.2",
+  "private": true,
+  "exports": {
+    "./Button": "./src/button.tsx",
+    "./Card": "./src/card.tsx",
+    "./Code": "./src/code.tsx",
+    "./Sidebar": "./src/sidebar.tsx",
+    "./Dashboard": "./src/dashboard.tsx",
+    "./Footer": "./src/footer.tsx",
+    "./Input": "./src/input.tsx",
+    "./Progress": "./src/progress.tsx",
+    "./Switch": "./src/switch.tsx",
+    "./Slider": "./src/slider.tsx",
+    "./Charts": "./src/charts.tsx",
+    "./Graphs": "./src/graphs.tsx",
+    "./Paper": "./src/paper.tsx",
+    "./Hero": "./src/hero.tsx",
+    "./Tooltip": "./src/tooltip.tsx",
+    "./Table": "./src/table.tsx",
+    "./List": "./src/list.tsx",
+    "./Appbar": "./src/appbar.tsx",
+    "./ChatWindow": "./src/chat/chatwindow.tsx",
+    "./ChatMessage": "./src/chat/chatmessage.tsx",
+    "./ModelSelector": "./src/model_selector.tsx",
+    "./ThemeProvider": "./src/theme/ThemeProvider.tsx",
+    "./index": "./src/theme/index.tsx",
+    "./Chat": "./src/chat/chat.tsx",
+    "./Chart": "./src/chart.tsx",
+    "./Responsive": "./src/responsive.tsx",
+    "./Autocomplete": "./src/autocomplete.tsx",
+    "./Select": "./src/select.tsx",
+    "./AccountMenu": "./src/menu.tsx",
+    "./Grid": "./src/grid.tsx",
+    "./Drawer": "./src/drawer.tsx",
+    "./D3NetworkGraph": "./src/d3.tsx",
+    "./AdvancedTabs": "./src/tabs.tsx",
+    "./darkTheme": "./src/theme/index.ts",
+    "./lightTheme": "./src/theme/index.ts",
+    "./Theme": "./src/theme/index.ts",
+    "./Accordion": "./src/accordion.tsx",
+    "./ChatContainer": "./src/chat/chatcontainer.tsx",
+    "./ChatInput": "./src/chat/chatinput.tsx",
+    "./ChatTypingIndicator": "./src/chat/chattypingindicator.tsx",
+    "./ChatMessageList": "./src/chat/chatmessagelist.tsx",
+    "./ChatOptions": "./src/chat/chatoptions.tsx",
+    "./EmojiPicker": "./src/chat/EmojiPicker.tsx",
+    "./ChatHeader": "./src/chat/chatheader.tsx",
+    "./ChatAccordion": "./src/chat/chataccordion.tsx",
+    "./Label": "./src/label.tsx",
+    "./Popover": "./src/popover.tsx",
+    "./ScrollArea": "./src/scrollarea.tsx",
+    "./Dropdown": "./src/dropdrown.tsx",
+    "./Form": "./src/form.tsx",
+    "./Collapsible": "./src/collapsible.tsx",
+    "./ChatAttachment": "./src/chat/chatattachment.tsx",
+    "./ChatCommandInput": "./src/chat/chatcommandinput.tsx",
+    "./ChatSlashCommands": "./src/chat/chatslashcommands.tsx",
+    "./ChatToolsPanel": "./src/chat/chattoolspanel.tsx",
+    "./ChatInterface": "./src/chat/chatinterface.tsx",
+    "./ChatAgentPanel": "./src/chat/chatagentpanel.tsx",
+    "./ChatWorkflowPanel": "./src/chat/chatworkflowpanel.tsx",
+    "./theme": "./src/theme/index.ts"
+  },
+  "scripts": {
+    "lint": "eslint . --max-warnings 0",
+    "generate:component": "turbo gen react-component"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@turbo/gen": "^2.4.4",
+    "@types/eslint": "^8.56.12",
+    "@types/node": "^22.14.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.1",
+    "@types/react-syntax-highlighter": "^15.5.13",
+    "@types/uuid": "^10.0.0",
+    "eslint": "^9.23.0",
+    "react": "^19.1.0",
+    "react-plotly.js": "^2.6.0",
+    "typescript": "5.8.2"
+  },
+  "dependencies": {
+    "@codemirror/view": "^6.36.5",
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@floating-ui/react": "^0.27.6",
+    "@hookform/resolvers": "^4.1.3",
+    "@livekit/components-react": "^2.9.0",
+    "@mastra/client-js": "^0.1.13",
+    "@mastra/core": "^0.7.0",
+    "@mastra/mcp": "^0.3.6",
+    "@mastra/pinecone": "^0.2.4",
+    "@mastra/rag": "^0.1.14",
+    "@mastra/upstash": "^0.2.1",
+    "@mui/icons-material": "^7.0.1",
+    "@mui/material": "^7.0.1",
+    "@radix-ui/react-collapsible": "^1.1.3",
+    "@radix-ui/react-context": "^1.1.1",
+    "@radix-ui/react-dialog": "^1.1.6",
+    "@radix-ui/react-dropdown-menu": "^2.1.6",
+    "@radix-ui/react-form": "^0.1.2",
+    "@radix-ui/react-hover-card": "^1.1.6",
+    "@radix-ui/react-label": "^2.1.2",
+    "@radix-ui/react-popover": "^1.1.6",
+    "@radix-ui/react-scroll-area": "^1.2.3",
+    "@radix-ui/react-select": "^2.1.6",
+    "@radix-ui/react-separator": "^1.1.2",
+    "@radix-ui/react-slot": "^1.1.2",
+    "@radix-ui/react-toast": "^1.2.6",
+    "@radix-ui/react-toolbar": "^1.1.2",
+    "@types/color": "^4.2.0",
+    "@types/d3": "^7.4.3",
+    "@types/lodash-es": "^4.17.12",
+    "@types/plotly.js": "^2.35.4",
+    "@types/react-plotly.js": "^2.6.3",
+    "@types/react-transition-group": "^4.4.12",
+    "@types/tinycolor2": "^1.4.6",
+    "@use-gesture/react": "^10.3.1",
+    "browser-image-compression": "^2.0.2",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "codemirror": "^6.0.1",
+    "codemirror-spell-checker": "^1.1.2",
+    "color": "^5.0.0",
+    "commander": "^13.1.0",
+    "copy-to-clipboard": "^3.3.3",
+    "d3": "^7.9.0",
+    "date-fns": "^4.1.0",
+    "dayjs": "^1.11.13",
+    "emoji-mart": "^5.6.0",
+    "file-type-browser": "^1.0.0",
+    "framer-motion": "^12.6.3",
+    "immer": "^10.1.1",
+    "lodash-es": "^4.17.21",
+    "lucide-react": "^0.484.0",
+    "next": "^15.2.4",
+    "plotly.js": "^3.0.1",
+    "react-dropzone": "^14.3.8",
+    "react-error-boundary": "^5.0.0",
+    "react-hook-form": "^7.55.0",
+    "react-markdown": "^10.1.0",
+    "react-merge-refs": "^2.1.1",
+    "react-responsive": "^10.0.1",
+    "react-syntax-highlighter": "^15.6.1",
+    "recharts": "^2.15.2",
+    "recordrtc": "^5.6.2",
+    "rehype-raw": "^7.0.0",
+    "remark-gfm": "^4.0.1",
+    "socket.io-client": "^4.8.1",
+    "swr": "^2.3.3",
+    "uuid": "^11.1.0",
+    "victory": "^37.3.6",
+    "zod": "^3.24.2"
+  }
+}
+````
+
 ## File: packages/api/package.json
 
 ````json
@@ -13902,6 +14479,7 @@ graph TB
     "rxjs": "^7.8.2",
     "socket.io": "^4.8.1",
     "socket.io-parser": "^3.4.3",
+    "supabase": "^2.20.5",
     "typeorm": "^0.3.21",
     "ws": "^8.18.1",
     "zod": "^3.24.2",

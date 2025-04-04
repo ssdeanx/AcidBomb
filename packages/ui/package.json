@@ -67,10 +67,14 @@
     "lint": "eslint . --max-warnings 0",
     "generate:component": "turbo gen react-component"
   },
+  "peerDependencies": {
+    "next": "*",
+    "nestjs": "*"
+  },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@turbo/gen": "^2.4.4",
+    "@turbo/gen": "^2.5.0",
     "@types/eslint": "^8.56.12",
     "@types/node": "^22.14.0",
     "@types/react": "^19.1.0",

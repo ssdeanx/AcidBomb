@@ -75,7 +75,8 @@
         "PINECONE_DIMENSION",
         "PINECONE_HOST",
         "PINECONE_INDEX",
-        "PINECONE_NAMESPACE"
+        "PINECONE_NAMESPACE",
+        "DIRECT_URL"
 
       ]
 

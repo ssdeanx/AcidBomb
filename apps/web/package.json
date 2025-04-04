@@ -11,6 +11,14 @@
     "test:watch": "jest --watch",
     "test:e2e": "playwright test"
   },
+  "peerDependencies": {
+    "next": "*",
+    "react": "*",
+    "react-dom": "*",
+    "nestjs": "*",
+    "@repo/ui": "*",
+    "@repo/api": "*"
+  },
   "dependencies": {
     "@ai-sdk/google": "^1.2.6",
     "@ai-sdk/google-vertex": "^2.2.9",

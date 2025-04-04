@@ -33,6 +33,11 @@
       "require": "./dist/*.js"
     }
   },
+  "peerDependencies": {
+    "next": "*",
+    "react": "*",
+    "nestjs": "*"
+  },
   "dependencies": {
     "@ai-sdk/google": "^1.2.6",
     "@ai-sdk/google-vertex": "^2.2.9",

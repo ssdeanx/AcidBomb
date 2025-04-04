@@ -407,87 +407,81 @@ Learn more about the power of Turborepo:
 
 ```mermaid
 graph TB
-    User((User))
+    User((External User))
 
     subgraph "Frontend Container"
-        direction TB
-        NextApp["Next.js App<br>(Next.js 15)"]
+        NextApp["Next.js App<br>(Next.js 15.2)"]
 
         subgraph "Frontend Components"
             AppLayout["App Layout<br>(React)"]
             ThemeProvider["Theme Provider<br>(MUI)"]
-            ChatInterface["Chat Interface<br>(React + MUI)"]
             AuthComponents["Auth Components<br>(React)"]
+            ChatInterface["Chat Interface<br>(React)"]
             DocumentationUI["Documentation UI<br>(React)"]
 
-            subgraph "Chat Components"
-                ChatMessageList["Message List<br>(React)"]
-                ChatInput["Command Input<br>(React)"]
-                ChatAgentPanel["Agent Panel<br>(React)"]
-                ChatToolsPanel["Tools Panel<br>(React)"]
+            subgraph "UI Components Library"
+                UICore["Core UI Components<br>(MUI/React)"]
+                ChatComponents["Chat Components<br>(React)"]
+                Forms["Form Components<br>(React)"]
+                Navigation["Navigation Components<br>(React)"]
             end
         end
     end
 
     subgraph "Backend Container"
-        direction TB
-        NestApp["NestJS API<br>(NestJS)"]
+        NestApp["API Server<br>(NestJS)"]
 
-        subgraph "Core Modules"
-            MastraCoreModule["Mastra Core Module<br>(NestJS)"]
+        subgraph "API Components"
+            AppModule["App Module<br>(NestJS)"]
             ChatModule["Chat Module<br>(NestJS)"]
-            LinksModule["Links Module<br>(NestJS)"]
-        end
+            MastraCore["Mastra Core Module<br>(NestJS)"]
 
-        subgraph "Agent Components"
-            AgentController["Agent Controller<br>(NestJS)"]
-            AgentService["Agent Service<br>(NestJS)"]
-            MastraAgents["Mastra Agents<br>(Custom)"]
+            subgraph "Mastra AI Components"
+                AgentService["Agent Service<br>(TypeScript)"]
+                EmbeddingService["Embedding Service<br>(TypeScript)"]
+                Tools["AI Tools<br>(TypeScript)"]
+                Workflows["AI Workflows<br>(TypeScript)"]
+            end
         end
+    end
 
-        subgraph "Database Components"
-            DatabaseClient["Database Client<br>(TypeScript)"]
-            VectorStore["Vector Store<br>(Upstash)"]
-            EmbeddingService["Embedding Service<br>(Custom)"]
-        end
+    subgraph "Data Storage Container"
+        Supabase["Database<br>(Supabase)"]
+        Redis["Cache<br>(Upstash Redis)"]
+        VectorStore["Vector Store<br>(Upstash Vector)"]
     end
 
     subgraph "External Services"
-        Supabase["Supabase<br>(PostgreSQL + Auth)"]
-        UpstashRedis["Upstash Redis<br>(Redis)"]
+        GeminiAI["Gemini AI<br>(Google AI)"]
     end
 
     %% Frontend Relationships
-    User -->|"Interacts with"| NextApp
+    User -->|"Accesses"| NextApp
     NextApp -->|"Uses"| AppLayout
-    AppLayout -->|"Contains"| ThemeProvider
-    AppLayout -->|"Contains"| ChatInterface
+    AppLayout -->|"Uses"| ThemeProvider
     AppLayout -->|"Contains"| AuthComponents
+    AppLayout -->|"Contains"| ChatInterface
     AppLayout -->|"Contains"| DocumentationUI
-
-    ChatInterface -->|"Contains"| ChatMessageList
-    ChatInterface -->|"Contains"| ChatInput
-    ChatInterface -->|"Contains"| ChatAgentPanel
-    ChatInterface -->|"Contains"| ChatToolsPanel
+    ChatInterface -->|"Uses"| ChatComponents
+    AuthComponents -->|"Uses"| Forms
+    DocumentationUI -->|"Uses"| Navigation
 
     %% Backend Relationships
-    NextApp -->|"API Requests"| NestApp
-    NestApp -->|"Uses"| MastraCoreModule
-    NestApp -->|"Uses"| ChatModule
-    NestApp -->|"Uses"| LinksModule
+    NextApp -->|"API Calls"| NestApp
+    NestApp -->|"Routes to"| AppModule
+    AppModule -->|"Uses"| ChatModule
+    AppModule -->|"Uses"| MastraCore
+    ChatModule -->|"Uses"| AgentService
+    MastraCore -->|"Uses"| EmbeddingService
+    AgentService -->|"Uses"| Tools
+    AgentService -->|"Uses"| Workflows
 
-    MastraCoreModule -->|"Manages"| AgentController
-    AgentController -->|"Uses"| AgentService
-    AgentService -->|"Uses"| MastraAgents
-
-    %% Database Relationships
-    DatabaseClient -->|"Connects to"| Supabase
-    VectorStore -->|"Connects to"| UpstashRedis
-    MastraAgents -->|"Uses"| EmbeddingService
-    EmbeddingService -->|"Uses"| VectorStore
+    %% Data Storage Relationships
+    NestApp -->|"Stores Data"| Supabase
+    NestApp -->|"Caches"| Redis
+    EmbeddingService -->|"Stores Vectors"| VectorStore
 
     %% External Service Relationships
-    AuthComponents -->|"Authenticates via"| Supabase
-    DatabaseClient -->|"Queries"| Supabase
-    VectorStore -->|"Caches in"| UpstashRedis
+    AgentService -->|"Uses"| GeminiAI
+    EmbeddingService -->|"Uses"| GeminiAI
 ```

@@ -8,6 +8,8 @@
 import { Agent } from '@mastra/core';
 import { createLogger } from '@mastra/core';
 import * as tools from "../tools";
+import { summarizeTool } from '../tools/summarizer';
+
 // Import model and memory from index after it's initialized there
 // We'll import these later since we need to avoid circular dependencies
 let memoryProvider;
@@ -48,13 +50,34 @@ Always explain your code and provide context to help the user understand solutio
 `;
 
 /**
+ * System instructions for a research assistant that uses RAG capabilities
+ */
+const researchAssistantInstructions = `
+You are a research assistant specialized in retrieving and synthesizing information.
+You use vector search tools to find relevant information from the knowledge base.
+When responding to questions, always cite your sources and explain your reasoning.
+You can summarize long documents to extract key insights.
+For complex research tasks, you can orchestrate workflows that combine multiple tools.
+`;
+
+/**
  * Initialize agents with model and memory after they are created
  * This avoids circular dependencies between agents and index
  */
-export const initializeAgents = (model, memory, tools) => {
+export const initializeAgents = (model, memory, toolSet) => {
   geminiModel = model;
   memoryProvider = memory;
-  initializedTools = tools;
+  initializedTools = {
+    ...toolSet,
+    summarize: summarizeTool
+  };
+
+  const logger = createLogger({
+    name: 'AgentsModule',
+    level: 'info',
+  });
+
+  logger.info('Initializing Mastra agents with tools: ' + Object.keys(initializedTools).join(', '));
 
   return {
     chat: new Agent({
@@ -76,6 +99,14 @@ export const initializeAgents = (model, memory, tools) => {
     codeAssistant: new Agent({
       name: 'codeAssistant',
       instructions: codeAssistantInstructions,
+      model: geminiModel,
+      memory: memoryProvider,
+      tools: initializedTools,
+    }),
+
+    researchAssistant: new Agent({
+      name: 'researchAssistant',
+      instructions: researchAssistantInstructions,
       model: geminiModel,
       memory: memoryProvider,
       tools: initializedTools,

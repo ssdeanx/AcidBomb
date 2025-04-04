@@ -1,89 +1,149 @@
 import {
-
-// filepath: c:\Users\dm\Documents\Deanmachines\packages\api\src\controllers\agents\agent.controller.ts
   Controller,
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
+  UseGuards,
+  HttpException,
+  HttpStatus,
   ParseIntPipe,
+  Query,
 } from '@nestjs/common';
-// Assume AgentService, CreateAgentDto, UpdateAgentDto will be created later
-// import { AgentService } from './agent.service';
-// import { CreateAgentDto } from './dto/create-agent.dto';
-// import { UpdateAgentDto } from './dto/update-agent.dto';
+import { AgentService, AgentResponse } from '../../mastra/services/agent-service';
+import { CreateAgentDto } from '../../links/dto/create-agent.dto';
+import { UpdateAgentDto } from '../../links/dto/update-agent.dto';
+import { Agent } from '../../links/entities/agent.entity';
+
+interface GenerateResponseDto {
+  prompt: string;
+  userId: string;
+  sessionId?: string;
+}
+
+interface RagQueryDto {
+  query: string;
+  userId: string;
+  maxResults?: number;
+}
 
 /**
- * Controller for managing AI agents.
- * Provides endpoints for creating, retrieving, updating, and deleting agents.
+ * Controller for managing and interacting with AI agents
  */
 @Controller('agents')
 export class AgentController {
-  // Inject AgentService once it's created
-  // constructor(private readonly agentService: AgentService) {}
+  constructor(
+    private readonly agentService: AgentService,
+  ) {}
 
   /**
-   * Creates a new agent.
-   * @param createAgentDto - Data transfer object containing agent creation data.
-   * @returns A confirmation message or the created agent details.
+   * Create a new agent configuration
+   * @param createAgentDto Data for creating the agent
+   * @returns The created agent configuration
    */
   @Post()
-  create(@Body() createAgentDto: /* CreateAgentDto */ unknown) {
-    // Replace with actual service call
-    return `This action adds a new agent with data: ${JSON.stringify(createAgentDto)}`;
-    // return this.agentService.create(createAgentDto);
+  async create(@Body() createAgentDto: CreateAgentDto): Promise<Agent> {
+    try {
+      // In a real implementation, you would save to database
+      // and possibly register with Mastra
+      const agent = new Agent();
+      agent.id = Math.floor(Math.random() * 1000);
+      agent.name = createAgentDto.name;
+      agent.description = createAgentDto.description;
+      agent.model = createAgentDto.model;
+      agent.instructions = createAgentDto.instructions;
+      agent.createdAt = new Date();
+      agent.updatedAt = new Date();
+
+      return agent;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      throw new HttpException(
+        `Failed to create agent: ${errorMessage}`,
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
   }
 
   /**
-   * Retrieves all agents.
-   * @returns A list of all agents.
+   * Retrieve all available agents
+   * @returns List of all agents' names
    */
   @Get()
-  findAll() {
-    // Replace with actual service call
-    return 'This action returns all agents';
-    // return this.agentService.findAll();
+  async findAll(): Promise<string[]> {
+    // Return the names of available agents from the Mastra configuration
+    // Assuming AgentService has a method like findAllAgents() that returns Promise<Agent[]>
+    // You might need to implement findAllAgents() in AgentService
+    const agents: Agent[] = await this.agentService.findAllAgents(); // Hypothetical method
+    return agents.map((agent) => agent.name);
   }
 
   /**
-   * Retrieves a specific agent by its ID.
-   * @param id - The ID of the agent to retrieve.
-   * @returns The details of the specified agent.
+   * Generate a response from a specific agent
+   * @param agentName Name of the agent to use
+   * @param body Request body containing the prompt and user ID
+   * @returns Generated response from the agent
    */
-  @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    // Replace with actual service call
-    return `This action returns agent #${id}`;
-    // return this.agentService.findOne(id);
+  @Post(':agentName/generate')
+  async generateResponse(
+    @Param('agentName') agentName: string,
+    @Body() body: GenerateResponseDto,
+  ): Promise<AgentResponse> {
+    try {
+      if (!body.prompt) {
+        throw new HttpException('Prompt is required', HttpStatus.BAD_REQUEST);
+      }
+
+      if (!body.userId) {
+        throw new HttpException('User ID is required', HttpStatus.BAD_REQUEST);
+      }
+
+      const response = await this.agentService.generateResponse(
+        agentName,
+        body.userId,
+        body.prompt,
+        body.sessionId
+      );
+
+      return response;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      throw new HttpException(
+        `Failed to generate response: ${errorMessage}`,
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
   }
 
   /**
-   * Updates an existing agent.
-   * @param id - The ID of the agent to update.
-   * @param updateAgentDto - Data transfer object containing agent update data.
-   * @returns A confirmation message or the updated agent details.
+   * Execute a RAG query to search and answer based on the knowledge base
+   * @param body Request body containing the query and user ID
+   * @returns Query results with response and sources
    */
-  @Patch(':id')
-  update(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() updateAgentDto: /* UpdateAgentDto */ unknown,
-  ) {
-    // Replace with actual service call
-    return `This action updates agent #${id} with data: ${JSON.stringify(updateAgentDto)}`;
-    // return this.agentService.update(id, updateAgentDto);
-  }
+  @Post('rag/query')
+  async executeRagQuery(@Body() body: RagQueryDto) {
+    try {
+      if (!body.query) {
+        throw new HttpException('Query is required', HttpStatus.BAD_REQUEST);
+      }
 
-  /**
-   * Deletes an agent.
-   * @param id - The ID of the agent to delete.
-   * @returns A confirmation message.
-   */
-  @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number) {
-    // Replace with actual service call
-    return `This action removes agent #${id}`;
-    // return this.agentService.remove(id);
+      if (!body.userId) {
+        throw new HttpException('User ID is required', HttpStatus.BAD_REQUEST);
+      }
+
+      const result = await this.agentService.executeRagQuery(
+        body.userId,
+        body.query,
+        body.maxResults
+      );
+      return result;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      throw new HttpException(
+        `Failed to execute RAG query: ${errorMessage}`,
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
   }
 }

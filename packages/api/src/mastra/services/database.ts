@@ -49,7 +49,7 @@ export class MastraDatabase {
    *
    * @param embeddingModel - The embedding model to use
    */
-  initEmbeddingService(embeddingModel: EmbeddingModel<number[]>): void {
+  initEmbeddingService(embeddingModel: any): void {
     if (!this.embeddingService) {
       // Create the embedding service instance
       this.embeddingService = new EmbeddingStoreService();
@@ -58,20 +58,17 @@ export class MastraDatabase {
       const embeddingModelAdapter: EmbeddingModelInterface<number[]> = {
         embed: async (text: string): Promise<number[]> => {
           try {
-            // Convert the text string to a number array format
-            // This is a simple encoding approach - each character gets converted to its numeric code
-            const numericInput = Array.from(text).map((char) =>
-              char.charCodeAt(0),
-            );
-
-            // The AI package has a different method signature
-            // Use doEmbed instead of embed, and format the parameters correctly
+            // Use the appropriate embedding method for Google's model
             const result = await embeddingModel.doEmbed({
-              values: [numericInput], // The API expects an array of number arrays
+              values: [text], // The model expects an array of strings
             });
 
-            // Return the first result from the embedding model
-            return result[0];
+            // Extract the embedding from the response
+            if (result && result.embeddings && result.embeddings.length > 0) {
+              return result.embeddings[0].embedding as number[];
+            }
+
+            throw new Error('Failed to generate embedding: empty response');
           } catch (error) {
             logger.error('Error generating embedding:', error);
             throw error;
@@ -87,14 +84,14 @@ export class MastraDatabase {
         .initialize()
         .then(() => {
           logger.info(
-            `Embedding service initialized with model for index ${this.indexName}`,
+            `Embedding service initialized with model for index ${this.indexName}`
           );
         })
         .catch((error) => {
           logger.error('Failed to initialize embedding service:', error);
         });
     } else {
-      // Similar adapter update for the existing service case
+      logger.info('Embedding service already initialized');
     }
   }
 

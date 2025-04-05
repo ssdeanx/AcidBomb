@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  // Hard-coded connection strings (not recommended for production)
+  url       = "postgresql://postgres.blouferyzgikeunksacp:VoePYGKXmSzh88nl@aws-0-us-east-2.pooler.supabase.com:6543/postgres?pgbouncer=true"
+  directUrl = "postgresql://postgres:VoePYGKXmSzh88nl@db.blouferyzgikeunksacp.supabase.co:5432/postgres"
+}
+
+// User preferences model based on 001_initial_schema.sql
+model UserPreference {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  theme     String   @default("system")
+  language  String   @default("en")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamptz
+
+  @@index([userId], name: "idx_user_preferences_user_id")
+  @@map("user_preferences")
+}
+
+// Conversations model based on 001_initial_schema.sql
+model Conversation {
+  id            String    @id @default(uuid()) @db.Uuid
+  userId        String    @map("user_id") @db.Uuid
+  agentId       String    @map("agent_id")
+  title         String
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt     DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+  lastMessageAt DateTime  @default(now()) @map("last_message_at") @db.Timestamptz
+  metadata      Json      @default("{}") @db.JsonB
+  messages      Message[]
+
+  @@index([userId], name: "idx_conversations_user_id")
+  @@index([lastMessageAt(sort: Desc)], name: "idx_conversations_last_message")
+  @@map("conversations")
+}
+
+// Messages model based on 001_initial_schema.sql
+model Message {
+  id             String       @id @default(uuid()) @db.Uuid
+  conversationId String       @map("conversation_id") @db.Uuid
+  role           MessageRole
+  content        String
+  createdAt      DateTime     @default(now()) @map("created_at") @db.Timestamptz
+  metadata       Json         @default("{}") @db.JsonB
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId, createdAt(sort: Desc)], name: "idx_messages_conversation")
+  @@map("messages")
+}
+
+// Links model based on 002_create_links_table.sql
+model Link {
+  id          String   @id @default(uuid()) @db.Uuid
+  title       String
+  url         String   @unique
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime @default(now()) @map("updated_at") @db.Timestamptz
+  userId      String?  @map("user_id") @db.Uuid
+
+  @@index([url], name: "idx_links_url")
+  @@index([userId], name: "idx_links_user_id")
+  @@map("links")
+}
+
+// Enum for message roles
+enum MessageRole {
+  user
+  assistant
+  system
+}

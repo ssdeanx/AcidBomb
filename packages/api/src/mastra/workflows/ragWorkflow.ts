@@ -44,8 +44,13 @@ const queryVectorStore = new Step({
     console.log(`[RAG Workflow] Executing vector query for: "${query}"`);
 
     try {
-      // Use the query tool to search for relevant documents
-      const results = await queryTool.execute(query, { topK: maxResults });
+      // Check if the query tool and its execute method are available
+      if (!queryTool || typeof queryTool.execute !== 'function') {
+        console.error('[RAG Workflow] Query tool or its execute method is not available.');
+        throw new Error('Query tool is not configured correctly.');
+      }
+      // Use the query tool to search for relevant documents, passing parameters within the context object
+      const results = await queryTool.execute({ context: { query: query, topK: maxResults } });
 
       return {
         results: results || [],
@@ -88,11 +93,18 @@ const generateResponse = new Step({
       .describe('Source document metadata'),
   }),
   execute: async ({ context }) => {
+    // Define the shape of a source document extracted from results
+    interface SourceDocument {
+      content: string;
+      source: string;
+      score: number;
+    }
+
     // Get the previous step result safely
     const queryStepResult = context.steps['query-vector-store'];
 
-    // Check if the previous step was successful
-    if (queryStepResult.status !== 'success') {
+    // Check if the previous step exists and was successful
+    if (!queryStepResult || queryStepResult.status !== 'success') {
       return {
         response:
           'I encountered an issue while searching for relevant information.',
@@ -106,22 +118,16 @@ const generateResponse = new Step({
 
     console.log(`[RAG Workflow] Generating response with ${count} documents`);
 
-    if (count === 0) {
-      return {
-        response:
-          "I couldn't find any relevant information to answer your query.",
-        sourcesUsed: 0,
-        sources: [],
-      };
-    }
+    // Ensure results is treated as an array, provide default empty array if not
+    const validResults = Array.isArray(results) ? results : [];
 
-    // Extract text content from results
-    const sources = results.map((result) => {
-      return {
-        content: result.text || result.metadata?.text || '',
-        source: result.metadata?.source || 'unknown',
-        score: result.score || 0,
-      };
+    // Extract text content from results, explicitly typing the array and handling potential 'any' from results
+    const sources: SourceDocument[] = validResults.map((result: any) => {
+      // Provide default values more safely
+      const content = result?.text || result?.metadata?.text || '';
+      const source = result?.metadata?.source || 'unknown';
+      const score = typeof result?.score === 'number' ? result.score : 0;
+      return { content, source, score };
     });
 
     // Format documents for context
@@ -146,20 +152,16 @@ Answer:`;
       const { text: responseText } = await generateText({
         model: google('models/gemini-2.0-flash-latest'),
         prompt: prompt,
-        maxTokens: 800,
-      });
+      }); // Correctly close the generateText call object
 
-      const response =
-        responseText ||
-        'Failed to generate response based on the available information.';
-
+      // Return the generated response and source details
       return {
-        response,
+        response: responseText, // Use the generated text
         sourcesUsed: count,
-        sources: sources.map((source) => ({
+        sources: sources.map((source: SourceDocument) => ({ // Map sources to the output schema shape
           source: source.source,
           score: source.score,
-          content:
+          content: // Truncate content for the output
             source.content.length > 100
               ? source.content.substring(0, 100) + '...'
               : source.content,
@@ -187,8 +189,8 @@ const generateSummary = new Step({
     // Get the generate-response step result safely
     const responseStepResult = context.steps['generate-response'];
 
-    // Check if the previous step was successful
-    if (responseStepResult.status !== 'success') {
+    // Check if the previous step exists and was successful
+    if (!responseStepResult || responseStepResult.status !== 'success') {
       return {
         summary:
           'Cannot generate summary due to issues in response generation.',
@@ -201,6 +203,14 @@ const generateSummary = new Step({
     try {
       console.log('[RAG Workflow] Generating summary of response');
 
+      // Check if summarizeTool and its execute method are defined before using it
+      if (!summarizeTool || typeof summarizeTool.execute !== 'function') {
+        console.error('[RAG Workflow] Summarize tool or its execute method is not available.');
+        return {
+          summary: 'Summary generation tool is unavailable or misconfigured.',
+        };
+      }
+
       // Define the expected shape of the summarize tool's result
       interface SummarizeResult {
         summary?: string;
@@ -209,6 +219,7 @@ const generateSummary = new Step({
       }
 
       // CORRECT: Need to pass parameters as the context object
+      // Now safe to call execute as we've checked summarizeTool
       const result = (await summarizeTool.execute({
         context: {
           text: response,
@@ -259,7 +270,7 @@ const combineResults = new Step({
     let summary = '';
 
     // Extract response information if available
-    if (responseStepResult.status === 'success') {
+    if (responseStepResult && responseStepResult.status === 'success') {
       const responseOutput = responseStepResult.output;
       response = responseOutput.response;
       sourcesUsed = responseOutput.sourcesUsed;

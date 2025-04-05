@@ -14,13 +14,22 @@ const graphTool = createGraphRAGTool({
 });
 
 
-export const getGraphDataWithParams = async (query, params) => {
-  const data = await graphTool.execute(query, params);
+export const getGraphDataWithParams = async (
+  query: string,
+  params: Record<string, unknown>,
+): Promise<unknown> => {
+  if (!graphTool?.execute) {
+    throw new Error('Graph tool execute function is not available.');
+  }
+  const data = await graphTool.execute({ context: { query, ...params } });
   return data;
 };
 
-export const getGraphData = async (query) => {
-  const data = await graphTool.execute(query);
+export const getGraphData = async (query: string): Promise<unknown> => {
+  if (!graphTool?.execute) {
+    throw new Error('Graph tool execute function is not available.');
+  }
+  const data = await graphTool.execute({ context: { query } });
   return data;
 };
 

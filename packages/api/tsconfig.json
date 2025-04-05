@@ -8,9 +8,37 @@
     "incremental": false,
     "outDir": "dist",
     "strict": true,
-    "module": "esnext", // Allow top-level await
-    "target": "esnext" // Ensure target is ES2017 or higher
+    "module": "NodeNext", // Required when moduleResolution is NodeNext
+    "target": "esnext", // Ensure target is ES2017 or higher
+
+    // Added configurations for better type handling
+    "moduleResolution": "NodeNext",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "allowSyntheticDefaultImports": true,
+    "noImplicitAny": true,
+    "noUncheckedIndexedAccess": true,
+    "strictNullChecks": true,
+    "paths": {
+      "*": ["*", "../node_modules/*"],
+      "@prisma/client": ["../node_modules/@prisma/client"],
+      "@prisma/client/*": ["../node_modules/@prisma/client/*"],
+      ".prisma/*": ["../prisma/*"],
+      "prisma/*": ["../prisma/*"]
+    },
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src/types"
+    ]
   },
-  "include": ["src/mastra/index.ts", "mastra.config.ts", "src"], // Added index.tsx and Drizzle/** pattern
+  "include": [
+    "src/mastra/index.ts",
+    "mastra.config.ts",
+    "src",
+    "scripts/**/*", // Added scripts directory for utility scripts
+    "prisma/**/*" // Added prisma directory for schema and generated files
+  ],
   "exclude": ["node_modules", "test", "dist", "**/*spec.ts"]
 }

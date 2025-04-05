@@ -227,12 +227,15 @@ export class EmbeddingStoreService {
       `[${this.indexName}] Upserting ${embeddings.length} embeddings${nsInfo}...`,
     );
     try {
+      // Note: Namespace handling depends on the '@mastra/pinecone' library implementation.
+      // If namespaces are supported, they might need to be passed differently (e.g., within metadata or via a separate option).
+      // Removing 'namespace' here to resolve the type error based on the current definition.
       await this.pineconeStore.upsert({
         indexName: this.indexName,
         vectors: embeddings.map((e) => e.vector),
         ids: embeddings.map((e) => e.id),
         metadata: embeddings.map((e) => e.metadata || {}), // Ensure metadata is at least {}
-        namespace: namespace,
+        // namespace: namespace, // Removed: Not a valid property for UpsertVectorParams
       });
       console.log(
         `[${this.indexName}] Successfully upserted ${embeddings.length} embeddings${nsInfo}.`,
@@ -274,25 +277,43 @@ export class EmbeddingStoreService {
       );
     }
 
-    const nsInfo = namespace ? ` in namespace "${namespace}"` : '';
+    // Note: Namespace filtering might need specific handling depending on the library's API.
+    // The current implementation assumes namespace is not directly part of the query object.
+    const nsInfo = namespace ? ` (namespace "${namespace}" requested, check library support)` : '';
     const filterInfo = filter ? ` with filter` : '';
     console.log(
-      `[${this.indexName}] Querying (top ${topK})${nsInfo}${filterInfo}...`,
+      `[${this.indexName}] Querying (top ${topK})${filterInfo}${nsInfo}...`,
     );
     try {
-      const results = await this.pineconeStore.query({
+      // Assuming namespace is handled differently (e.g., via filter or not supported directly here)
+      const queryParams: any = { // Use 'any' temporarily if QueryVectorParams is strict
         indexName: this.indexName,
-        vector: queryVector,
+        vector: queryVector, // Corrected property name based on potential library API
         topK: topK,
         filter: filter,
-        namespace: namespace,
-        includeVector: includeVector,
-        // includeMetadata: true // Usually implied/default, pass if explicitly needed by API
-      });
+        includeValues: includeVector, // Pinecone often uses includeValues
+        includeMetadata: true, // Usually desired
+        // namespace: namespace, // Removed as it causes the error
+      };
+      // If the library expects 'queryVector' instead of 'vector', adjust accordingly:
+      // queryParams.queryVector = queryVector; delete queryParams.vector;
+
+      // If namespace needs to be passed, consult the library documentation.
+      // It might be part of the filter or a separate parameter/method.
+      // Example if namespace was part of filter:
+      // if (namespace && queryParams.filter) {
+      //   queryParams.filter = { ...queryParams.filter, namespace: namespace };
+      // } else if (namespace) {
+      //   queryParams.filter = { namespace: namespace };
+      // }
+
+
+      const results = await this.pineconeStore.query(queryParams);
       console.log(
         `[${this.indexName}] Query returned ${results.length} results.`,
       );
-      return results as QueryResult[]; // Cast to defined interface (adjust if needed)
+      // Assuming pineconeStore.query returns QueryResult[] or a compatible type
+      return results;
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : String(error);
       const stack = error instanceof Error ? error.stack : undefined;

@@ -47,7 +47,6 @@
     "@mastra/firecrawl": "^1.1.14",
     "@mastra/loggers": "^0.1.14",
     "@mastra/mcp": "^0.3.6",
-    "@mastra/mem0": "^0.0.1",
     "@mastra/memory": "^0.2.6",
     "@mastra/pg": "^0.2.6",
     "@mastra/pinecone": "^0.2.4",

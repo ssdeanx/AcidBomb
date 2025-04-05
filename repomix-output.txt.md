@@ -45,7 +45,7 @@ The content is organized as follows:
 
 ```
 apps/web/app/dashboard/
-packages/api/src/graphql/
+packages/api/prisma/migrations/
 packages/api/src/trpc/
 packages/ui/src/dashboard/
 .cursor/mcp.json
@@ -133,6 +133,9 @@ packages/api/.prettierrc.js
 packages/api/mastra.config.ts
 packages/api/package.json
 packages/api/README.md
+packages/api/scripts/run-prisma-migrate.ts
+packages/api/scripts/validate-env.ts
+packages/api/scripts/verify-db-connection.ts
 packages/api/src/controllers/agents/agent.controller.ts
 packages/api/src/controllers/agents/agent.service.ts
 packages/api/src/database/client.ts
@@ -141,6 +144,7 @@ packages/api/src/database/migrations/001_initial_schema.sql
 packages/api/src/database/migrations/002_create_links_table.sql
 packages/api/src/database/supabase.ts
 packages/api/src/database/upstash.ts
+packages/api/src/graphql/schema.ts
 packages/api/src/index.ts
 packages/api/src/links/dto/create-agent.dto.ts
 packages/api/src/links/dto/create-link.dto.ts
@@ -151,15 +155,21 @@ packages/api/src/links/entities/link.entity.ts
 packages/api/src/mastra/agents/index.ts
 packages/api/src/mastra/evaluation/langsmith.ts
 packages/api/src/mastra/index.ts
+packages/api/src/mastra/integrations/graphQLIntegration.ts
+packages/api/src/mastra/services/agent-service.ts
 packages/api/src/mastra/services/database.ts
+packages/api/src/mastra/services/redis-cache.ts
 packages/api/src/mastra/services/store-embeddings.ts
+packages/api/src/mastra/services/upstash.ts
 packages/api/src/mastra/services/vector-store.ts
 packages/api/src/mastra/tools/document.ts
 packages/api/src/mastra/tools/graphrag.ts
 packages/api/src/mastra/tools/index.ts
+packages/api/src/mastra/tools/summarizer.ts
 packages/api/src/mastra/tools/vectorquery.ts
 packages/api/src/mastra/tools/weatherInfo.ts
-packages/api/src/mastra/workflows.ts/index.ts
+packages/api/src/mastra/workflows/index.ts
+packages/api/src/mastra/workflows/ragWorkflow.ts
 packages/api/src/supabase/guard.ts
 packages/api/src/supabase/supabase-auth.guard.ts
 packages/api/src/utils/env.ts
@@ -1969,6 +1979,100 @@ import RootPage from '../app/page';
 /** @type {import("prettier").Config} */
 ````
 
+## File: packages/api/scripts/run-prisma-migrate.ts
+
+````typescript
+import { spawn } from 'child_process';
+⋮----
+import { getEnvVar } from '../src/utils/env';
+⋮----
+/**
+ * Runs prisma migrate dev command with timeout
+ * This helps prevent indefinite hanging on connection issues
+ *
+ * @param migrationName - Name for the migration
+ * @param timeoutMs - Timeout in milliseconds
+ * @returns Promise that resolves when the command completes
+ */
+function runPrismaMigrate(migrationName: string, timeoutMs = 30000): Promise<void>
+⋮----
+// Ensure DATABASE_URL is available
+⋮----
+// Create temporary .env file for this run if it doesn't exist
+⋮----
+// Setup timeout
+⋮----
+// Run the command
+⋮----
+// Get migration name from command line arguments or use default
+⋮----
+// Run the migration
+````
+
+## File: packages/api/scripts/validate-env.ts
+
+````typescript
+import fs from 'fs';
+import path from 'path';
+import { getEnvVar } from '../src/utils/env';
+⋮----
+/**
+ * Validates and creates a .env file for Prisma
+ * Ensures that required environment variables are set
+ *
+ * @returns void
+ * @throws Error if required environment variables are missing
+ */
+function validateAndCreateEnv(): void
+⋮----
+// Get DATABASE_URL from environment or utility
+⋮----
+// Check if the database URL is properly formatted
+⋮----
+// Create .env file in the Prisma directory
+⋮----
+// Execute the function
+````
+
+## File: packages/api/scripts/verify-db-connection.ts
+
+````typescript
+import { Client, QueryResult } from 'pg';
+import { getEnvVar } from '../src/utils/env';
+⋮----
+/**
+ * Interface representing database version query result
+ */
+interface VersionResult {
+  version: string;
+}
+⋮----
+/**
+ * Verifies connection to the PostgreSQL database
+ * This helps diagnose connection issues before running Prisma commands
+ *
+ * @throws Error if connection fails or if required extensions are missing
+ */
+async function verifyDatabaseConnection(): Promise<void>
+⋮----
+// Set a reasonable timeout to avoid hanging indefinitely
+⋮----
+// Test a simple query
+⋮----
+// Safely access the version using optional chaining
+⋮----
+// Check if uuid-generate-v4 extension is available
+⋮----
+// Check for extensions.uuid_generate_v4
+⋮----
+// In case ending the connection also throws an error
+⋮----
+/**
+ * Script entry point - executes the verification function
+ * and handles process exit codes appropriately
+ */
+````
+
 ## File: packages/api/src/controllers/agents/agent.service.ts
 
 ````typescript
@@ -2526,6 +2630,13 @@ async hmget<T extends Record<string, unknown>>(
 )
 ````
 
+## File: packages/api/src/graphql/schema.ts
+
+````typescript
+import { gql } from 'graphql-tag';
+import { DocumentNode } from 'graphql';
+````
+
 ## File: packages/api/src/links/dto/create-agent.dto.ts
 
 ````typescript
@@ -2658,6 +2769,151 @@ export class Agent {
 export class Link {
 ````
 
+## File: packages/api/src/mastra/integrations/graphQLIntegration.ts
+
+````typescript
+import { PrismaClient } from '@prisma/client';
+import { getGraphData, getGraphDataWithParams } from '../tools/graphrag';
+import { typeDefs } from '../../graphql/schema';
+⋮----
+/**
+ * Executes a GraphQL query against the database using Mastra AI's GraphRAG tool
+ *
+ * @param query - The GraphQL query string to execute
+ * @returns The query result from the GraphRAG tool
+ * @throws Error if the query execution fails
+ */
+export async function executeGraphQLQuery(query: string): Promise<unknown>
+⋮----
+/**
+ * Executes a GraphQL query with parameters against the database using Mastra AI's GraphRAG tool
+ *
+ * @param query - The GraphQL query string to execute
+ * @param params - Parameters to pass to the query
+ * @returns The query result from the GraphRAG tool
+ * @throws Error if the query execution fails
+ */
+export async function executeGraphQLQueryWithParams(
+  query: string,
+  params: Record<string, unknown>,
+): Promise<unknown>
+⋮----
+/**
+ * Provides the GraphQL schema type definitions for use with GraphRAG
+ *
+ * @returns The GraphQL schema type definitions string
+ */
+export function getGraphQLSchema(): string
+⋮----
+/**
+ * Example resolver functions for the GraphQL schema
+ * These would typically be implemented in a separate file
+ * and connected to your database via Prisma
+ */
+⋮----
+// Add other resolvers here
+⋮----
+// Add other resolver objects here
+````
+
+## File: packages/api/src/mastra/services/agent-service.ts
+
+````typescript
+import { Injectable, Logger } from '@nestjs/common';
+import { mastra, agents } from '../index';
+import { ragWorkflow } from '../workflows/ragWorkflow';
+import { Agent } from '@mastra/core';
+import { getEnvVar } from '../../utils/env';
+import { mastraDb } from './database';
+⋮----
+export interface AgentResponse {
+  text: string;
+  sources?: Array<{
+    title: string;
+    url?: string;
+    snippet?: string;
+  }>;
+  metadata?: Record<string, any>;
+}
+⋮----
+/**
+ * Service for interacting with Mastra agents
+ */
+⋮----
+export class AgentService {
+⋮----
+constructor()
+⋮----
+/**
+   * Get an agent by name
+   * @param agentName Name of the agent to retrieve
+   * @returns The requested agent or undefined if not found
+   */
+getAgent(agentName: string): Agent | undefined
+⋮----
+/**
+   * Generate a response from an agent
+   * @param agentName Name of the agent to use
+   * @param userId User ID for memory context
+   * @param prompt User prompt to process
+   * @param sessionId Optional session ID for continuing conversations
+   * @returns Generated response
+   */
+async generateResponse(
+    agentName: string,
+    userId: string,
+    prompt: string,
+    sessionId?: string,
+): Promise<AgentResponse>
+⋮----
+// Generate session ID if not provided
+⋮----
+// Generate response using agent
+⋮----
+// TODO: Verify how to pass userId and sessionId if needed.
+// The 'metadata' property is not valid here according to AgentGenerateOptions.
+⋮----
+// Store conversation in database
+⋮----
+// Assuming toolsUsed information is not directly available on the response object
+// based on the type error. Adjust if the structure is different.
+⋮----
+/**
+   * Execute the RAG workflow to answer a query using the document knowledge base
+   * @param userId User ID
+   * @param query Query to process
+   * @param maxResults Maximum number of results to retrieve (default: 5)
+   * @returns Workflow execution result
+   */
+async executeRagQuery(
+    userId: string,
+    query: string,
+    maxResults: number = 5,
+): Promise<any>
+⋮----
+// Execute the workflow
+// TODO: Fix RAG workflow execution - Property 'execute' does not exist on type 'Workflow<any, ZodObject<...>>'.
+// const result = await ragWorkflow.execute({
+//   query,
+//   maxResults,
+//   generateSummary: true,
+//   userId, // Pass the userId for tracing
+// });
+⋮----
+// Placeholder until the workflow execution is fixed
+````
+
+## File: packages/api/src/mastra/services/upstash.ts
+
+````typescript
+import { Redis } from '@upstash/redis';
+⋮----
+/**
+ * Demonstrates setting and getting a value from Redis.
+ */
+async function runRedisDemo(): Promise<void>
+````
+
 ## File: packages/api/src/mastra/tools/document.ts
 
 ````typescript
@@ -2686,6 +2942,28 @@ metadata: chunks[i].metadata, // Assuming chunks have metadata
 vector: openAIEmbeddings[0], // Example: Use the embedding of the first chunk for the query
 ````
 
+## File: packages/api/src/mastra/tools/summarizer.ts
+
+````typescript
+import { createTool } from '@mastra/core';
+import { z } from 'zod';
+import { google } from '@ai-sdk/google';
+import { generateText } from 'ai';
+⋮----
+/**
+ * Tool to summarize documents or text of any length
+ * Uses the Gemini model to create concise summaries
+ */
+⋮----
+// Log the summarization request
+⋮----
+// Configure prompt based on style
+⋮----
+// Generate summary using Gemini model via generateText
+⋮----
+model: google('models/gemini-2.0-flash-latest'), // Use the correct model ID format
+````
+
 ## File: packages/api/src/mastra/tools/weatherInfo.ts
 
 ````typescript
@@ -2695,6 +2973,34 @@ import { z } from 'zod';
 const getWeatherInfo = async (city: string) =>
 ⋮----
 // Replace with an actual API call to a weather service
+````
+
+## File: packages/api/src/mastra/workflows/index.ts
+
+````typescript
+import { Workflow } from '@mastra/core';
+import { Step } from '@mastra/core';
+import { z } from 'zod';
+⋮----
+/**
+ * Defines the expected output shape for step1.
+ */
+interface Step1Output {
+  /** The processed result string. */
+  result: string;
+}
+⋮----
+/** The processed result string. */
+⋮----
+// Define the step using the Step class or a StepDefinition object
+⋮----
+// Access trigger data via context.triggerData
+⋮----
+// Perform some operation
+⋮----
+// Add the step instance to the workflow
+⋮----
+// Commit the workflow definition
 ````
 
 ## File: packages/api/src/supabase/guard.ts
@@ -8335,6 +8641,19 @@ import { createLogger } from '@mastra/core';
 // ... other config
 ````
 
+## File: packages/api/src/mastra/services/redis-cache.ts
+
+````typescript
+import { Index } from '@upstash/vector';
+⋮----
+/**
+ * Main function to demonstrate Upstash Vector operations.
+ */
+async function main()
+⋮----
+// Execute the main function
+````
+
 ## File: packages/api/src/mastra/services/vector-store.ts
 
 ````typescript
@@ -8496,54 +8815,110 @@ async deleteVectors(
 // Export singleton instance
 ````
 
-## File: packages/api/src/mastra/tools/graphrag.ts
+## File: packages/api/src/mastra/workflows/ragWorkflow.ts
 
 ````typescript
-import { google } from '@ai-sdk/google';
-import { createGraphRAGTool } from '@mastra/rag';
-⋮----
-export const getGraphDataWithParams = async (query, params) =>
-⋮----
-export const getGraphData = async (query) =>
-````
-
-## File: packages/api/src/mastra/tools/vectorquery.ts
-
-````typescript
-import { google } from '@ai-sdk/google';
-import { createVectorQueryTool } from '@mastra/rag';
-⋮----
-export const executeQuery = async (query, params) =>
-⋮----
-export const executeQueryWithParams = async (query, params) =>
-````
-
-## File: packages/api/src/mastra/workflows.ts/index.ts
-
-````typescript
-import { Workflow } from '@mastra/core';
-import { Step } from '@mastra/core';
+import { Workflow, Step } from '@mastra/core';
 import { z } from 'zod';
+import { generateText } from 'ai';
+import { google } from '@ai-sdk/google';
+import queryTool from '../tools/vectorquery';
+import { summarizeTool } from '../tools/summarizer';
+import { mastraDb } from '../services/database';
 ⋮----
 /**
- * Defines the expected output shape for step1.
+ * RAG workflow that retrieves relevant documents and generates a response
+ * based on those documents along with a summary
  */
-interface Step1Output {
-  /** The processed result string. */
-  result: string;
-}
 ⋮----
-/** The processed result string. */
+// Step 1: Query the vector database
 ⋮----
-// Define the step using the Step class or a StepDefinition object
+// Check if the query tool and its execute method are available
 ⋮----
-// Access trigger data via context.triggerData
+// Use the query tool to search for relevant documents, passing parameters within the context object
 ⋮----
-// Perform some operation
+// Add retry configuration for network issues
 ⋮----
-// Add the step instance to the workflow
+// Step 2: Generate a response based on query and retrieved documents
 ⋮----
-// Commit the workflow definition
+// Define the shape of a source document extracted from results
+interface SourceDocument {
+      content: string;
+      source: string;
+      score: number;
+    }
+⋮----
+// Get the previous step result safely
+⋮----
+// Check if the previous step exists and was successful
+⋮----
+// We can safely access the output now that we've verified the status
+⋮----
+// Ensure results is treated as an array, provide default empty array if not
+⋮----
+// Extract text content from results, explicitly typing the array and handling potential 'any' from results
+⋮----
+// Provide default values more safely
+⋮----
+// Format documents for context
+⋮----
+// Build prompt with proper context
+⋮----
+// Use generateText with Gemini for response generation
+⋮----
+}); // Correctly close the generateText call object
+⋮----
+// Return the generated response and source details
+⋮----
+response: responseText, // Use the generated text
+⋮----
+sources: sources.map((source: SourceDocument) => ({ // Map sources to the output schema shape
+⋮----
+content: // Truncate content for the output
+⋮----
+// Step 3: Generate summary (conditional)
+⋮----
+// Get the generate-response step result safely
+⋮----
+// Check if the previous step exists and was successful
+⋮----
+// Access the response from the successful step
+⋮----
+// Check if summarizeTool and its execute method are defined before using it
+⋮----
+// Define the expected shape of the summarize tool's result
+interface SummarizeResult {
+        summary?: string;
+        error?: string;
+        // Include other potential fields if necessary
+      }
+⋮----
+// Include other potential fields if necessary
+⋮----
+// CORRECT: Need to pass parameters as the context object
+// Now safe to call execute as we've checked summarizeTool
+⋮----
+})) as SummarizeResult; // Assert the type here
+⋮----
+// Step 4: Combine results
+⋮----
+// Safely access the response step
+⋮----
+// Default values in case steps weren't successful
+⋮----
+// Extract response information if available
+⋮----
+// Extract summary if available and requested
+⋮----
+// Optional: Store usage data for the user
+⋮----
+// Log but don't interrupt workflow
+⋮----
+// Non-critical error, just log
+⋮----
+// Define workflow sequence
+⋮----
+// Commit the workflow
 ````
 
 ## File: packages/eslint-config/prettier-base.js
@@ -9856,6 +10231,37 @@ import { google } from '@ai-sdk/google';
 /**
  * This file (`apps/web/src/mastra/index.ts`) configures Mastra for the web frontend. It correctly re-exports the `useAgent` hook, which is used to communicate with agents defined on your backend API (like in `#document:/c:/Users/dm/Documents/Deanmachines/packages/api/src/mastra/index.ts`). Agent definitions are not needed in this frontend configuration file. The `useAgent` hook handles the API calls to interact with those backend agents. No changes are required here.
  */
+````
+
+## File: packages/api/src/mastra/tools/graphrag.ts
+
+````typescript
+import { google } from '@ai-sdk/google';
+import { createGraphRAGTool } from '@mastra/rag';
+⋮----
+export const getGraphDataWithParams = async (
+  query: string,
+  params: Record<string, unknown>,
+): Promise<unknown> =>
+⋮----
+export const getGraphData = async (query: string): Promise<unknown> =>
+````
+
+## File: packages/api/src/mastra/tools/vectorquery.ts
+
+````typescript
+import { google } from '@ai-sdk/google';
+import { createVectorQueryTool } from '@mastra/rag';
+⋮----
+export const executeQuery = async (
+  query: string,
+  params: Record<string, unknown>,
+): Promise<unknown> =>
+⋮----
+export const executeQueryWithParams = async (
+  query: string,
+  params: Record<string, unknown>,
+): Promise<unknown> =>
 ````
 
 ## File: packages/ui/README.md
@@ -12339,104 +12745,6 @@ const handleClear = (event: React.MouseEvent<HTMLButtonElement>) =>
 const handleTogglePassword = () =>
 ````
 
-## File: packages/api/src/controllers/agents/agent.controller.ts
-
-````typescript
-import {
-
-// filepath: c:\Users\dm\Documents\Deanmachines\packages\api\src\controllers\agents\agent.controller.ts
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  ParseIntPipe,
-} from '@nestjs/common';
-⋮----
-// filepath: c:\Users\dm\Documents\Deanmachines\packages\api\src\controllers\agents\agent.controller.ts
-⋮----
-// Assume AgentService, CreateAgentDto, UpdateAgentDto will be created later
-// import { AgentService } from './agent.service';
-// import { CreateAgentDto } from './dto/create-agent.dto';
-// import { UpdateAgentDto } from './dto/update-agent.dto';
-⋮----
-/**
- * Controller for managing AI agents.
- * Provides endpoints for creating, retrieving, updating, and deleting agents.
- */
-⋮----
-export class AgentController {
-⋮----
-// Inject AgentService once it's created
-// constructor(private readonly agentService: AgentService) {}
-⋮----
-/**
-   * Creates a new agent.
-   * @param createAgentDto - Data transfer object containing agent creation data.
-   * @returns A confirmation message or the created agent details.
-   */
-⋮----
-create(@Body() createAgentDto: /* CreateAgentDto */ unknown) {
-// Replace with actual service call
-⋮----
-// return this.agentService.create(createAgentDto);
-⋮----
-/**
-   * Retrieves all agents.
-   * @returns A list of all agents.
-   */
-⋮----
-findAll()
-⋮----
-// Replace with actual service call
-⋮----
-// return this.agentService.findAll();
-⋮----
-/**
-   * Retrieves a specific agent by its ID.
-   * @param id - The ID of the agent to retrieve.
-   * @returns The details of the specified agent.
-   */
-⋮----
-findOne(@Param('id', ParseIntPipe) id: number)
-⋮----
-// Replace with actual service call
-⋮----
-// return this.agentService.findOne(id);
-⋮----
-/**
-   * Updates an existing agent.
-   * @param id - The ID of the agent to update.
-   * @param updateAgentDto - Data transfer object containing agent update data.
-   * @returns A confirmation message or the updated agent details.
-   */
-⋮----
-update(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() updateAgentDto: /* UpdateAgentDto */ unknown,
-)
-⋮----
-@Body() updateAgentDto: /* UpdateAgentDto */ unknown,
-⋮----
-// Replace with actual service call
-⋮----
-// return this.agentService.update(id, updateAgentDto);
-⋮----
-/**
-   * Deletes an agent.
-   * @param id - The ID of the agent to delete.
-   * @returns A confirmation message.
-   */
-⋮----
-remove(@Param('id', ParseIntPipe) id: number)
-⋮----
-// Replace with actual service call
-⋮----
-// return this.agentService.remove(id);
-````
-
 ## File: packages/api/src/mastra/evaluation/langsmith.ts
 
 ````typescript
@@ -12628,237 +12936,6 @@ return null; // Indicate failure
 /**
  * Export the LangSmith integration functions
  */
-````
-
-## File: packages/api/src/mastra/services/database.ts
-
-````typescript
-/**
- * Database service for Mastra
- * Provides database access for agents and tools
- *
- * @module packages/api/src/mastra/services/database
- */
-⋮----
-import { createLogger, LogLevel } from '@mastra/core';
-import { createId } from '@paralleldrive/cuid2';
-import { EmbeddingModel } from 'ai';
-import {
-  EmbeddingStoreService,
-  Document,
-  EmbeddingModelInterface,
-} from './store-embeddings';
-import { getEnvVar } from '../../utils/env';
-import { db, vectorOperations, redisOperations } from '../../database';
-⋮----
-// Logger for database operations
-⋮----
-/**
- * Message format for storing conversations
- */
-export interface MessageData {
-  role: 'user' | 'assistant' | 'system';
-  content: string;
-  metadata?: Record<string, any>;
-}
-⋮----
-/**
- * Database service for Mastra agents
- */
-export class MastraDatabase
-⋮----
-constructor()
-⋮----
-/**
-   * Initialize the embedding service with a model
-   * Called after models are available
-   *
-   * @param embeddingModel - The embedding model to use
-   */
-initEmbeddingService(embeddingModel: EmbeddingModel<number[]>): void
-⋮----
-// Create the embedding service instance
-⋮----
-// Create an adapter that maps the EmbeddingModel to our EmbeddingModelInterface
-⋮----
-// Convert the text string to a number array format
-// This is a simple encoding approach - each character gets converted to its numeric code
-⋮----
-// The AI package has a different method signature
-// Use doEmbed instead of embed, and format the parameters correctly
-⋮----
-values: [numericInput], // The API expects an array of number arrays
-⋮----
-// Return the first result from the embedding model
-⋮----
-// Set the adapted embedding model before initialization
-⋮----
-// Initialize the service
-⋮----
-// Similar adapter update for the existing service case
-⋮----
-/**
-   * Store a conversation in the database
-   *
-   * @param userId - User ID for the conversation
-   * @param agentId - Agent ID that handled the conversation
-   * @param messages - Array of messages in the conversation
-   * @returns The conversation ID
-   */
-async storeConversation(
-    userId: string,
-    agentId: string,
-    messages: MessageData[],
-): Promise<string>
-⋮----
-// Create conversation metadata (could store in Redis/Supabase)
-⋮----
-// Log the conversation storage
-⋮----
-// TODO: Implement actual storage in database
-// This would typically use Supabase or another database client
-⋮----
-// Also store the conversation content in vector store for semantic search
-⋮----
-/**
-   * Store conversation messages as embeddings in the vector store
-   *
-   * @param conversationId - ID of the conversation
-   * @param userId - User ID associated with the conversation
-   * @param agentId - Agent ID that handled the conversation
-   * @param messages - Array of messages to store
-   */
-async storeConversationEmbeddings(
-    conversationId: string,
-    userId: string,
-    agentId: string,
-    messages: MessageData[],
-): Promise<void>
-⋮----
-// Skip if embedding service isn't initialized
-⋮----
-// Prepare documents for embedding
-⋮----
-// Process and store each document individually
-// TODO: Consider batching if EmbeddingStoreService supports it for efficiency
-⋮----
-// Assuming processAndStoreDocument exists and handles chunking internally
-// Pass chunk options if the method accepts them, otherwise remove them.
-// Adjust based on the actual signature of processAndStoreDocument.
-⋮----
-doc /*, { chunkSize: 500, chunkOverlap: 100 } */,
-⋮----
-// Decide whether to continue or stop on partial failure
-⋮----
-// Don't throw, just log - this is a non-critical operation
-⋮----
-/**
-   * Store document embeddings in vector store
-   *
-   * @param userId - User ID associated with the document
-   * @param document - Document content and metadata
-   * @returns ID of the stored document
-   */
-async storeDocument(userId: string, document: Document): Promise<string[]>
-⋮----
-// Skip if embedding service isn't initialized
-⋮----
-// Add user ID to metadata
-⋮----
-// Process and store the document
-⋮----
-/**
-   * Search for similar content in the vector store
-   *
-   * @param query - Query text to find similar content
-   * @param userId - Optional user ID to filter results
-   * @param topK - Maximum number of results to return
-   * @returns Array of similar document chunks
-   */
-async searchSimilarContent(
-    query: string,
-    userId?: string,
-    topK: number = 5,
-): Promise<any[]>
-⋮----
-// Skip if embedding service isn't initialized
-⋮----
-// Build filter for the query
-⋮----
-// Query the vector store
-⋮----
-return []; // Return empty array on error, don't break the flow
-⋮----
-/**
-   * Store embeddings in vector store
-   */
-async storeEmbeddings(
-    documents: Array<{
-      id: string;
-      vector: number[];
-      metadata: {
-        documentId: string;
-        title: string;
-        source: string;
-        type: 'document' | 'conversation' | 'memory';
-        userId?: string;
-        createdAt: string;
-      };
-    }>,
-)
-⋮----
-/**
-   * Query similar embeddings
-   */
-async querySimilar(vector: number[], topK = 5)
-⋮----
-/**
-   * Store memory in Redis
-   */
-async storeMemory(key: string, memory: unknown, ttlSeconds?: number)
-⋮----
-/**
-   * Retrieve memory from Redis
-   */
-async getMemory<T>(key: string): Promise<T | null>
-⋮----
-/**
-   * Delete memory from Redis
-   */
-async deleteMemory(key: string)
-⋮----
-/**
-   * Get user preferences
-   */
-async getUserPreferences(userId: string)
-⋮----
-/**
-   * Get user conversations
-   */
-async getUserConversations(userId: string, limit = 10)
-⋮----
-// Export singleton instance
-````
-
-## File: packages/api/tsconfig.json
-
-````json
-{
-  "extends": "../typescript-config/nestjs.json", // Adjusted path assuming typescript-config is a sibling package
-  "compilerOptions": {
-    "allowJs": true,
-    "jsx": "react-jsx",
-    "baseUrl": "src", // Changed from "src" to "." to reflect root structure
-    "esModuleInterop": true,
-    "incremental": false,
-    "outDir": "dist",
-    "strict": true,
-    "module": "esnext", // Allow top-level await
-    "target": "esnext" // Ensure target is ES2017 or higher
-  },
-  "include": ["src/mastra/index.ts", "mastra.config.ts", "src"], // Added index.tsx and Drizzle/** pattern
-  "exclude": ["node_modules", "test", "dist", "**/*spec.ts"]
-}
 ````
 
 ## File: packages/ui/src/footer.tsx
@@ -13255,60 +13332,6 @@ UPSTASH_INDEX="<upstash_index>"
 FIRECRAWL_KEY="<firecrawl_key>"
 ````
 
-## File: apps/api/package.json
-
-````json
-{
-  "name": "api",
-  "version": "0.0.2",
-  "private": true,
-  "scripts": {
-    "dev": "nest start --watch",
-    "build": "nest build",
-    "start": "nest start",
-    "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/main",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json",
-    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\""
-  },
-  "dependencies": {
-    "@mastra/core": "^0.7.0",
-    "@nestjs/common": "^11.0.12",
-    "@nestjs/core": "^11.0.12",
-    "@nestjs/platform-express": "^11.0.12",
-    "@repo/api": "workspace:*",
-    "ai": "^4.2.10",
-    "class-transformer": "^0.5.1",
-    "class-validator": "^0.14.1",
-    "reflect-metadata": "^0.2.2",
-    "rxjs": "^7.8.2"
-  },
-  "devDependencies": {
-    "@jest/globals": "^29.7.0",
-    "@nestjs/cli": "^11.0.5",
-    "@nestjs/schematics": "^11.0.2",
-    "@nestjs/testing": "^11.0.12",
-    "@repo/eslint-config": "workspace:*",
-    "@repo/jest-config": "workspace:*",
-    "@repo/typescript-config": "workspace:*",
-    "@types/express": "^5.0.1",
-    "@types/node": "^22.14.0",
-    "@types/supertest": "^6.0.3",
-    "jest": "^29.7.0",
-    "source-map-support": "^0.5.21",
-    "supertest": "^7.1.0",
-    "ts-jest": "^29.3.1",
-    "ts-loader": "^9.5.2",
-    "ts-node": "^10.9.2",
-    "tsconfig-paths": "^4.2.0",
-    "typescript": "5.8.2"
-  }
-}
-````
-
 ## File: apps/web/app/layout.tsx
 
 ````typescript
@@ -13319,6 +13342,344 @@ import { ThemeProvider } from '@repo/ui/ThemeProvider';
 import { AppBar } from '@repo/ui/Appbar';
 ⋮----
 export default function RootLayout(
+````
+
+## File: packages/api/src/controllers/agents/agent.controller.ts
+
+````typescript
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  UseGuards,
+  HttpException,
+  HttpStatus,
+  ParseIntPipe,
+  Query,
+} from '@nestjs/common';
+import { AgentService, AgentResponse } from '../../mastra/services/agent-service';
+import { CreateAgentDto } from '../../links/dto/create-agent.dto';
+import { UpdateAgentDto } from '../../links/dto/update-agent.dto';
+import { Agent } from '../../links/entities/agent.entity';
+⋮----
+interface GenerateResponseDto {
+  prompt: string;
+  userId: string;
+  sessionId?: string;
+}
+⋮----
+interface RagQueryDto {
+  query: string;
+  userId: string;
+  maxResults?: number;
+}
+⋮----
+/**
+ * Controller for managing and interacting with AI agents
+ */
+⋮----
+export class AgentController {
+⋮----
+constructor(
+⋮----
+/**
+   * Create a new agent configuration
+   * @param createAgentDto Data for creating the agent
+   * @returns The created agent configuration
+   */
+⋮----
+async create(@Body() createAgentDto: CreateAgentDto): Promise<Agent>
+⋮----
+// In a real implementation, you would save to database
+// and possibly register with Mastra
+⋮----
+/**
+   * Retrieve all available agents
+   * @returns List of all agents' names
+   */
+⋮----
+async findAll(): Promise<string[]>
+⋮----
+// Return the names of available agents from the Mastra configuration
+// Assuming AgentService has a method like findAllAgents() that returns Promise<Agent[]>
+// You might need to implement findAllAgents() in AgentService
+const agents: Agent[] = await this.agentService.findAllAgents(); // Hypothetical method
+⋮----
+/**
+   * Generate a response from a specific agent
+   * @param agentName Name of the agent to use
+   * @param body Request body containing the prompt and user ID
+   * @returns Generated response from the agent
+   */
+⋮----
+async generateResponse(
+    @Param('agentName') agentName: string,
+    @Body() body: GenerateResponseDto,
+): Promise<AgentResponse>
+⋮----
+/**
+   * Execute a RAG query to search and answer based on the knowledge base
+   * @param body Request body containing the query and user ID
+   * @returns Query results with response and sources
+   */
+⋮----
+async executeRagQuery(@Body() body: RagQueryDto)
+````
+
+## File: packages/api/src/mastra/services/database.ts
+
+````typescript
+/**
+ * Database service for Mastra
+ * Provides database access for agents and tools
+ *
+ * @module packages/api/src/mastra/services/database
+ */
+⋮----
+import { createLogger, LogLevel } from '@mastra/core';
+import { createId } from '@paralleldrive/cuid2';
+import { EmbeddingModel } from 'ai';
+import {
+  EmbeddingStoreService,
+  Document,
+  EmbeddingModelInterface,
+} from './store-embeddings';
+import { getEnvVar } from '../../utils/env';
+import { db, vectorOperations, redisOperations } from '../../database';
+⋮----
+// Logger for database operations
+⋮----
+/**
+ * Message format for storing conversations
+ */
+export interface MessageData {
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+  metadata?: Record<string, any>;
+}
+⋮----
+/**
+ * Database service for Mastra agents
+ */
+export class MastraDatabase
+⋮----
+constructor()
+⋮----
+/**
+   * Initialize the embedding service with a model
+   * Called after models are available
+   *
+   * @param embeddingModel - The embedding model to use
+   */
+initEmbeddingService(embeddingModel: any): void
+⋮----
+// Create the embedding service instance
+⋮----
+// Create an adapter that maps the EmbeddingModel to our EmbeddingModelInterface
+⋮----
+// Use the appropriate embedding method for Google's model
+⋮----
+values: [text], // The model expects an array of strings
+⋮----
+// Extract the embedding from the response
+⋮----
+// Set the adapted embedding model before initialization
+⋮----
+// Initialize the service
+⋮----
+/**
+   * Store a conversation in the database
+   *
+   * @param userId - User ID for the conversation
+   * @param agentId - Agent ID that handled the conversation
+   * @param messages - Array of messages in the conversation
+   * @returns The conversation ID
+   */
+async storeConversation(
+    userId: string,
+    agentId: string,
+    messages: MessageData[],
+): Promise<string>
+⋮----
+// Create conversation metadata (could store in Redis/Supabase)
+⋮----
+// Log the conversation storage
+⋮----
+// TODO: Implement actual storage in database
+// This would typically use Supabase or another database client
+⋮----
+// Also store the conversation content in vector store for semantic search
+⋮----
+/**
+   * Store conversation messages as embeddings in the vector store
+   *
+   * @param conversationId - ID of the conversation
+   * @param userId - User ID associated with the conversation
+   * @param agentId - Agent ID that handled the conversation
+   * @param messages - Array of messages to store
+   */
+async storeConversationEmbeddings(
+    conversationId: string,
+    userId: string,
+    agentId: string,
+    messages: MessageData[],
+): Promise<void>
+⋮----
+// Skip if embedding service isn't initialized
+⋮----
+// Prepare documents for embedding
+⋮----
+// Process and store each document individually
+// TODO: Consider batching if EmbeddingStoreService supports it for efficiency
+⋮----
+// Assuming processAndStoreDocument exists and handles chunking internally
+// Pass chunk options if the method accepts them, otherwise remove them.
+// Adjust based on the actual signature of processAndStoreDocument.
+⋮----
+doc /*, { chunkSize: 500, chunkOverlap: 100 } */,
+⋮----
+// Decide whether to continue or stop on partial failure
+⋮----
+// Don't throw, just log - this is a non-critical operation
+⋮----
+/**
+   * Store document embeddings in vector store
+   *
+   * @param userId - User ID associated with the document
+   * @param document - Document content and metadata
+   * @returns ID of the stored document
+   */
+async storeDocument(userId: string, document: Document): Promise<string[]>
+⋮----
+// Skip if embedding service isn't initialized
+⋮----
+// Add user ID to metadata
+⋮----
+// Process and store the document
+⋮----
+/**
+   * Search for similar content in the vector store
+   *
+   * @param query - Query text to find similar content
+   * @param userId - Optional user ID to filter results
+   * @param topK - Maximum number of results to return
+   * @returns Array of similar document chunks
+   */
+async searchSimilarContent(
+    query: string,
+    userId?: string,
+    topK: number = 5,
+): Promise<any[]>
+⋮----
+// Skip if embedding service isn't initialized
+⋮----
+// Build filter for the query
+⋮----
+// Query the vector store
+⋮----
+return []; // Return empty array on error, don't break the flow
+⋮----
+/**
+   * Store embeddings in vector store
+   */
+async storeEmbeddings(
+    documents: Array<{
+      id: string;
+      vector: number[];
+      metadata: {
+        documentId: string;
+        title: string;
+        source: string;
+        type: 'document' | 'conversation' | 'memory';
+        userId?: string;
+        createdAt: string;
+      };
+    }>,
+)
+⋮----
+/**
+   * Query similar embeddings
+   */
+async querySimilar(vector: number[], topK = 5)
+⋮----
+/**
+   * Store memory in Redis
+   */
+async storeMemory(key: string, memory: unknown, ttlSeconds?: number)
+⋮----
+/**
+   * Retrieve memory from Redis
+   */
+async getMemory<T>(key: string): Promise<T | null>
+⋮----
+/**
+   * Delete memory from Redis
+   */
+async deleteMemory(key: string)
+⋮----
+/**
+   * Get user preferences
+   */
+async getUserPreferences(userId: string)
+⋮----
+/**
+   * Get user conversations
+   */
+async getUserConversations(userId: string, limit = 10)
+⋮----
+// Export singleton instance
+````
+
+## File: packages/api/tsconfig.json
+
+````json
+{
+  "extends": "../typescript-config/nestjs.json", // Adjusted path assuming typescript-config is a sibling package
+  "compilerOptions": {
+    "allowJs": true,
+    "jsx": "react-jsx",
+    "baseUrl": "src", // Changed from "src" to "." to reflect root structure
+    "esModuleInterop": true,
+    "incremental": false,
+    "outDir": "dist",
+    "strict": true,
+    "module": "NodeNext", // Required when moduleResolution is NodeNext
+    "target": "esnext", // Ensure target is ES2017 or higher
+
+    // Added configurations for better type handling
+    "moduleResolution": "NodeNext",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "allowSyntheticDefaultImports": true,
+    "noImplicitAny": true,
+    "noUncheckedIndexedAccess": true,
+    "strictNullChecks": true,
+    "paths": {
+      "*": ["*", "../node_modules/*"],
+      "@prisma/client": ["../node_modules/@prisma/client"],
+      "@prisma/client/*": ["../node_modules/@prisma/client/*"],
+      ".prisma/*": ["../prisma/*"],
+      "prisma/*": ["../prisma/*"]
+    },
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src/types"
+    ]
+  },
+  "include": [
+    "src/mastra/index.ts",
+    "mastra.config.ts",
+    "src",
+    "scripts/**/*", // Added scripts directory for utility scripts
+    "prisma/**/*" // Added prisma directory for schema and generated files
+  ],
+  "exclude": ["node_modules", "test", "dist", "**/*spec.ts"]
+}
 ````
 
 ## File: packages/eslint-config/package.json
@@ -13341,9 +13702,135 @@ export default function RootLayout(
     "@typescript-eslint/parser": "^8.29.0",
     "@vercel/style-guide": "^6.0.0",
     "eslint-config-prettier": "^10.1.1",
-    "eslint-config-turbo": "^2.4.4",
+    "eslint-config-turbo": "^2.5.0",
     "eslint-plugin-only-warn": "^1.1.0",
     "eslint-plugin-prettier": "^5.2.6",
+    "typescript": "5.8.2"
+  }
+}
+````
+
+## File: packages/api/src/mastra/agents/index.ts
+
+````typescript
+/**
+ * Mastra agents implementation.
+ * Provides chat and specialized agents using Gemini as the model provider.
+ *
+ * @module packages/api/src/mastra/agents
+ */
+⋮----
+import { Agent } from '@mastra/core';
+import { createLogger } from '@mastra/core';
+⋮----
+import { summarizeTool } from '../tools/summarizer';
+⋮----
+// Import model and memory from index after it's initialized there
+// We'll import these later since we need to avoid circular dependencies
+⋮----
+/**
+ * Base system instructions for the general-purpose chat agent
+ */
+⋮----
+/**
+ * System instructions for a specialized search agent that provides factual information
+ */
+⋮----
+/**
+ * System instructions for a specialized coding assistant
+ */
+⋮----
+/**
+ * System instructions for a research assistant that uses RAG capabilities
+ */
+⋮----
+/**
+ * Initialize agents with model and memory after they are created
+ * This avoids circular dependencies between agents and index
+ */
+export const initializeAgents = (model, memory, toolSet) =>
+⋮----
+/**
+ * Export empty agents object to be populated by initializeAgents
+ * This avoids circular dependencies
+ */
+````
+
+## File: packages/api/src/mastra/tools/index.ts
+
+````typescript
+import { createDocumentChunkerTool, MDocument } from '@mastra/rag';
+⋮----
+docs: [{ // Wrap document content in the 'docs' array
+⋮----
+type: 'text', // Add the required 'type' property
+⋮----
+/**
+ * Executes the document chunker tool.
+ * @returns A promise that resolves with the document chunks.
+ * @throws Error if the chunker execute function is not available.
+ */
+async function runChunker(): Promise<unknown>
+⋮----
+console.log('Document chunks:', chunks); // Example usage
+⋮----
+// Invoke the async function
+⋮----
+process.exit(1); // Exit with error code if chunking fails
+````
+
+## File: apps/api/package.json
+
+````json
+{
+  "name": "api",
+  "version": "0.0.2",
+  "private": true,
+  "scripts": {
+    "dev": "nest start --watch",
+    "build": "nest build",
+    "start": "nest start",
+    "start:debug": "nest start --debug --watch",
+    "start:prod": "node dist/main",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\""
+  },
+  "peerDependencies": {
+    "@repo/api": "*"
+  },
+  "dependencies": {
+    "@mastra/core": "^0.7.0",
+    "@nestjs/common": "^11.0.13",
+    "@nestjs/core": "^11.0.13",
+    "@nestjs/platform-express": "^11.0.13",
+    "@repo/api": "workspace:*",
+    "ai": "^4.3.1",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.1",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2"
+  },
+  "devDependencies": {
+    "@jest/globals": "^29.7.0",
+    "@nestjs/cli": "^11.0.6",
+    "@nestjs/schematics": "^11.0.3",
+    "@nestjs/testing": "^11.0.13",
+    "@repo/eslint-config": "workspace:*",
+    "@repo/jest-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@types/express": "^5.0.1",
+    "@types/node": "^22.14.0",
+    "@types/supertest": "^6.0.3",
+    "jest": "^29.7.0",
+    "source-map-support": "^0.5.21",
+    "supertest": "^7.1.0",
+    "ts-jest": "^29.3.1",
+    "ts-loader": "^9.5.2",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "5.8.2"
   }
 }
@@ -13377,9 +13864,9 @@ export default function RootLayout(
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "prettier": "^3.5.3",
-    "turbo": "^2.4.4"
+    "turbo": "^2.5.0"
   },
-  "packageManager": "pnpm@8.15.5",
+  "packageManager": "pnpm@10.7.1+sha512.2d92c86b7928dc8284f53494fb4201f983da65f0fb4f0d40baafa5cf628fa31dae3e5968f12466f17df7e97310e30f343a648baea1b9b350685dafafffdf5808",
   "engines": {
     "node": ">=18"
   },
@@ -13387,71 +13874,67 @@ export default function RootLayout(
     "overrides": {
       "pathe": "^1.1.2",
       "pg": "^8.12.0",
-      "@opentelemetry/api": ">=1.0.0 <1.8.0"
-    }
+      "@opentelemetry/api": ">=1.0.0 <1.8.0",
+      "@anthropic-ai/sdk": "^0.18.0",
+      "@types/pg": "^8.11.0",
+      "groq-sdk": "0.3.0",
+      "eslint": "^8.56.0"
+    },
+    "onlyBuiltDependencies": [
+      "@nestjs/core",
+      "@parcel/watcher",
+      "@prisma/client",
+      "@swc/core",
+      "canvas",
+      "core-js-pure",
+      "es5-ext",
+      "esbuild",
+      "onnxruntime-node",
+      "protobufjs",
+      "sharp",
+      "sqlite3",
+      "supabase",
+      "tree-sitter"
+    ]
   }
 }
-````
-
-## File: packages/api/src/mastra/agents/index.ts
-
-````typescript
-/**
- * Mastra agents implementation.
- * Provides chat and specialized agents using Gemini as the model provider.
- *
- * @module packages/api/src/mastra/agents
- */
-⋮----
-import { Agent } from '@mastra/core';
-import { createLogger } from '@mastra/core';
-⋮----
-// Import model and memory from index after it's initialized there
-// We'll import these later since we need to avoid circular dependencies
-⋮----
-/**
- * Base system instructions for the general-purpose chat agent
- */
-⋮----
-/**
- * System instructions for a specialized search agent that provides factual information
- */
-⋮----
-/**
- * System instructions for a specialized coding assistant
- */
-⋮----
-/**
- * Initialize agents with model and memory after they are created
- * This avoids circular dependencies between agents and index
- */
-export const initializeAgents = (model, memory, tools) =>
-⋮----
-/**
- * Export empty agents object to be populated by initializeAgents
- * This avoids circular dependencies
- */
-````
-
-## File: packages/api/src/mastra/tools/index.ts
-
-````typescript
-import { createDocumentChunkerTool, MDocument } from '@mastra/rag';
-⋮----
-docs: [{ // Wrap document content in the 'docs' array
-⋮----
-type: 'text', // Add the required 'type' property
 ````
 
 ## File: packages/api/src/mastra/index.ts
 
 ````typescript
-import { Mastra, Tool } from '@mastra/core';
-import { agents } from './agents';
-import { createLogger } from '@mastra/core';
+import { Mastra, Tool, createLogger, MastraMemory } from '@mastra/core';
+import { agents, initializeAgents } from './agents';
 import { getEnvVar } from '../utils/env';
+import { PineconeVector } from '@mastra/pinecone';
+import { google } from '@ai-sdk/google';
+import { weatherInfo } from './tools/weatherInfo';
+import graphTool from './tools/graphrag';
+import queryTool from './tools/vectorquery';
+import { mastraDb } from './services/database';
+import { summarizeTool } from './tools/summarizer';
 ⋮----
-// TODO: add tools here
+// Initialize embedding model
+⋮----
+// Initialize Pinecone vector store
+⋮----
+// Initialize Pinecone vector store
+⋮----
+// Initialize memory provider
+⋮----
+// Define tools before Mastra initialization
+⋮----
+// Initialize Mastra instance with proper configuration
+⋮----
+// Fix: Remove the incorrect import and type cast
+⋮----
+// Initialize agents with model, memory and tools
+⋮----
+// Fix: Use the proper method for creating a Gemini model
+⋮----
+// Initialize embedding service with model
+⋮----
+// Export agents for use in API routes
 ````
 
 ## File: turbo.json
@@ -14004,214 +14487,84 @@ Learn more about the power of Turborepo:
 
 ```mermaid
 graph TB
-    User((User))
+    User((External User))
 
     subgraph "Frontend Container"
-        direction TB
-        NextApp["Next.js App<br>(Next.js 15)"]
+        NextApp["Next.js App<br>(Next.js 15.2)"]
 
         subgraph "Frontend Components"
             AppLayout["App Layout<br>(React)"]
             ThemeProvider["Theme Provider<br>(MUI)"]
-            ChatInterface["Chat Interface<br>(React + MUI)"]
             AuthComponents["Auth Components<br>(React)"]
+            ChatInterface["Chat Interface<br>(React)"]
             DocumentationUI["Documentation UI<br>(React)"]
 
-            subgraph "Chat Components"
-                ChatMessageList["Message List<br>(React)"]
-                ChatInput["Command Input<br>(React)"]
-                ChatAgentPanel["Agent Panel<br>(React)"]
-                ChatToolsPanel["Tools Panel<br>(React)"]
+            subgraph "UI Components Library"
+                UICore["Core UI Components<br>(MUI/React)"]
+                ChatComponents["Chat Components<br>(React)"]
+                Forms["Form Components<br>(React)"]
+                Navigation["Navigation Components<br>(React)"]
             end
         end
     end
 
     subgraph "Backend Container"
-        direction TB
-        NestApp["NestJS API<br>(NestJS)"]
+        NestApp["API Server<br>(NestJS)"]
 
-        subgraph "Core Modules"
-            MastraCoreModule["Mastra Core Module<br>(NestJS)"]
+        subgraph "API Components"
+            AppModule["App Module<br>(NestJS)"]
             ChatModule["Chat Module<br>(NestJS)"]
-            LinksModule["Links Module<br>(NestJS)"]
-        end
+            MastraCore["Mastra Core Module<br>(NestJS)"]
 
-        subgraph "Agent Components"
-            AgentController["Agent Controller<br>(NestJS)"]
-            AgentService["Agent Service<br>(NestJS)"]
-            MastraAgents["Mastra Agents<br>(Custom)"]
+            subgraph "Mastra AI Components"
+                AgentService["Agent Service<br>(TypeScript)"]
+                EmbeddingService["Embedding Service<br>(TypeScript)"]
+                Tools["AI Tools<br>(TypeScript)"]
+                Workflows["AI Workflows<br>(TypeScript)"]
+            end
         end
+    end
 
-        subgraph "Database Components"
-            DatabaseClient["Database Client<br>(TypeScript)"]
-            VectorStore["Vector Store<br>(Upstash)"]
-            EmbeddingService["Embedding Service<br>(Custom)"]
-        end
+    subgraph "Data Storage Container"
+        Supabase["Database<br>(Supabase)"]
+        Redis["Cache<br>(Upstash Redis)"]
+        VectorStore["Vector Store<br>(Upstash Vector)"]
     end
 
     subgraph "External Services"
-        Supabase["Supabase<br>(PostgreSQL + Auth)"]
-        UpstashRedis["Upstash Redis<br>(Redis)"]
+        GeminiAI["Gemini AI<br>(Google AI)"]
     end
 
     %% Frontend Relationships
-    User -->|"Interacts with"| NextApp
+    User -->|"Accesses"| NextApp
     NextApp -->|"Uses"| AppLayout
-    AppLayout -->|"Contains"| ThemeProvider
-    AppLayout -->|"Contains"| ChatInterface
+    AppLayout -->|"Uses"| ThemeProvider
     AppLayout -->|"Contains"| AuthComponents
+    AppLayout -->|"Contains"| ChatInterface
     AppLayout -->|"Contains"| DocumentationUI
-
-    ChatInterface -->|"Contains"| ChatMessageList
-    ChatInterface -->|"Contains"| ChatInput
-    ChatInterface -->|"Contains"| ChatAgentPanel
-    ChatInterface -->|"Contains"| ChatToolsPanel
+    ChatInterface -->|"Uses"| ChatComponents
+    AuthComponents -->|"Uses"| Forms
+    DocumentationUI -->|"Uses"| Navigation
 
     %% Backend Relationships
-    NextApp -->|"API Requests"| NestApp
-    NestApp -->|"Uses"| MastraCoreModule
-    NestApp -->|"Uses"| ChatModule
-    NestApp -->|"Uses"| LinksModule
+    NextApp -->|"API Calls"| NestApp
+    NestApp -->|"Routes to"| AppModule
+    AppModule -->|"Uses"| ChatModule
+    AppModule -->|"Uses"| MastraCore
+    ChatModule -->|"Uses"| AgentService
+    MastraCore -->|"Uses"| EmbeddingService
+    AgentService -->|"Uses"| Tools
+    AgentService -->|"Uses"| Workflows
 
-    MastraCoreModule -->|"Manages"| AgentController
-    AgentController -->|"Uses"| AgentService
-    AgentService -->|"Uses"| MastraAgents
-
-    %% Database Relationships
-    DatabaseClient -->|"Connects to"| Supabase
-    VectorStore -->|"Connects to"| UpstashRedis
-    MastraAgents -->|"Uses"| EmbeddingService
-    EmbeddingService -->|"Uses"| VectorStore
+    %% Data Storage Relationships
+    NestApp -->|"Stores Data"| Supabase
+    NestApp -->|"Caches"| Redis
+    EmbeddingService -->|"Stores Vectors"| VectorStore
 
     %% External Service Relationships
-    AuthComponents -->|"Authenticates via"| Supabase
-    DatabaseClient -->|"Queries"| Supabase
-    VectorStore -->|"Caches in"| UpstashRedis
+    AgentService -->|"Uses"| GeminiAI
+    EmbeddingService -->|"Uses"| GeminiAI
 ```
-````
-
-## File: apps/web/package.json
-
-````json
-{
-  "name": "web",
-  "version": "0.0.2",
-  "private": true,
-  "scripts": {
-    "dev": "next dev --port 3001",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint . --max-warnings 0",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:e2e": "playwright test"
-  },
-  "dependencies": {
-    "@ai-sdk/google": "^1.2.5",
-    "@ai-sdk/google-vertex": "^2.2.8",
-    "@ai-sdk/provider": "^1.1.0",
-    "@ai-sdk/provider-utils": "^2.2.3",
-    "@aws-sdk/client-s3": "^3.779.0",
-    "@codemirror/autocomplete": "^6.18.6",
-    "@codemirror/commands": "^6.8.1",
-    "@codemirror/lang-javascript": "^6.2.3",
-    "@codemirror/lang-json": "^6.0.1",
-    "@codemirror/lang-markdown": "^6.3.2",
-    "@codemirror/lang-python": "^6.1.7",
-    "@codemirror/lang-xml": "^6.1.0",
-    "@codemirror/language-data": "^6.5.1",
-    "@codemirror/search": "^6.5.10",
-    "@codemirror/state": "^6.5.2",
-    "@codemirror/theme-one-dark": "^6.1.2",
-    "@codemirror/view": "^6.36.5",
-    "@emotion/react": "^11.14.0",
-    "@emotion/styled": "^11.14.0",
-    "@google-cloud/vertexai": "^1.9.3",
-    "@mastra/client-js": "^0.1.13",
-    "@mastra/core": "^0.7.0",
-    "@mastra/deployer-vercel": "^0.1.14",
-    "@mastra/evals": "^0.1.14",
-    "@mastra/firecrawl": "^1.1.14",
-    "@mastra/loggers": "^0.1.14",
-    "@mastra/mcp": "^0.3.6",
-    "@mastra/mem0": "^0.0.1",
-    "@mastra/memory": "^0.2.6",
-    "@mastra/pg": "^0.2.6",
-    "@mastra/pinecone": "^0.2.4",
-    "@mastra/qdrant": "^0.2.5",
-    "@mastra/rag": "^0.1.14",
-    "@mastra/upstash": "^0.2.1",
-    "@mastra/vectorize": "^0.2.1",
-    "@mastra/voice-elevenlabs": "^0.1.9",
-    "@mastra/voice-google": "^0.1.9",
-    "@mui/icons-material": "^7.0.1",
-    "@mui/material": "^7.0.1",
-    "@nestjs/common": "^11.0.13",
-    "@next/env": "^15.2.4",
-    "@opentelemetry/api": "^1.9.0",
-    "@opentelemetry/api-logs": "^0.200.0",
-    "@opentelemetry/core": "^2.0.0",
-    "@opentelemetry/instrumentation": "^0.200.0",
-    "@opentelemetry/resources": "^1.19.0",
-    "@opentelemetry/sdk-logs": "^0.200.0",
-    "@opentelemetry/sdk-metrics": "^1.19.0",
-    "@opentelemetry/sdk-trace-base": "^1.19.0",
-    "@repo/ui": "workspace:*",
-    "@supabase/auth-js": "^2.69.1",
-    "@supabase/postgrest-js": "^1.19.4",
-    "@supabase/realtime-js": "^2.11.5",
-    "@supabase/ssr": "^0.6.1",
-    "@supabase/supabase-js": "^2.49.4",
-    "@tanstack/react-query": "^5.71.5",
-    "@trpc/client": "^11.0.1",
-    "@trpc/react-query": "^11.0.1",
-    "@types/ws": "^8.18.1",
-    "@uiw/react-codemirror": "^4.23.10",
-    "@upstash/core-analytics": "^0.0.10",
-    "@upstash/ratelimit": "^2.0.5",
-    "@upstash/redis": "^1.34.6",
-    "@upstash/vector": "^1.2.1",
-    "@vercel/otel": "^1.10.4",
-    "ai": "4.2.10",
-    "codemirror-lang-mermaid": "^0.5.0",
-    "date-fns": "^4.1.0",
-    "diff": "^7.0.0",
-    "fast-xml-parser": "^5.1.0",
-    "google-auth-library": "^9.15.1",
-    "json": "^11.0.0",
-    "langsmith": "^0.3.15",
-    "next": "^15.2.4",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
-    "react-hook-form": "^7.55.0",
-    "react-hot-toast": "^2.5.2",
-    "react-syntax-highlighter": "^15.6.1",
-    "recharts": "^2.15.2",
-    "socket.io-client": "^4.8.1",
-    "ws": "^8.18.1",
-    "zod": "^3.24.2",
-    "zustand": "^5.0.3"
-  },
-  "devDependencies": {
-    "@jest/globals": "^29.7.0",
-    "@next/eslint-plugin-next": "^15.2.4",
-    "@playwright/test": "^1.51.1",
-    "@repo/api": "workspace:^",
-    "@repo/eslint-config": "workspace:*",
-    "@repo/jest-config": "workspace:*",
-    "@repo/typescript-config": "workspace:*",
-    "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/react": "^16.3.0",
-    "@types/node": "^22.14.0",
-    "@types/react": "^19.1.0",
-    "@types/react-dom": "^19.1.1",
-    "jest": "^29.7.0",
-    "jest-environment-jsdom": "^29.7.0",
-    "mastra": "^0.4.4",
-    "tsx": "^4.19.3",
-    "typescript": "5.8.2"
-  }
-}
 ````
 
 ## File: packages/ui/package.json
@@ -14286,17 +14639,21 @@ graph TB
     "lint": "eslint . --max-warnings 0",
     "generate:component": "turbo gen react-component"
   },
+  "peerDependencies": {
+    "next": "*",
+    "nestjs": "*"
+  },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@turbo/gen": "^2.4.4",
+    "@turbo/gen": "^2.5.0",
     "@types/eslint": "^8.56.12",
     "@types/node": "^22.14.0",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.1",
     "@types/react-syntax-highlighter": "^15.5.13",
     "@types/uuid": "^10.0.0",
-    "eslint": "^9.23.0",
+    "eslint": "^8.56.0",
     "react": "^19.1.0",
     "react-plotly.js": "^2.6.0",
     "typescript": "5.8.2"
@@ -14379,6 +14736,138 @@ graph TB
 }
 ````
 
+## File: apps/web/package.json
+
+````json
+{
+  "name": "web",
+  "version": "0.0.2",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --port 3001",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint . --max-warnings 0",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:e2e": "playwright test"
+  },
+  "peerDependencies": {
+    "next": "*",
+    "react": "*",
+    "react-dom": "*",
+    "nestjs": "*",
+    "@repo/ui": "*",
+    "@repo/api": "*"
+  },
+  "dependencies": {
+    "@ai-sdk/google": "^1.2.7",
+    "@ai-sdk/google-vertex": "^2.2.10",
+    "@ai-sdk/provider": "^1.1.0",
+    "@ai-sdk/provider-utils": "^2.2.4",
+    "@aws-sdk/client-s3": "^3.782.0",
+    "@codemirror/autocomplete": "^6.18.6",
+    "@codemirror/commands": "^6.8.1",
+    "@codemirror/lang-javascript": "^6.2.3",
+    "@codemirror/lang-json": "^6.0.1",
+    "@codemirror/lang-markdown": "^6.3.2",
+    "@codemirror/lang-python": "^6.1.7",
+    "@codemirror/lang-xml": "^6.1.0",
+    "@codemirror/language-data": "^6.5.1",
+    "@codemirror/search": "^6.5.10",
+    "@codemirror/state": "^6.5.2",
+    "@codemirror/theme-one-dark": "^6.1.2",
+    "@codemirror/view": "^6.36.5",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@google-cloud/vertexai": "^1.9.3",
+    "@mastra/client-js": "^0.1.13",
+    "@mastra/core": "^0.7.0",
+    "@mastra/deployer-vercel": "^0.1.14",
+    "@mastra/evals": "^0.1.14",
+    "@mastra/firecrawl": "^1.1.14",
+    "@mastra/loggers": "^0.1.14",
+    "@mastra/mcp": "^0.3.6",
+    "@mastra/mem0": "^0.0.1",
+    "@mastra/memory": "^0.2.6",
+    "@mastra/pg": "^0.2.6",
+    "@mastra/pinecone": "^0.2.4",
+    "@mastra/qdrant": "^0.2.5",
+    "@mastra/rag": "^0.1.14",
+    "@mastra/upstash": "^0.2.1",
+    "@mastra/vectorize": "^0.2.1",
+    "@mastra/voice-elevenlabs": "^0.1.9",
+    "@mastra/voice-google": "^0.1.9",
+    "@mui/icons-material": "^7.0.1",
+    "@mui/material": "^7.0.1",
+    "@nestjs/common": "^11.0.13",
+    "@next/env": "^15.2.4",
+    "@opentelemetry/api": "^1.9.0",
+    "@opentelemetry/api-logs": "^0.200.0",
+    "@opentelemetry/core": "^2.0.0",
+    "@opentelemetry/instrumentation": "^0.200.0",
+    "@opentelemetry/resources": "^1.19.0",
+    "@opentelemetry/sdk-logs": "^0.200.0",
+    "@opentelemetry/sdk-metrics": "^1.19.0",
+    "@opentelemetry/sdk-trace-base": "^1.19.0",
+    "@repo/ui": "workspace:*",
+    "@supabase/auth-js": "^2.69.1",
+    "@supabase/postgrest-js": "^1.19.4",
+    "@supabase/realtime-js": "^2.11.5",
+    "@supabase/ssr": "^0.6.1",
+    "@supabase/supabase-js": "^2.49.4",
+    "@tanstack/react-query": "^5.71.10",
+    "@trpc/client": "^11.0.2",
+    "@trpc/react-query": "^11.0.2",
+    "@types/ws": "^8.18.1",
+    "@uiw/react-codemirror": "^4.23.10",
+    "@upstash/core-analytics": "^0.0.10",
+    "@upstash/ratelimit": "^2.0.5",
+    "@upstash/redis": "^1.34.6",
+    "@upstash/vector": "^1.2.1",
+    "@vercel/otel": "^1.10.4",
+    "ai": "4.2.10",
+    "codemirror-lang-mermaid": "^0.5.0",
+    "date-fns": "^4.1.0",
+    "diff": "^7.0.0",
+    "fast-xml-parser": "^5.2.0",
+    "google-auth-library": "^9.15.1",
+    "json": "^11.0.0",
+    "langsmith": "^0.3.15",
+    "next": "^15.2.4",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-hook-form": "^7.55.0",
+    "react-hot-toast": "^2.5.2",
+    "react-syntax-highlighter": "^15.6.1",
+    "recharts": "^2.15.2",
+    "socket.io-client": "^4.8.1",
+    "ws": "^8.18.1",
+    "zod": "^3.24.2",
+    "zustand": "^5.0.3"
+  },
+  "devDependencies": {
+    "@jest/globals": "^29.7.0",
+    "@next/eslint-plugin-next": "^15.2.4",
+    "@playwright/test": "^1.51.1",
+    "@repo/api": "workspace:^",
+    "@repo/eslint-config": "workspace:*",
+    "@repo/jest-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@types/node": "^22.14.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.1",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "mastra": "^0.4.4",
+    "tsx": "^4.19.3",
+    "typescript": "5.8.2"
+  }
+}
+````
+
 ## File: packages/api/package.json
 
 ````json
@@ -14390,7 +14879,12 @@ graph TB
   "scripts": {
     "dev": "pnpm build --watch",
     "build": "tsc -b -v",
-    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\""
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\"",
+    "verify-db": "tsx scripts/verify-db-connection.ts",
+    "validate-env": "tsx scripts/validate-env.ts",
+    "prisma:migrate": "tsx scripts/run-prisma-migrate.ts",
+    "prisma:generate": "prisma generate",
+    "db:migrate": "npm run validate-env && npm run verify-db && npm run prisma:migrate && npm run prisma:generate"
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -14417,15 +14911,21 @@ graph TB
       "require": "./dist/*.js"
     }
   },
+  "peerDependencies": {
+    "nestjs": "*",
+    "next": "*",
+    "react": "*"
+  },
   "dependencies": {
-    "@ai-sdk/google": "^1.2.5",
-    "@ai-sdk/google-vertex": "^2.2.8",
-    "@ai-sdk/groq": "^1.2.3",
-    "@ai-sdk/openai": "^1.3.6",
+    "@ai-sdk/google": "^1.2.7",
+    "@ai-sdk/google-vertex": "^2.2.10",
+    "@ai-sdk/openai": "^1.3.7",
     "@ai-sdk/provider": "^1.1.0",
-    "@ai-sdk/provider-utils": "^2.2.3",
-    "@aws-sdk/client-s3": "^3.779.0",
+    "@ai-sdk/provider-utils": "^2.2.4",
+    "@auth/prisma-adapter": "^2.8.0",
+    "@aws-sdk/client-s3": "^3.782.0",
     "@google-cloud/vertexai": "^1.9.3",
+    "@graphql-tools/utils": "^10.8.6",
     "@mastra/core": "^0.7.0",
     "@mastra/deployer-vercel": "^0.1.14",
     "@mastra/evals": "^0.1.14",
@@ -14447,7 +14947,7 @@ graph TB
     "@nestjs/mapped-types": "2.1.0",
     "@nestjs/microservices": "^11.0.13",
     "@nestjs/platform-express": "^11.0.13",
-    "@opentelemetry/api": "^1.9.0",
+    "@opentelemetry/api": "^1.7.0",
     "@opentelemetry/api-logs": "^0.200.0",
     "@opentelemetry/core": "^2.0.0",
     "@opentelemetry/instrumentation": "^0.200.0",
@@ -14456,47 +14956,52 @@ graph TB
     "@opentelemetry/sdk-logs": "^0.200.0",
     "@paralleldrive/cuid2": "^2.2.2",
     "@pinecone-database/pinecone": "^5.1.1",
+    "@prisma/client": "^6.5.0",
     "@supabase/auth-js": "^2.69.1",
     "@supabase/postgrest-js": "^1.19.4",
     "@supabase/realtime-js": "^2.11.5",
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.49.4",
-    "@trpc/server": "^11.0.1",
-    "@types/ws": "^8.18.1",
+    "@trpc/server": "^11.0.2",
     "@upstash/core-analytics": "^0.0.10",
     "@upstash/ratelimit": "^2.0.5",
     "@upstash/redis": "^1.34.6",
     "@upstash/vector": "^1.2.1",
     "@vercel/otel": "^1.10.4",
-    "ai": "4.2.10",
+    "ai": "4.3.1",
     "class-validator": "^0.14.1",
     "express": "^5.1.0",
     "google-auth-library": "^9.15.1",
+    "graphql": "^16.10.0",
+    "graphql-tag": "^2.12.6",
     "json": "^11.0.0",
     "langsmith": "^0.3.15",
+    "pg": "^8.14.1",
     "postgres": "^3.4.5",
     "redis": "^4.7.0",
     "rxjs": "^7.8.2",
     "socket.io": "^4.8.1",
     "socket.io-parser": "^3.4.3",
-    "supabase": "^2.20.5",
-    "typeorm": "^0.3.21",
+    "supabase": "^2.20.11",
+    "typeorm": "^0.3.22",
     "ws": "^8.18.1",
     "zod": "^3.24.2",
     "zustand": "^5.0.3"
   },
   "devDependencies": {
-    "@nestjs/cli": "^11.0.5",
-    "@nestjs/schematics": "^11.0.2",
+    "@nestjs/cli": "^11.0.6",
+    "@nestjs/schematics": "^11.0.3",
     "@nestjs/testing": "^11.0.13",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/express": "^5.0.1",
     "@types/node": "^22.14.0",
+    "@types/pg": "^8.11.11",
     "@types/react": "^19.1.0",
+    "@types/ws": "^8.18.1",
     "ts-loader": "^9.5.2",
     "ts-node": "^10.9.2",
-    "typescript": "5.8.2"
+    "typescript": "5.8.3"
   }
 }
 ````

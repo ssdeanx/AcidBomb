@@ -70,7 +70,7 @@ export class MastraDatabase {
 
             throw new Error('Failed to generate embedding: empty response');
           } catch (error) {
-            logger.error('Error generating embedding:', error);
+            logger.error('Error generating embedding:', { error });
             throw error;
           }
         },
@@ -88,7 +88,7 @@ export class MastraDatabase {
           );
         })
         .catch((error) => {
-          logger.error('Failed to initialize embedding service:', error);
+          logger.error('Failed to initialize embedding service:', { error });
         });
     } else {
       logger.info('Embedding service already initialized');
@@ -138,7 +138,7 @@ export class MastraDatabase {
 
       return conversationId;
     } catch (error) {
-      logger.error(`Failed to store conversation for user ${userId}:`, error);
+      logger.error(`Failed to store conversation for user ${userId}:`, { error });
       throw error;
     }
   }
@@ -195,7 +195,7 @@ export class MastraDatabase {
         } catch (docError) {
           logger.error(
             `Failed to store embedding for one message in conversation ${conversationId}:`,
-            docError,
+            { error: docError },
           );
           // Decide whether to continue or stop on partial failure
         }
@@ -207,7 +207,7 @@ export class MastraDatabase {
     } catch (error) {
       logger.error(
         `Failed to store conversation embeddings for ${conversationId}:`,
-        error,
+        { error },
       );
       // Don't throw, just log - this is a non-critical operation
     }
@@ -250,7 +250,7 @@ export class MastraDatabase {
 
       return chunkIds;
     } catch (error) {
-      logger.error(`Failed to store document for user ${userId}:`, error);
+      logger.error(`Failed to store document for user ${userId}:`, { error });
       throw error;
     }
   }
@@ -291,7 +291,7 @@ export class MastraDatabase {
 
       return results;
     } catch (error) {
-      logger.error('Failed to search for similar content:', error);
+      logger.error('Failed to search for similar content:', { error });
       return []; // Return empty array on error, don't break the flow
     }
   }

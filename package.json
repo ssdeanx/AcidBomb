@@ -7,7 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "dev": "turbo run dev",
-    "build": "turbo run build",
+    "build": "turbo run build --output public",
     "test": "turbo run test",
     "test:e2e": "turbo run test:e2e",
     "lint": "turbo run lint",
@@ -17,7 +17,8 @@
     "db:migrate": "turbo run db:migrate",
     "db:seed": "turbo run db:seed",
     "db:reset": "turbo run db:reset",
-    "db:migrate:dev": "turbo run db:migrate:dev"
+    "db:migrate:dev": "turbo run db:migrate:dev",
+    "start": "turbo run start"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
@@ -41,6 +42,7 @@
     },
     "onlyBuiltDependencies": [
       "@nestjs/core",
+      "@opentelemetry/instrumentation-grpc",
       "@parcel/watcher",
       "@prisma/client",
       "@swc/core",

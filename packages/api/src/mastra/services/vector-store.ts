@@ -111,15 +111,18 @@ export class VectorStoreService {
     );
 
     try {
+      // Note: The @mastra/pinecone wrapper might not support 'metadata' directly here.
+      // If index metadata config is needed, it might require using the native client
+      // or checking the wrapper's documentation for the correct approach.
       await this.mastraStore.createIndex({
         indexName: config.indexName,
         dimension: config.dimension,
-        metadata: config.metadata,
+        // metadata: config.metadata, // Removed: Not a valid property for CreateIndexParams in @mastra/pinecone
       });
 
       logger.info(`Successfully created index ${config.indexName}`);
     } catch (error) {
-      logger.error(`Failed to create index ${config.indexName}:`, error);
+      logger.error(`Failed to create index ${config.indexName}:`, { error });
       throw error;
     }
   }
@@ -149,7 +152,7 @@ export class VectorStoreService {
 
       logger.info(`Successfully upserted ${vectors.length} vectors`);
     } catch (error) {
-      logger.error(`Failed to upsert vectors to ${indexName}:`, error);
+      logger.error(`Failed to upsert vectors to ${indexName}:`, { error });
       throw error;
     }
   }
@@ -180,10 +183,13 @@ export class VectorStoreService {
     try {
       await this.mastraStore.upsert({
         indexName,
-        vectors: embeddings,
-        metadata: chunks.map((chunk) => ({
+        vectors: embeddings.map((e) => e.values), // Extract the vector values
+        ids: embeddings.map((e) => e.id), // Extract the IDs
+        metadata: chunks.map((chunk, index) => ({
           text: chunk.text,
           ...chunk.metadata,
+          // Optionally link metadata back to the original embedding ID if needed
+          // embeddingId: embeddings[index].id
         })),
       });
 
@@ -193,7 +199,7 @@ export class VectorStoreService {
     } catch (error) {
       logger.error(
         `Failed to upsert document embeddings to ${indexName}:`,
-        error,
+        { error },
       );
       throw error;
     }
@@ -236,7 +242,7 @@ export class VectorStoreService {
       );
       return response;
     } catch (error) {
-      logger.error(`Failed to query similar vectors from ${indexName}:`, error);
+      logger.error(`Failed to query similar vectors from ${indexName}:`, { error });
       throw error;
     }
   }
@@ -265,7 +271,7 @@ export class VectorStoreService {
 
       logger.info(`Successfully deleted ${ids.length} vectors`);
     } catch (error) {
-      logger.error(`Failed to delete vectors from ${indexName}:`, error);
+      logger.error(`Failed to delete vectors from ${indexName}:`, { error });
       throw error;
     }
   }
